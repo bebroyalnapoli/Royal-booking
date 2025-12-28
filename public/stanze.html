@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Stanze - Royal Booking</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Auth -->
+  <script src="auth.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* HEADER */
+    .header {
+      background: black;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .header button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    /* LISTA STANZE */
+    .room {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .room h3 {
+      margin: 0 0 5px;
+    }
+
+    .room small {
+      color: #666;
+    }
+
+    .room button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    .edit-btn {
+      background: #007bff;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #d9534f;
+      color: white;
+    }
+
+    /* FORM */
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-top: 25px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body onload="loadStanze()">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Stanze</h1>
+    <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <h2>Stanze della struttura</h2>
+    <h3 id="structureName"></h3>
+
+    <div id="roomsList"></div>
+
+    <!-- FORM AGGIUNTA -->
+    <div class="form-box">
+      <h3>Aggiungi nuova stanza</h3>
+
+      <input id="nome" type="text" placeholder="Nome stanza">
+      <input id="capacita" type="number" placeholder="Capacità (es. 2)">
+      
+      <select id="tipologia">
+        <option value="">Seleziona tipologia</option>
+        <option value="Matrimoniale">Matrimoniale</option>
+        <option value="Doppia">Doppia</option>
+        <option value="Singola">Singola</option>
+        <option value="Suite">Suite</option>
+      </select>
+
+      <button class="save-btn" onclick="addRoom()">Salva</button>
+    </div>
+
+  </div>
+
+  <script>
+    const db = firebase.firestore();
+    let currentUser = null;
+    let structureId = localStorage.getItem("activeStructure");
+
+    function loadStanze() {
+      checkAuth();
+
+      if (!structureId) {
+        alert("Nessuna struttura selezionata");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadStructureInfo();
+          loadRooms();
+        }
+      });
+    }
+
+    function loadStructureInfo() {
+      db.collection("strutture").doc(structureId).get().then(doc => {
+        if (doc.exists) {
+          document.getElementById("structureName").innerText =
+            doc.data().nome + " — " + doc.data().indirizzo;
+        }
+      });
+    }
+
+    function loadRooms() {
+      const list = document.getElementById("roomsList");
+      list.innerHTML = "Caricamento...";
+
+      db.collection("stanze")
+        .where("structureId", "==", structureId)
+        .get()
+        .then(snapshot => {
+          list.innerHTML = "";
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+
+            const div = document.createElement("div");
+            div.className = "room";
+
+            div.innerHTML = `
+              <h3>${data.nome}</h3>
+              <small>${data.tipologia} — Capacità: ${data.capacita}</small><br>
+              <button class="edit-btn" onclick="editRoom('${doc.id}', '${data.nome}', '${data.capacita}', '${data.tipologia}')">Modifica</button>
+              <button class="delete-btn" onclick="deleteRoom('${doc.id}')">Elimina</button>
+            `;
+
+            list.appendChild(div);
+          });
+        });
+    }
+
+    function addRoom() {
+      const nome = document.getElementById("nome").value.trim();
+      const capacita = document.getElementById("capacita").value.trim();
+      const tipologia = document.getElementById("tipologia").value;
+
+      if (!nome || !capacita || !tipologia) {
+        alert("Compila tutti i campi");
+        return;
+      }
+
+      db.collection("stanze").add({
+        nome,
+        capacita,
+        tipologia,
+        structureId,
+        owner: currentUser.uid
+      }).then(() => {
+        document.getElementById("nome").value = "";
+        document.getElementById("capacita").value = "";
+        document.getElementById("tipologia").value = "";
+        loadRooms();
+      });
+    }
+
+    function editRoom(id, nome, capacita, tipologia) {
+      const nuovoNome = prompt("Modifica nome stanza:", nome);
+      const nuovaCapacita = prompt("Modifica capacità:", capacita);
+      const nuovaTipologia = prompt("Modifica tipologia:", tipologia);
+
+      if (!nuovoNome || !nuovaCapacita || !nuovaTipologia) return;
+
+      db.collection("stanze").doc(id).update({
+        nome: nuovoNome,
+        capacita: nuovaCapacita,
+        tipologia: nuovaTipologia
+      }).then(() => loadRooms());
+    }
+
+    function deleteRoom(id) {
+      if (!confirm("Sei sicuro di voler eliminare questa stanza?")) return;
+
+      db.collection("stanze").doc(id).delete()
+        .then(() => loadRooms());
+    }
+  </script>
+
+</body>
+</html>
