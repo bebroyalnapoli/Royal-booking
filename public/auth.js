@@ -1,4 +1,6 @@
-// Configurazione Firebase
+// ===============================
+// CONFIGURAZIONE FIREBASE
+// ===============================
 const firebaseConfig = {
   apiKey: "TUO_API_KEY",
   authDomain: "royal-booking-e6050.firebaseapp.com",
@@ -8,10 +10,18 @@ const firebaseConfig = {
 // Inizializza Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Funzione di login
+
+// ===============================
+// LOGIN
+// ===============================
 function loginUser() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (email === "" || password === "") {
+    alert("Inserisci email e password");
+    return;
+  }
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
@@ -22,7 +32,10 @@ function loginUser() {
     });
 }
 
-// Controllo accesso sulle pagine protette
+
+// ===============================
+// PROTEZIONE PAGINE
+// ===============================
 function checkAuth() {
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
@@ -31,9 +44,16 @@ function checkAuth() {
   });
 }
 
-// Logout
+
+// ===============================
+// LOGOUT
+// ===============================
 function logoutUser() {
-  firebase.auth().signOut().then(() => {
-    window.location.href = "login.html";
-  });
+  firebase.auth().signOut()
+    .then(() => {
+      window.location.href = "login.html";
+    })
+    .catch(error => {
+      alert("Errore durante il logout: " + error.message);
+    });
 }
