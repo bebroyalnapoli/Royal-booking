@@ -2,17 +2,71 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Dashboard - Royal Booking</title>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- File di autenticazione -->
   <script src="auth.js"></script>
+
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .dashboard-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #222;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
 </head>
+
 <body onload="checkAuth()">
 
-  <h1>Benvenuto nella Dashboard</h1>
+  <div class="dashboard-box">
+    <h1>Benvenuto nella Dashboard</h1>
 
-  <button onclick="logoutUser()">Logout</button>
+    <p>Accesso effettuato con successo.</p>
+
+    <button onclick="logoutUser()">Logout</button>
+  </div>
 
 </body>
 </html>
