@@ -7,6 +7,7 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
   <!-- Auth -->
   <script src="auth.js"></script>
@@ -43,9 +44,22 @@
       font-size: 14px;
     }
 
-    /* MAIN CONTENT */
+    /* CONTENT */
     .content {
       padding: 20px;
+    }
+
+    /* SELECTOR */
+    .selector {
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
 
     /* CARDS */
@@ -112,21 +126,28 @@
 
     <h2 id="welcome"></h2>
 
+    <!-- SELECTOR STRUTTURE -->
+    <div class="selector">
+      <select id="structureSelector" onchange="changeStructure()">
+        <option value="">Seleziona una struttura...</option>
+      </select>
+    </div>
+
     <!-- CARDS -->
     <div class="cards">
       <div class="card">
-        <h2>Strutture</h2>
-        <p>Gestisci le tue strutture</p>
-      </div>
-
-      <div class="card">
         <h2>Stanze</h2>
-        <p>Configura le stanze disponibili</p>
+        <p id="roomsCount">Caricamento...</p>
       </div>
 
       <div class="card">
-        <h2>Prenotazioni</h2>
-        <p>Visualizza e crea prenotazioni</p>
+        <h2>Prenotazioni oggi</h2>
+        <p id="todayBookings">Caricamento...</p>
+      </div>
+
+      <div class="card">
+        <h2>Disponibilità</h2>
+        <p id="availability">Caricamento...</p>
       </div>
     </div>
 
@@ -140,15 +161,80 @@
   </div>
 
   <script>
+    const db = firebase.firestore();
+
     function loadDashboard() {
-      checkAuth(); // Protezione pagina
+      checkAuth();
 
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
           document.getElementById("welcome").innerText =
             "Benvenuto, " + user.email;
+
+          loadStructures(user.uid);
         }
       });
+    }
+
+    function loadStructures(userId) {
+      const selector = document.getElementById("structureSelector");
+
+      db.collection("strutture")
+        .where("owner", "==", userId)
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            const opt = document.createElement("option");
+            opt.value = doc.id;
+            opt.textContent = doc.data().nome;
+            selector.appendChild(opt);
+          });
+        });
+    }
+
+    function changeStructure() {
+      const structureId = document.getElementById("structureSelector").value;
+
+      if (!structureId) return;
+
+      loadRooms(structureId);
+      loadTodayBookings(structureId);
+      loadAvailability(structureId);
+    }
+
+    function loadRooms(structureId) {
+      db.collection("stanze")
+        .where("structureId", "==", structureId)
+        .get()
+        .then(snap => {
+          document.getElementById("roomsCount").innerText =
+            snap.size + " stanze";
+        });
+    }
+
+    function loadTodayBookings(structureId) {
+      const today = new Date().toISOString().split("T")[0];
+
+      db.collection("prenotazioni")
+        .where("structureId", "==", structureId)
+        .where("data", "==", today)
+        .get()
+        .then(snap => {
+          document.getElementById("todayBookings").innerText =
+            snap.size + " prenotazioni";
+        });
+    }
+
+    function loadAvailability(structureId) {
+      db.collection("stanze")
+        .where("structureId", "==", structureId)
+        .get()
+        .then(snap => {
+          const total = snap.size;
+          const available = total; // Placeholder: logica reale dopo
+          document.getElementById("availability").innerText =
+            available + " disponibili";
+        });
     }
   </script>
 
