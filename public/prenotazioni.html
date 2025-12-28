@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Prenotazioni - Royal Booking</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Auth -->
+  <script src="auth.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* HEADER */
+    .header {
+      background: black;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .header button {
+      background: white;
+      color: black;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    /* LISTA PRENOTAZIONI */
+    .booking {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .booking h3 {
+      margin: 0 0 5px;
+    }
+
+    .booking small {
+      color: #666;
+    }
+
+    .booking button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    .edit-btn {
+      background: #007bff;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #d9534f;
+      color: white;
+    }
+
+    /* FORM */
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-top: 25px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body onload="loadPrenotazioni()">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Prenotazioni</h1>
+    <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <h2>Prenotazioni della struttura</h2>
+    <h3 id="structureName"></h3>
+
+    <div id="bookingsList"></div>
+
+    <!-- FORM AGGIUNTA -->
+    <div class="form-box">
+      <h3>Nuova prenotazione</h3>
+
+      <input id="cliente" type="text" placeholder="Nome cliente">
+      <input id="checkin" type="date">
+      <input id="checkout" type="date">
+
+      <select id="stanzaSelect">
+        <option value="">Seleziona stanza</option>
+      </select>
+
+      <button class="save-btn" onclick="addBooking()">Salva</button>
+    </div>
+
+  </div>
+
+  <script>
+    const db = firebase.firestore();
+    let currentUser = null;
+    let structureId = localStorage.getItem("activeStructure");
+
+    function loadPrenotazioni() {
+      checkAuth();
+
+      if (!structureId) {
+        alert("Nessuna struttura selezionata");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadStructureInfo();
+          loadRooms();
+          loadBookings();
+        }
+      });
+    }
+
+    function loadStructureInfo() {
+      db.collection("strutture").doc(structureId).get().then(doc => {
+        if (doc.exists) {
+          document.getElementById("structureName").innerText =
+            doc.data().nome + " — " + doc.data().indirizzo;
+        }
+      });
+    }
+
+    function loadRooms() {
+      const select = document.getElementById("stanzaSelect");
+
+      db.collection("stanze")
+        .where("structureId", "==", structureId)
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            const opt = document.createElement("option");
+            opt.value = doc.id;
+            opt.textContent = doc.data().nome;
+            select.appendChild(opt);
+          });
+        });
+    }
+
+    function loadBookings() {
+      const list = document.getElementById("bookingsList");
+      list.innerHTML = "Caricamento...";
+
+      db.collection("prenotazioni")
+        .where("structureId", "==", structureId)
+        .orderBy("checkin")
+        .get()
+        .then(snapshot => {
+          list.innerHTML = "";
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+
+            const div = document.createElement("div");
+            div.className = "booking";
+
+            div.innerHTML = `
+              <h3>${data.cliente}</h3>
+              <small>Stanza: ${data.stanzaNome}</small><br>
+              <small>Check-in: ${data.checkin}</small><br>
+              <small>Check-out: ${data.checkout}</small><br>
+              <small>Codice: ${data.codice}</small><br>
+
+              <button class="edit-btn" onclick="editBooking('${doc.id}', '${data.cliente}', '${data.checkin}', '${data.checkout}')">Modifica</button>
+              <button class="delete-btn" onclick="deleteBooking('${doc.id}')">Elimina</button>
+            `;
+
+            list.appendChild(div);
+          });
+        });
+    }
+
+    function generateCode() {
+      return "RB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    function addBooking() {
+      const cliente = document.getElementById("cliente").value.trim();
+      const checkin = document.getElementById("checkin").value;
+      const checkout = document.getElementById("checkout").value;
+      const stanzaId = document.getElementById("stanzaSelect").value;
+
+      if (!cliente || !checkin || !checkout || !stanzaId) {
+        alert("Compila tutti i campi");
+        return;
+      }
+
+      db.collection("stanze").doc(stanzaId).get().then(stanzaDoc => {
+        const stanzaNome = stanzaDoc.data().nome;
+
+        db.collection("prenotazioni").add({
+          cliente,
+          checkin,
+          checkout,
+          stanzaId,
+          stanzaNome,
+          structureId,
+          owner: currentUser.uid,
+          codice: generateCode()
+        }).then(() => {
+          document.getElementById("cliente").value = "";
+          document.getElementById("checkin").value = "";
+          document.getElementById("checkout").value = "";
+          document.getElementById("stanzaSelect").value = "";
+          loadBookings();
+        });
+      });
+    }
+
+    function editBooking(id, cliente, checkin, checkout) {
+      const nuovoCliente = prompt("Modifica nome cliente:", cliente);
+      const nuovoCheckin = prompt("Modifica check-in:", checkin);
+      const nuovoCheckout = prompt("Modifica check-out:", checkout);
+
+      if (!nuovoCliente || !nuovoCheckin || !nuovoCheckout) return;
+
+      db.collection("prenotazioni").doc(id).update({
+        cliente: nuovoCliente,
+        checkin: nuovoCheckin,
+        checkout: nuovoCheckout
+      }).then(() => loadBookings());
+    }
+
+    function deleteBooking(id) {
+      if (!confirm("Sei sicuro di voler eliminare questa prenotazione?")) return;
+
+      db.collection("prenotazioni").doc(id).delete()
+        .then(() => loadBookings());
+    }
+  </script>
+
+</body>
+</html>
