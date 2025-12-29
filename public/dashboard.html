@@ -133,29 +133,32 @@
       </select>
     </div>
 
+    <!-- STRUTTURA ATTIVA -->
+    <h3 id="selectedStructureLabel" style="margin-top:10px; color:#444;"></h3>
+
     <!-- CARDS -->
     <div class="cards">
       <div class="card">
         <h2>Stanze</h2>
-        <p id="roomsCount">Caricamento...</p>
+        <p id="roomsCount">—</p>
       </div>
 
       <div class="card">
         <h2>Prenotazioni oggi</h2>
-        <p id="todayBookings">Caricamento...</p>
+        <p id="todayBookings">—</p>
       </div>
 
       <div class="card">
         <h2>Disponibilità</h2>
-        <p id="availability">Caricamento...</p>
+        <p id="availability">—</p>
       </div>
     </div>
 
     <!-- MENU -->
     <div class="menu">
       <button onclick="window.location.href='strutture.html'">Gestisci Strutture</button>
-      <button onclick="window.location.href='stanze.html'">Gestisci Stanze</button>
-      <button onclick="window.location.href='prenotazioni.html'">Gestisci Prenotazioni</button>
+      <button onclick="goToStanze()">Gestisci Stanze</button>
+      <button onclick="goToPrenotazioni()">Gestisci Prenotazioni</button>
     </div>
 
   </div>
@@ -172,6 +175,13 @@
             "Benvenuto, " + user.email;
 
           loadStructures(user.uid);
+
+          // Se esiste già una struttura selezionata, la mostriamo
+          const savedName = localStorage.getItem("activeStructureName");
+          if (savedName) {
+            document.getElementById("selectedStructureLabel").innerText =
+              "Struttura selezionata: " + savedName;
+          }
         }
       });
     }
@@ -193,10 +203,22 @@
     }
 
     function changeStructure() {
-      const structureId = document.getElementById("structureSelector").value;
+      const selector = document.getElementById("structureSelector");
+      const structureId = selector.value;
 
       if (!structureId) return;
 
+      const structureName = selector.selectedOptions[0].text;
+
+      // Salva struttura selezionata
+      localStorage.setItem("activeStructure", structureId);
+      localStorage.setItem("activeStructureName", structureName);
+
+      // Mostra struttura selezionata
+      document.getElementById("selectedStructureLabel").innerText =
+        "Struttura selezionata: " + structureName;
+
+      // Aggiorna card
       loadRooms(structureId);
       loadTodayBookings(structureId);
       loadAvailability(structureId);
@@ -217,7 +239,7 @@
 
       db.collection("prenotazioni")
         .where("structureId", "==", structureId)
-        .where("data", "==", today)
+        .where("checkin", "==", today)
         .get()
         .then(snap => {
           document.getElementById("todayBookings").innerText =
@@ -231,10 +253,28 @@
         .get()
         .then(snap => {
           const total = snap.size;
-          const available = total; // Placeholder: logica reale dopo
+          const available = total; // Placeholder
           document.getElementById("availability").innerText =
             available + " disponibili";
         });
+    }
+
+    function goToStanze() {
+      const id = localStorage.getItem("activeStructure");
+      if (!id) {
+        alert("Seleziona prima una struttura dalla Dashboard");
+        return;
+      }
+      window.location.href = "stanze.html";
+    }
+
+    function goToPrenotazioni() {
+      const id = localStorage.getItem("activeStructure");
+      if (!id) {
+        alert("Seleziona prima una struttura dalla Dashboard");
+        return;
+      }
+      window.location.href = "prenotazioni.html";
     }
   </script>
 
