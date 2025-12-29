@@ -133,7 +133,7 @@
   <div class="content">
 
     <h2>Prenotazioni della struttura</h2>
-    <h3 id="structureName"></h3>
+    <h3 id="activeStructureLabel" style="color:#444;"></h3>
 
     <div id="bookingsList"></div>
 
@@ -162,27 +162,22 @@
     function loadPrenotazioni() {
       checkAuth();
 
+      // BLOCCO SE NON C'È STRUTTURA
       if (!structureId) {
-        alert("Nessuna struttura selezionata");
+        alert("Seleziona prima una struttura dalla Dashboard");
         window.location.href = "dashboard.html";
         return;
       }
 
+      // Mostra nome struttura
+      document.getElementById("activeStructureLabel").innerText =
+        "Struttura attiva: " + localStorage.getItem("activeStructureName");
+
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
           currentUser = user;
-          loadStructureInfo();
           loadRooms();
           loadBookings();
-        }
-      });
-    }
-
-    function loadStructureInfo() {
-      db.collection("strutture").doc(structureId).get().then(doc => {
-        if (doc.exists) {
-          document.getElementById("structureName").innerText =
-            doc.data().nome + " — " + doc.data().indirizzo;
         }
       });
     }
