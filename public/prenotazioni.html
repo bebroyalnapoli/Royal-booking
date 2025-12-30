@@ -44,16 +44,45 @@
       font-size: 14px;
     }
 
+    /* TAB BAR */
+    .tab-bar {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      font-size: 16px;
+      border-bottom: 3px solid transparent;
+      color: #555;
+    }
+
+    .tab.active {
+      border-bottom: 3px solid black;
+      color: black;
+      font-weight: bold;
+    }
+
     /* CONTENT */
     .content {
       padding: 20px;
     }
 
-    h2 {
-      margin-top: 0;
+    /* BUTTON NEW BOOKING */
+    .new-booking-btn {
+      background: black;
+      color: white;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
     }
 
-    /* LISTA PRENOTAZIONI */
+    /* BOOKING LIST */
     .booking {
       background: white;
       padding: 15px;
@@ -90,13 +119,28 @@
       color: white;
     }
 
-    /* FORM */
-    .form-box {
+    /* MODAL */
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal {
       background: white;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      margin-top: 25px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .modal h2 {
+      margin-top: 0;
     }
 
     input, select {
@@ -118,6 +162,7 @@
       font-size: 16px;
       cursor: pointer;
     }
+
   </style>
 </head>
 
@@ -129,17 +174,25 @@
     <button onclick="window.location.href='dashboard.html'">Dashboard</button>
   </div>
 
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('lista')">Lista prenotazioni</div>
+    <div class="tab" onclick="switchTab('nuova')">Nuova prenotazione</div>
+  </div>
+
   <!-- CONTENT -->
   <div class="content">
 
-    <h2>Prenotazioni della struttura</h2>
-    <h3 id="activeStructureLabel" style="color:#444;"></h3>
+    <!-- LISTA -->
+    <div id="lista" class="section active">
+      <button class="new-booking-btn" onclick="openModal()">+ Nuova prenotazione</button>
+      <h3 id="activeStructureLabel"></h3>
+      <div id="bookingsList">Caricamento...</div>
+    </div>
 
-    <div id="bookingsList"></div>
-
-    <!-- FORM AGGIUNTA -->
-    <div class="form-box">
-      <h3>Nuova prenotazione</h3>
+    <!-- FORM (TAB VERSIONE) -->
+    <div id="nuova" class="section">
+      <h2>Nuova prenotazione</h2>
 
       <input id="cliente" type="text" placeholder="Nome cliente">
       <input id="checkin" type="date">
@@ -154,22 +207,53 @@
 
   </div>
 
+  <!-- MODAL -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <h2>Nuova prenotazione</h2>
+
+      <input id="m_cliente" type="text" placeholder="Nome cliente">
+      <input id="m_checkin" type="date">
+      <input id="m_checkout" type="date">
+
+      <select id="m_stanzaSelect">
+        <option value="">Seleziona stanza</option>
+      </select>
+
+      <button class="save-btn" onclick="addBookingModal()">Salva</button>
+    </div>
+  </div>
+
   <script>
     const db = firebase.firestore();
     let currentUser = null;
     let structureId = localStorage.getItem("activeStructure");
 
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+      document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+
+    function openModal() {
+      document.getElementById("modalBg").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modalBg").style.display = "none";
+    }
+
     function loadPrenotazioni() {
       checkAuth();
 
-      // BLOCCO SE NON C'È STRUTTURA
       if (!structureId) {
         alert("Seleziona prima una struttura dalla Dashboard");
         window.location.href = "dashboard.html";
         return;
       }
 
-      // Mostra nome struttura
       document.getElementById("activeStructureLabel").innerText =
         "Struttura attiva: " + localStorage.getItem("activeStructureName");
 
@@ -183,17 +267,22 @@
     }
 
     function loadRooms() {
-      const select = document.getElementById("stanzaSelect");
+      const select1 = document.getElementById("stanzaSelect");
+      const select2 = document.getElementById("m_stanzaSelect");
 
       db.collection("stanze")
         .where("structureId", "==", structureId)
         .get()
         .then(snapshot => {
           snapshot.forEach(doc => {
-            const opt = document.createElement("option");
-            opt.value = doc.id;
-            opt.textContent = doc.data().nome;
-            select.appendChild(opt);
+            const opt1 = document.createElement("option");
+            opt1.value = doc.id;
+            opt1.textContent = doc.data().nome;
+
+            const opt2 = opt1.cloneNode(true);
+
+            select1.appendChild(opt1);
+            select2.appendChild(opt2);
           });
         });
     }
@@ -208,6 +297,11 @@
         .get()
         .then(snapshot => {
           list.innerHTML = "";
+
+          if (snapshot.empty) {
+            list.innerHTML = "<p>Nessuna prenotazione trovata.</p>";
+            return;
+          }
 
           snapshot.forEach(doc => {
             const data = doc.data();
@@ -259,11 +353,39 @@
           owner: currentUser.uid,
           codice: generateCode()
         }).then(() => {
-          document.getElementById("cliente").value = "";
-          document.getElementById("checkin").value = "";
-          document.getElementById("checkout").value = "";
-          document.getElementById("stanzaSelect").value = "";
           loadBookings();
+          alert("Prenotazione aggiunta");
+        });
+      });
+    }
+
+    function addBookingModal() {
+      const cliente = document.getElementById("m_cliente").value.trim();
+      const checkin = document.getElementById("m_checkin").value;
+      const checkout = document.getElementById("m_checkout").value;
+      const stanzaId = document.getElementById("m_stanzaSelect").value;
+
+      if (!cliente || !checkin || !checkout || !stanzaId) {
+        alert("Compila tutti i campi");
+        return;
+      }
+
+      db.collection("stanze").doc(stanzaId).get().then(stanzaDoc => {
+        const stanzaNome = stanzaDoc.data().nome;
+
+        db.collection("prenotazioni").add({
+          cliente,
+          checkin,
+          checkout,
+          stanzaId,
+          stanzaNome,
+          structureId,
+          owner: currentUser.uid,
+          codice: generateCode()
+        }).then(() => {
+          closeModal();
+          loadBookings();
+          alert("Prenotazione aggiunta");
         });
       });
     }
