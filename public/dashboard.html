@@ -19,6 +19,7 @@
       background: #f5f5f5;
     }
 
+    /* HEADER */
     .header {
       background: black;
       color: white;
@@ -43,8 +44,39 @@
       font-size: 14px;
     }
 
+    /* TAB BAR */
+    .tab-bar {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      font-size: 16px;
+      border-bottom: 3px solid transparent;
+      color: #555;
+    }
+
+    .tab.active {
+      border-bottom: 3px solid black;
+      color: black;
+      font-weight: bold;
+    }
+
+    /* CONTENT */
     .content {
       padding: 20px;
+    }
+
+    /* STRUCTURE SELECTOR */
+    .structure-box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
 
     select {
@@ -55,9 +87,10 @@
       font-size: 16px;
     }
 
+    /* CARDS */
     .cards {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 15px;
       margin-top: 20px;
     }
@@ -67,18 +100,22 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      text-align: center;
     }
 
-    .menu {
-      margin-top: 25px;
-      display: grid;
-      gap: 12px;
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
     }
 
-    .menu button {
-      width: 100%;
-      padding: 14px;
+    .quick-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .quick-buttons button {
+      flex: 1;
+      padding: 12px;
       background: black;
       color: white;
       border: none;
@@ -86,47 +123,88 @@
       font-size: 16px;
       cursor: pointer;
     }
+
+    /* SECTIONS */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
   </style>
 </head>
 
 <body onload="loadDashboard()">
 
+  <!-- HEADER -->
   <div class="header">
     <h1>Royal Booking</h1>
     <button onclick="logoutUser()">Logout</button>
   </div>
 
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('overview')">Panoramica</div>
+    <div class="tab" onclick="switchTab('rooms')">Stanze</div>
+    <div class="tab" onclick="switchTab('bookings')">Prenotazioni</div>
+  </div>
+
+  <!-- CONTENT -->
   <div class="content">
 
-    <h2 id="welcome"></h2>
+    <!-- STRUCTURE SELECTOR -->
+    <div class="structure-box">
+      <h3>Struttura attiva</h3>
+      <select id="structureSelector" onchange="changeStructure()">
+        <option value="">Seleziona una struttura...</option>
+      </select>
+    </div>
 
-    <select id="structureSelector" onchange="changeStructure()">
-      <option value="">Seleziona una struttura...</option>
-    </select>
+    <!-- PANORAMICA -->
+    <div id="overview" class="section active">
+      <h2>Panoramica</h2>
 
-    <h3 id="selectedStructureLabel" style="margin-top:10px; color:#444;"></h3>
+      <div class="cards">
+        <div class="card">
+          <h2>Stanze totali</h2>
+          <p id="roomsCount">—</p>
+        </div>
 
-    <div class="cards">
-      <div class="card">
-        <h2>Stanze</h2>
-        <p id="roomsCount">—</p>
+        <div class="card">
+          <h2>Prenotazioni oggi</h2>
+          <p id="todayBookings">—</p>
+        </div>
+
+        <div class="card">
+          <h2>Disponibilità</h2>
+          <p id="availability">—</p>
+        </div>
+
+        <div class="card">
+          <h2>Prenotazioni future</h2>
+          <p id="futureBookings">—</p>
+        </div>
       </div>
 
-      <div class="card">
-        <h2>Prenotazioni oggi</h2>
-        <p id="todayBookings">—</p>
-      </div>
-
-      <div class="card">
-        <h2>Disponibilità</h2>
-        <p id="availability">—</p>
+      <div class="quick-buttons">
+        <button onclick="window.location.href='prenotazioni.html'">+ Nuova prenotazione</button>
+        <button onclick="window.location.href='stanze.html'">+ Nuova stanza</button>
       </div>
     </div>
 
-    <div class="menu">
-      <button onclick="window.location.href='strutture.html'">Gestisci Strutture</button>
-      <button onclick="goToStanze()">Gestisci Stanze</button>
-      <button onclick="goToPrenotazioni()">Gestisci Prenotazioni</button>
+    <!-- STANZE -->
+    <div id="rooms" class="section">
+      <h2>Stanze</h2>
+      <p>Gestisci le stanze della struttura selezionata.</p>
+      <button onclick="window.location.href='stanze.html'">Vai alle stanze</button>
+    </div>
+
+    <!-- PRENOTAZIONI -->
+    <div id="bookings" class="section">
+      <h2>Prenotazioni</h2>
+      <p>Gestisci le prenotazioni della struttura selezionata.</p>
+      <button onclick="window.location.href='prenotazioni.html'">Vai alle prenotazioni</button>
     </div>
 
   </div>
@@ -134,15 +212,19 @@
   <script>
     const db = firebase.firestore();
 
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+      document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+
     function loadDashboard() {
       checkAuth();
 
       firebase.auth().onAuthStateChanged(user => {
         if (!user) return;
-
-        document.getElementById("welcome").innerText =
-          "Benvenuto, " + user.email;
-
         loadStructures(user.uid);
       });
     }
@@ -163,16 +245,9 @@
             selector.appendChild(opt);
           });
 
-          // AUTO-SELEZIONE STRUTTURA SALVATA
           const savedId = localStorage.getItem("activeStructure");
-          const savedName = localStorage.getItem("activeStructureName");
-
           if (savedId) {
             selector.value = savedId;
-            document.getElementById("selectedStructureLabel").innerText =
-              "Struttura selezionata: " + savedName;
-
-            // CARICA I DATI AUTOMATICAMENTE
             changeStructure();
           }
         });
@@ -184,18 +259,13 @@
 
       if (!structureId) return;
 
-      const structureName = selector.selectedOptions[0].text;
-
-      // SALVA STRUTTURA
       localStorage.setItem("activeStructure", structureId);
-      localStorage.setItem("activeStructureName", structureName);
-
-      document.getElementById("selectedStructureLabel").innerText =
-        "Struttura selezionata: " + structureName;
+      localStorage.setItem("activeStructureName", selector.selectedOptions[0].text);
 
       loadRooms(structureId);
       loadTodayBookings(structureId);
       loadAvailability(structureId);
+      loadFutureBookings(structureId);
     }
 
     function loadRooms(structureId) {
@@ -203,8 +273,7 @@
         .where("structureId", "==", structureId)
         .get()
         .then(snap => {
-          document.getElementById("roomsCount").innerText =
-            snap.size + " stanze";
+          document.getElementById("roomsCount").innerText = snap.size;
         });
     }
 
@@ -216,8 +285,7 @@
         .where("checkin", "==", today)
         .get()
         .then(snap => {
-          document.getElementById("todayBookings").innerText =
-            snap.size + " prenotazioni";
+          document.getElementById("todayBookings").innerText = snap.size;
         });
     }
 
@@ -226,26 +294,20 @@
         .where("structureId", "==", structureId)
         .get()
         .then(snap => {
-          const total = snap.size;
-          document.getElementById("availability").innerText =
-            total + " disponibili";
+          document.getElementById("availability").innerText = snap.size + " disponibili";
         });
     }
 
-    function goToStanze() {
-      if (!localStorage.getItem("activeStructure")) {
-        alert("Seleziona prima una struttura dalla Dashboard");
-        return;
-      }
-      window.location.href = "stanze.html";
-    }
+    function loadFutureBookings(structureId) {
+      const today = new Date().toISOString().split("T")[0];
 
-    function goToPrenotazioni() {
-      if (!localStorage.getItem("activeStructure")) {
-        alert("Seleziona prima una struttura dalla Dashboard");
-        return;
-      }
-      window.location.href = "prenotazioni.html";
+      db.collection("prenotazioni")
+        .where("structureId", "==", structureId)
+        .where("checkin", ">", today)
+        .get()
+        .then(snap => {
+          document.getElementById("futureBookings").innerText = snap.size;
+        });
     }
   </script>
 
