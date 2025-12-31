@@ -1,296 +1,369 @@
-/* ============================
+/* ============================================================
    RESET & BASE
-============================ */
+============================================================ */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
 }
 
 body {
-  background-color: #f8fafc;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f7f9fc;
   color: #111827;
-  padding: 20px;
+  line-height: 1.5;
 }
 
-/* ============================
-   TITOLI & LAYOUT PAGINA
-============================ */
+h1, h2, h3 {
+  font-weight: 600;
+  color: #111827;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+.btn-primary {
+  background: #111827;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.btn-primary:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   PAGE HEADER
+============================================================ */
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .page-header h1 {
-  font-size: 26px;
-  font-weight: 600;
-  color: #0f172a;
+  font-size: 28px;
+  letter-spacing: -0.5px;
 }
 
-/* ============================
-   BOTTONI
-============================ */
-
-.btn-primary {
-  background-color: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.btn-primary:hover {
-  background-color: #1d4ed8;
-}
-
-.btn-secondary {
-  background-color: #e5e7eb;
-  color: #111827;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s;
-}
-
-.btn-secondary:hover {
-  background-color: #d1d5db;
-}
-
-.btn-danger {
-  background-color: #dc2626;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s;
-}
-
-.btn-danger:hover {
-  background-color: #b91c1c;
-}
-
-/* ============================
-   INPUT & FORM
-============================ */
-
-input, select {
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  background-color: #fff;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
-}
-
-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.required {
-  color: #dc2626;
-}
-
-/* ============================
-   SEARCH BAR & SORT
-============================ */
-
-.search-input {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  min-width: 240px;
-  font-size: 14px;
-}
+/* ============================================================
+   SEARCH + SORT BAR
+============================================================ */
 
 .search-sort-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
-  gap: 12px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  background: white;
+  transition: 0.2s;
+}
+
+.search-input:focus {
+  border-color: #111827;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(17,24,39,0.15);
 }
 
 .sort-buttons {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 10px;
 }
 
-/* ============================
-   TABELLA
-============================ */
+/* ============================================================
+   TABLE
+============================================================ */
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #fff;
-  border-radius: 8px;
+  background: white;
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 
 thead {
-  background-color: #f1f5f9;
+  background: #f1f5f9;
 }
 
-th, td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
+thead th {
+  padding: 14px;
   font-size: 14px;
+  text-align: left;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-th {
-  font-weight: 600;
-  color: #334155;
+tbody td {
+  padding: 14px;
+  font-size: 15px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 tbody tr:hover {
-  background-color: #f9fafb;
+  background: #f9fafb;
+  transition: 0.15s;
 }
 
-/* ============================
-   PAGAMENTO (colori testo)
-============================ */
+/* ============================================================
+   PAYMENT BADGES
+============================================================ */
 
 .payment-attesa {
-  color: #dc2626;
-  font-weight: 600;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .payment-acconto {
-  color: #ea580c;
-  font-weight: 600;
+  background: #d1fae5;
+  color: #065f46;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .payment-saldo {
-  color: #16a34a;
-  font-weight: 600;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* ============================
+/* ============================================================
    MODAL
-============================ */
+============================================================ */
 
 .modal-backdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
   display: none;
-  align-items: center;
   justify-content: center;
-  z-index: 50;
+  align-items: center;
+  padding: 20px;
+  z-index: 999;
 }
 
 .modal {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 22px 24px;
-  max-width: 760px;
+  background: white;
   width: 100%;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 650px;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
-}
-
-.modal-header h2 {
-  font-size: 20px;
-  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 28px;
   cursor: pointer;
   color: #6b7280;
+  transition: 0.2s;
+}
+
+.modal-close:hover {
+  color: #111827;
 }
 
 .modal-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 18px;
-  margin-bottom: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 25px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.form-group label {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+  display: block;
 }
 
-.small-hint {
-  font-size: 11px;
-  color: #6b7280;
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  background: white;
+  transition: 0.2s;
 }
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #111827;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(17,24,39,0.15);
+}
+
+.required {
+  color: #dc2626;
+  margin-left: 3px;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* ============================================================
+   ROOMS SECTION
+============================================================ */
 
 .rooms-section {
-  margin-top: 12px;
-  margin-bottom: 12px;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 12px;
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
 .rooms-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .rooms-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .room-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr auto;
+  display: flex;
   gap: 10px;
   align-items: center;
 }
+
+.room-row select,
+.room-row input {
+  flex: 1;
+}
+
+.small-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   MODAL FOOTER
+============================================================ */
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 16px;
 }
 
-.error-message {
-  color: #dc2626;
-  font-size: 13px;
-  margin-bottom: 10px;
-}
+/* ============================================================
+   RESPONSIVE
+============================================================ */
 
-.muted {
-  color: #6b7280;
-  font-size: 13px;
+@media (max-width: 600px) {
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-sort-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-buttons {
+    flex-wrap: wrap;
+  }
+
+  .room-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
