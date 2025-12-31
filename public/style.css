@@ -1,31 +1,296 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
+/* ============================
+   RESET & BASE
+============================ */
+
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
 }
 
-.container {
-  max-width: 600px;
-  margin: 40px auto;
-  background: white;
+body {
+  background-color: #f8fafc;
+  color: #111827;
   padding: 20px;
-  border-radius: 10px;
-  text-align: center;
 }
 
-input, button {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 12px;
-  font-size: 16px;
+/* ============================
+   TITOLI & LAYOUT PAGINA
+============================ */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-button {
-  background: #333;
-  color: white;
+.page-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* ============================
+   BOTTONI
+============================ */
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #fff;
   border: none;
+  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #111827;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #d1d5db;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+/* ============================
+   INPUT & FORM
+============================ */
+
+input, select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.required {
+  color: #dc2626;
+}
+
+/* ============================
+   SEARCH BAR & SORT
+============================ */
+
+.search-input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  min-width: 240px;
+  font-size: 14px;
+}
+
+.search-sort-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ============================
+   TABELLA
+============================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #f1f5f9;
+}
+
+th, td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  font-weight: 600;
+  color: #334155;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* ============================
+   PAGAMENTO (colori testo)
+============================ */
+
+.payment-attesa {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.payment-acconto {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.payment-saldo {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* ============================
+   MODAL
+============================ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 22px 24px;
+  max-width: 760px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin-bottom: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.small-hint {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.rooms-section {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.rooms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.room-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 13px;
 }
