@@ -1,81 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Royal Booking</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Auth -->
+  <script src="auth.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 230px;
+      height: 100vh;
+      background: #111827;
+      color: white;
+      padding: 25px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu a {
+      color: #e5e7eb;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .menu a:hover {
+      background: #1f2937;
+    }
+
+    .menu a.active {
+      background: #374151;
+      color: white;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      margin-top: auto;
+      padding: 10px 12px;
+      background: #dc2626;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* PAGE CONTENT */
+    .page-content {
+      margin-left: 250px;
+      padding: 30px;
+    }
+
+    /* DASHBOARD GRID */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .dash-card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      transition: 0.2s;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .dash-icon {
+      font-size: 32px;
+    }
+
+    .dash-info h2 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .dash-info p {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .dash-card.wide {
+      grid-column: span 2;
+    }
+
+    .next-bookings {
+      list-style: none;
+      margin-top: 10px;
+      padding-left: 0;
+    }
+
+    .next-bookings li {
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 15px;
+    }
+
+    .quick-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .quick-buttons button {
+      flex: 1;
+      padding: 12px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .quick-buttons button:hover {
+      background: #000;
+      transform: translateY(-1px);
+    }
+
+    .structure-box {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+      width: 350px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
 <body onload="loadDashboard()">
 
-  <!-- HEADER -->
-  <div class="header">
-    <h1>Royal Booking</h1>
-    <button onclick="logoutUser()">Logout</button>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Royal Booking</h2>
+
+    <div class="menu">
+      <a class="active" href="dashboard.html">🏠 Dashboard</a>
+      <a href="stanze.html">🛏️ Stanze</a>
+      <a href="prenotazioni.html">📅 Prenotazioni</a>
+      <a href="#">⚙️ Impostazioni</a>
+    </div>
+
+    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
 
-  <!-- STRUCTURE SELECTOR -->
-  <div class="structure-box" style="margin: 20px;">
-    <h3 style="margin-bottom: 10px;">Struttura attiva</h3>
-    <select id="structureSelector" onchange="changeStructure()">
-      <option value="">Seleziona una struttura...</option>
-    </select>
-  </div>
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
 
-  <!-- DASHBOARD GRID -->
-  <div class="dashboard-grid">
+    <h1>Dashboard</h1>
 
-    <!-- CARD: STANZE TOTALI -->
-    <div class="dash-card">
-      <div class="dash-icon">🏨</div>
-      <div class="dash-info">
-        <h2>Stanze totali</h2>
-        <p id="roomsCount">—</p>
-      </div>
+    <!-- STRUCTURE SELECTOR -->
+    <div class="structure-box">
+      <h3>Struttura attiva</h3>
+      <select id="structureSelector" onchange="changeStructure()">
+        <option value="">Seleziona una struttura...</option>
+      </select>
     </div>
 
-    <!-- CARD: PRENOTAZIONI OGGI -->
-    <div class="dash-card">
-      <div class="dash-icon">📅</div>
-      <div class="dash-info">
-        <h2>Prenotazioni oggi</h2>
-        <p id="todayBookings">—</p>
-      </div>
-    </div>
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid">
 
-    <!-- CARD: OCCUPAZIONE -->
-    <div class="dash-card">
-      <div class="dash-icon">📊</div>
-      <div class="dash-info">
-        <h2>Occupazione</h2>
-        <p id="availability">—</p>
-      </div>
-    </div>
-
-    <!-- CARD: PRENOTAZIONI FUTURE -->
-    <div class="dash-card">
-      <div class="dash-icon">⏳</div>
-      <div class="dash-info">
-        <h2>Prenotazioni future</h2>
-        <p id="futureBookings">—</p>
-      </div>
-    </div>
-
-    <!-- CARD: PROSSIME PRENOTAZIONI -->
-    <div class="dash-card wide">
-      <div class="dash-icon">🧾</div>
-      <div class="dash-info">
-        <h2>Prossime prenotazioni</h2>
-        <ul id="nextBookingsList" class="next-bookings"></ul>
-      </div>
-    </div>
-
-    <!-- CARD: AZIONI RAPIDE -->
-    <div class="dash-card wide">
-      <div class="dash-icon">⚡</div>
-      <div class="dash-info">
-        <h2>Azioni rapide</h2>
-        <div class="quick-buttons">
-          <button onclick="window.location.href='prenotazioni.html'">+ Nuova prenotazione</button>
-          <button onclick="window.location.href='stanze.html'">+ Nuova stanza</button>
-          <button onclick="window.location.href='prenotazioni.html'">Gestisci prenotazioni</button>
-          <button onclick="window.location.href='stanze.html'">Gestisci stanze</button>
+      <div class="dash-card">
+        <div class="dash-icon">🏨</div>
+        <div class="dash-info">
+          <h2>Stanze totali</h2>
+          <p id="roomsCount">—</p>
         </div>
       </div>
-    </div>
 
+      <div class="dash-card">
+        <div class="dash-icon">📅</div>
+        <div class="dash-info">
+          <h2>Prenotazioni oggi</h2>
+          <p id="todayBookings">—</p>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-icon">📊</div>
+        <div class="dash-info">
+          <h2>Occupazione</h2>
+          <p id="availability">—</p>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-icon">⏳</div>
+        <div class="dash-info">
+          <h2>Prenotazioni future</h2>
+          <p id="futureBookings">—</p>
+        </div>
+      </div>
+
+      <div class="dash-card wide">
+        <div class="dash-icon">🧾</div>
+        <div class="dash-info">
+          <h2>Prossime prenotazioni</h2>
+          <ul id="nextBookingsList" class="next-bookings"></ul>
+        </div>
+      </div>
+
+      <div class="dash-card wide">
+        <div class="dash-icon">⚡</div>
+        <div class="dash-info">
+          <h2>Azioni rapide</h2>
+          <div class="quick-buttons">
+            <button onclick="window.location.href='prenotazioni.html'">+ Nuova prenotazione</button>
+            <button onclick="window.location.href='stanze.html'">+ Nuova stanza</button>
+            <button onclick="window.location.href='prenotazioni.html'">Gestisci prenotazioni</button>
+            <button onclick="window.location.href='stanze.html'">Gestisci stanze</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 <script>
@@ -199,3 +389,4 @@ function loadNextBookings(structureId) {
 </script>
 
 </body>
+</html>
