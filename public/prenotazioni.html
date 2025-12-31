@@ -2,12 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Prenotazioni</title>
+  <title>Prenotazioni - Royal Booking</title>
 
-  <!-- CSS principale -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase v8 -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -15,90 +12,24 @@
   <!-- Auth -->
   <script src="auth.js"></script>
 
-  <style>
-    /* SIDEBAR */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 230px;
-      height: 100vh;
-      background: #111827;
-      color: white;
-      padding: 25px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-    }
-
-    .sidebar h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      letter-spacing: -0.5px;
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .menu a {
-      color: #e5e7eb;
-      padding: 10px 12px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      transition: 0.2s;
-    }
-
-    .menu a:hover {
-      background: #1f2937;
-    }
-
-    .menu a.active {
-      background: #374151;
-      color: white;
-      font-weight: 600;
-    }
-
-    .logout-btn {
-      margin-top: auto;
-      padding: 10px 12px;
-      background: #dc2626;
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .logout-btn:hover {
-      background: #b91c1c;
-    }
-
-    /* PAGE CONTENT */
-    .page-content {
-      margin-left: 250px;
-      padding: 30px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <!-- SIDEBAR SMART -->
+  <div class="sidebar" id="sidebar">
     <h2>Royal Booking</h2>
 
     <div class="menu">
-      <a href="dashboard.html">🏠 Dashboard</a>
-      <a href="stanze.html">🛏️ Stanze</a>
-      <a class="active" href="prenotazioni.html">📅 Prenotazioni</a>
-      <a href="#">⚙️ Impostazioni</a>
+      <a href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
+      <a href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
+      <a class="active" href="prenotazioni.html" data-label="Prenotazioni">📅 <span>Prenotazioni</span></a>
+      <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
+      <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
     </div>
+
+    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
@@ -202,11 +133,22 @@
     </div>
   </div>
 
+<!-- SIDEBAR SCRIPT -->
 <script>
-/* ============================================================
-   FIRESTORE + STRUTTURA ATTIVA
-============================================================ */
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const content = document.querySelector(".page-content");
+  const toggleBtn = document.getElementById("toggleBtn");
 
+  sidebar.classList.toggle("collapsed");
+  content.classList.toggle("expanded");
+
+  toggleBtn.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
+}
+</script>
+
+<!-- FIRESTORE SCRIPT (TUO ORIGINALE) -->
+<script>
 const db = firebase.firestore();
 const strutturaCorrenteId = localStorage.getItem("activeStructure");
 
@@ -225,10 +167,6 @@ let strutturaCorrente = {
 let stanzeDisponibili = [];
 let prenotazioni = [];
 
-/* ============================================================
-   UTILITY
-============================================================ */
-
 function todayISO() {
   return new Date().toISOString().split("T")[0];
 }
@@ -239,10 +177,6 @@ function formatDate(d) {
   return `${g}/${m}/${y}`;
 }
 
-/* ============================================================
-   CARICA STRUTTURA
-============================================================ */
-
 async function caricaStruttura() {
   const snap = await db.collection("strutture").doc(strutturaCorrente.id).get();
   if (!snap.exists) return;
@@ -252,10 +186,6 @@ async function caricaStruttura() {
   strutturaCorrente.ultimoNumero = data.ultimoNumero || 0;
   strutturaCorrente.ultimoAnno = data.ultimoAnno || new Date().getFullYear();
 }
-
-/* ============================================================
-   GENERA CODICE
-============================================================ */
 
 async function generaCodice() {
   const anno = new Date().getFullYear();
@@ -275,10 +205,6 @@ async function generaCodice() {
   return `${strutturaCorrente.sigla}-${strutturaCorrente.ultimoNumero}/${anno}`;
 }
 
-/* ============================================================
-   CARICA STANZE
-============================================================ */
-
 async function caricaStanze() {
   stanzeDisponibili = [];
   const snap = await db.collection("stanze")
@@ -293,10 +219,6 @@ async function caricaStanze() {
   });
 }
 
-/* ============================================================
-   CARICA PRENOTAZIONI
-============================================================ */
-
 async function caricaPrenotazioni() {
   prenotazioni = [];
   const snap = await db.collection("prenotazioni")
@@ -309,10 +231,6 @@ async function caricaPrenotazioni() {
 
   renderPrenotazioni(prenotazioni);
 }
-
-/* ============================================================
-   RENDER TABELLA
-============================================================ */
 
 function renderPrenotazioni(lista) {
   const tbody = document.getElementById("prenotazioniBody");
@@ -338,20 +256,12 @@ function renderPrenotazioni(lista) {
   });
 }
 
-/* ============================================================
-   ELIMINA PRENOTAZIONE
-============================================================ */
-
 async function eliminaPrenotazione(id) {
   if (!confirm("Eliminare questa prenotazione?")) return;
 
   await db.collection("prenotazioni").doc(id).delete();
   await caricaPrenotazioni();
 }
-
-/* ============================================================
-   MODAL
-============================================================ */
 
 const modal = document.getElementById("modalBackdrop");
 const modalError = document.getElementById("modalError");
@@ -403,10 +313,6 @@ function aggiungiRigaStanza() {
 
   roomsList.appendChild(row);
 }
-
-/* ============================================================
-   SALVA PRENOTAZIONE
-============================================================ */
 
 async function salvaPrenotazione() {
   modalError.style.display = "none";
@@ -465,10 +371,6 @@ function showError(msg) {
   modalError.textContent = msg;
   modalError.style.display = "block";
 }
-
-/* ============================================================
-   EVENTI
-============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
   await caricaStruttura();
