@@ -16,46 +16,128 @@
   <script src="auth.js"></script>
 
   <style>
-    body {
-      background-color: #f8fafc;
-      color: #111827;
-      padding: 20px;
-      font-family: "Inter", sans-serif;
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 230px;
+      height: 100vh;
+      background: #111827;
+      color: white;
+      padding: 25px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .menu a {
+      color: #e5e7eb;
+      padding: 10px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .menu a:hover {
+      background: #1f2937;
+    }
+
+    .menu a.active {
+      background: #374151;
+      color: white;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      margin-top: auto;
+      padding: 10px 12px;
+      background: #dc2626;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* PAGE CONTENT */
+    .page-content {
+      margin-left: 250px;
+      padding: 30px;
     }
   </style>
 </head>
+
 <body>
 
-  <div class="page-header">
-    <h1>Prenotazioni</h1>
-    <button class="btn-primary" id="btnNuovaPrenotazione">+ Nuova prenotazione</button>
-  </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Royal Booking</h2>
 
-  <div class="search-sort-bar">
-    <input type="text" id="searchInput" class="search-input" placeholder="Cerca per codice, cliente, stanza, telefono, email...">
-    <div class="sort-buttons">
-      <button class="btn-secondary" data-sort="codice">Ordina per codice</button>
-      <button class="btn-secondary" data-sort="dataPrenotazione">Ordina per data prenotazione</button>
-      <button class="btn-secondary" data-sort="cliente">Ordina per cliente</button>
-      <button class="btn-secondary" data-sort="checkin">Ordina per check-in</button>
+    <div class="menu">
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <a href="stanze.html">🛏️ Stanze</a>
+      <a class="active" href="prenotazioni.html">📅 Prenotazioni</a>
+      <a href="#">⚙️ Impostazioni</a>
     </div>
+
+    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
 
-  <table id="prenotazioniTable">
-    <thead>
-      <tr>
-        <th>Codice</th>
-        <th>Data prenotazione</th>
-        <th>Cliente</th>
-        <th>Stanze</th>
-        <th>Check-in</th>
-        <th>Check-out</th>
-        <th>Pagamento</th>
-        <th>Azioni</th>
-      </tr>
-    </thead>
-    <tbody id="prenotazioniBody"></tbody>
-  </table>
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+    <div class="page-header">
+      <h1>Prenotazioni</h1>
+      <button class="btn-primary" id="btnNuovaPrenotazione">+ Nuova prenotazione</button>
+    </div>
+
+    <div class="search-sort-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cerca per codice, cliente, stanza, telefono, email...">
+      <div class="sort-buttons">
+        <button class="btn-secondary" data-sort="codice">Ordina per codice</button>
+        <button class="btn-secondary" data-sort="dataPrenotazione">Ordina per data prenotazione</button>
+        <button class="btn-secondary" data-sort="cliente">Ordina per cliente</button>
+        <button class="btn-secondary" data-sort="checkin">Ordina per check-in</button>
+      </div>
+    </div>
+
+    <table id="prenotazioniTable">
+      <thead>
+        <tr>
+          <th>Codice</th>
+          <th>Data prenotazione</th>
+          <th>Cliente</th>
+          <th>Stanze</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+          <th>Pagamento</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody id="prenotazioniBody"></tbody>
+    </table>
+
+  </div>
 
   <!-- MODAL -->
   <div class="modal-backdrop" id="modalBackdrop">
@@ -126,8 +208,6 @@
 ============================================================ */
 
 const db = firebase.firestore();
-
-// 🔥 PRENDIAMO LA STRUTTURA ATTIVA DALLA DASHBOARD
 const strutturaCorrenteId = localStorage.getItem("activeStructure");
 
 if (!strutturaCorrenteId) {
@@ -150,8 +230,7 @@ let prenotazioni = [];
 ============================================================ */
 
 function todayISO() {
-  const d = new Date();
-  return d.toISOString().split("T")[0];
+  return new Date().toISOString().split("T")[0];
 }
 
 function formatDate(d) {
@@ -175,7 +254,7 @@ async function caricaStruttura() {
 }
 
 /* ============================================================
-   GENERA CODICE PRENOTAZIONE
+   GENERA CODICE
 ============================================================ */
 
 async function generaCodice() {
