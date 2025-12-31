@@ -2,415 +2,755 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Prenotazioni - Royal Booking</title>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <!-- Auth -->
-  <script src="auth.js"></script>
-
+  <title>Prenotazioni</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-
-    /* HEADER */
-    .header {
-      background: black;
-      color: white;
-      padding: 15px 20px;
+    /* Solo piccoli ritocchi locali, il resto in style.css */
+    .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .header button {
-      background: white;
-      color: black;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    /* TAB BAR */
-    .tab-bar {
-      display: flex;
-      background: white;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .tab {
-      padding: 15px 25px;
-      cursor: pointer;
-      font-size: 16px;
-      border-bottom: 3px solid transparent;
-      color: #555;
-    }
-
-    .tab.active {
-      border-bottom: 3px solid black;
-      color: black;
-      font-weight: bold;
-    }
-
-    /* CONTENT */
-    .content {
-      padding: 20px;
-    }
-
-    /* BUTTON NEW BOOKING */
-    .new-booking-btn {
-      background: black;
-      color: white;
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
       margin-bottom: 20px;
     }
-
-    /* BOOKING LIST */
-    .booking {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .page-header h1 {
+      margin: 0;
+      font-size: 24px;
     }
-
-    .booking h3 {
-      margin: 0 0 5px;
-    }
-
-    .booking small {
-      color: #666;
-    }
-
-    .booking button {
-      margin-top: 10px;
-      padding: 8px 12px;
+    .btn-primary {
+      background-color: #2563eb;
+      color: #fff;
       border: none;
+      padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
-      margin-right: 8px;
     }
-
-    .edit-btn {
-      background: #007bff;
-      color: white;
+    .btn-primary:hover {
+      background-color: #1d4ed8;
     }
-
-    .delete-btn {
-      background: #d9534f;
-      color: white;
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #111827;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-right: 6px;
     }
-
-    /* MODAL */
-    .modal-bg {
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+    }
+    .btn-danger {
+      background-color: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+    .search-sort-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      min-width: 220px;
+      font-size: 13px;
+    }
+    .sort-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead {
+      background-color: #f3f4f6;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      font-weight: 600;
+      color: #374151;
+    }
+    tbody tr:hover {
+      background-color: #f9fafb;
+    }
+    .payment-attesa {
+      color: #dc2626;
+      font-weight: 500;
+    }
+    .payment-acconto {
+      color: #ea580c;
+      font-weight: 500;
+    }
+    .payment-saldo {
+      color: #16a34a;
+      font-weight: 500;
+    }
+    .modal-backdrop {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
       display: none;
+      align-items: center;
       justify-content: center;
+      z-index: 50;
+    }
+    .modal {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px 22px;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-group label {
+      font-size: 12px;
+      color: #4b5563;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group select {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+    .required {
+      color: #dc2626;
+      margin-left: 2px;
+    }
+    .small-hint {
+      font-size: 11px;
+      color: #6b7280;
+    }
+    .rooms-section {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+    }
+    .rooms-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .rooms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .room-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 8px;
       align-items: center;
     }
-
-    .modal {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    .room-row button {
+      font-size: 12px;
+      padding: 4px 8px;
     }
-
-    .modal h2 {
-      margin-top: 0;
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
     }
-
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+    .error-message {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 4px;
     }
-
-    .save-btn {
-      width: 100%;
-      padding: 12px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
+    .muted {
+      color: #6b7280;
+      font-size: 12px;
     }
-
   </style>
 </head>
+<body>
 
-<body onload="loadPrenotazioni()">
-
-  <!-- HEADER -->
-  <div class="header">
+  <div class="page-header">
     <h1>Prenotazioni</h1>
-    <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+    <button class="btn-primary" id="btnNuovaPrenotazione">+ Nuova prenotazione</button>
   </div>
 
-  <!-- TAB BAR -->
-  <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('lista')">Lista prenotazioni</div>
-    <div class="tab" onclick="switchTab('nuova')">Nuova prenotazione</div>
-  </div>
-
-  <!-- CONTENT -->
-  <div class="content">
-
-    <!-- LISTA -->
-    <div id="lista" class="section active">
-      <button class="new-booking-btn" onclick="openModal()">+ Nuova prenotazione</button>
-      <h3 id="activeStructureLabel"></h3>
-      <div id="bookingsList">Caricamento...</div>
+  <div class="search-sort-bar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Cerca per codice, cliente, stanza, telefono, email...">
+    <div class="sort-buttons">
+      <button class="btn-secondary" data-sort="codice">Ordina per codice</button>
+      <button class="btn-secondary" data-sort="dataPrenotazione">Ordina per data prenotazione</button>
+      <button class="btn-secondary" data-sort="cliente">Ordina per cliente</button>
+      <button class="btn-secondary" data-sort="checkin">Ordina per check-in</button>
     </div>
-
-    <!-- FORM (TAB VERSIONE) -->
-    <div id="nuova" class="section">
-      <h2>Nuova prenotazione</h2>
-
-      <input id="cliente" type="text" placeholder="Nome cliente">
-      <input id="checkin" type="date">
-      <input id="checkout" type="date">
-
-      <select id="stanzaSelect">
-        <option value="">Seleziona stanza</option>
-      </select>
-
-      <button class="save-btn" onclick="addBooking()">Salva</button>
-    </div>
-
   </div>
 
-  <!-- MODAL -->
-  <div class="modal-bg" id="modalBg">
+  <table id="prenotazioniTable">
+    <thead>
+      <tr>
+        <th>Codice</th>
+        <th>Data prenotazione</th>
+        <th>Cliente</th>
+        <th>Stanze</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Pagamento</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody id="prenotazioniBody">
+      <!-- Righe generate via JS -->
+    </tbody>
+  </table>
+
+  <!-- MODAL NUOVA PRENOTAZIONE -->
+  <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal">
-      <h2>Nuova prenotazione</h2>
+      <div class="modal-header">
+        <h2>Nuova prenotazione</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
 
-      <input id="m_cliente" type="text" placeholder="Nome cliente">
-      <input id="m_checkin" type="date">
-      <input id="m_checkout" type="date">
+      <div id="modalError" class="error-message" style="display:none;"></div>
 
-      <select id="m_stanzaSelect">
-        <option value="">Seleziona stanza</option>
-      </select>
+      <div class="modal-grid">
+        <div class="form-group">
+          <label>Codice prenotazione</label>
+          <input type="text" id="codicePrenotazione" readonly>
+        </div>
+        <div class="form-group">
+          <label>Data prenotazione</label>
+          <input type="date" id="dataPrenotazione" readonly>
+        </div>
 
-      <button class="save-btn" onclick="addBookingModal()">Salva</button>
+        <div class="form-group">
+          <label>Nome cliente<span class="required">*</span></label>
+          <input type="text" id="nomeCliente">
+        </div>
+        <div class="form-group">
+          <label>Telefono</label>
+          <input type="text" id="telefonoCliente">
+          <div class="small-hint">Almeno uno tra telefono o email è obbligatorio</div>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="emailCliente">
+        </div>
+        <div class="form-group">
+          <label>Check-in<span class="required">*</span></label>
+          <input type="date" id="checkin">
+        </div>
+
+        <div class="form-group">
+          <label>Check-out<span class="required">*</span></label>
+          <input type="date" id="checkout">
+        </div>
+        <div class="form-group">
+          <label>Acconto da versare (€)<span class="required">*</span></label>
+          <input type="number" id="acconto" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="rooms-section">
+        <div class="rooms-header">
+          <span><strong>Stanze prenotate</strong> <span class="required">*</span></span>
+          <button class="btn-secondary" id="btnAggiungiStanza">+ Aggiungi stanza</button>
+        </div>
+        <div class="rooms-list" id="roomsList">
+          <!-- Righe stanza dinamiche -->
+        </div>
+        <div class="small-hint">Per ogni stanza seleziona la camera e il costo relativo.</div>
+      </div>
+
+      <div class="muted">
+        Stato pagamento iniziale: <strong>In attesa acconto</strong>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btnAnnulla">Annulla</button>
+        <button class="btn-primary" id="btnSalvaPrenotazione">Salva prenotazione</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const db = firebase.firestore();
-    let currentUser = null;
-    let structureId = localStorage.getItem("activeStructure");
+    // ==========================
+    // DATI DI ESEMPIO / MOCK
+    // ==========================
 
-    function switchTab(tab) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // Struttura corrente (in reale lo prenderai da login / selezione struttura)
+    let strutturaCorrente = {
+      id: "royal-toledo",
+      nome: "Royal Toledo",
+      sigla: "RT",
+      ultimoNumero: 2,
+      ultimoAnno: 2025
+    };
 
-      document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
-      document.getElementById(tab).classList.add('active');
+    // Stanze disponibili (mock)
+    const stanzeDisponibili = [
+      { id: "501", nome: "Camera 501" },
+      { id: "502", nome: "Camera 502" },
+      { id: "503", nome: "Camera 503" }
+    ];
+
+    // Prenotazioni (mock iniziale)
+    let prenotazioni = [
+      {
+        id: "p1",
+        codice: "RT-1/2025",
+        dataPrenotazione: "2025-12-30",
+        cliente: "Mario Rossi",
+        telefono: "3331234567",
+        email: "",
+        checkin: "2026-01-10",
+        checkout: "2026-01-12",
+        stanze: [
+          { stanzaId: "501", stanzaNome: "Camera 501", costo: 120 }
+        ],
+        acconto: 50,
+        pagamento: "attesa" // attesa | acconto | saldo
+      },
+      {
+        id: "p2",
+        codice: "RT-2/2025",
+        dataPrenotazione: "2025-12-31",
+        cliente: "Antonio",
+        telefono: "",
+        email: "antonio@example.com",
+        checkin: "2026-01-15",
+        checkout: "2026-01-16",
+        stanze: [
+          { stanzaId: "502", stanzaNome: "Camera 502", costo: 90 },
+          { stanzaId: "503", stanzaNome: "Camera 503", costo: 100 }
+        ],
+        acconto: 80,
+        pagamento: "acconto"
+      }
+    ];
+
+    // ==========================
+    // UTILITY
+    // ==========================
+
+    function formatDateForDisplay(isoDate) {
+      if (!isoDate) return "";
+      const [y, m, d] = isoDate.split("-");
+      return d + "/" + m + "/" + y;
     }
 
-    function openModal() {
-      document.getElementById("modalBg").style.display = "flex";
+    function todayISO() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    function getPaymentClass(pagamento) {
+      if (pagamento === "attesa") return "payment-attesa";
+      if (pagamento === "acconto") return "payment-acconto";
+      if (pagamento === "saldo") return "payment-saldo";
+      return "";
+    }
+
+    function getPaymentLabel(pagamento) {
+      if (pagamento === "attesa") return "In attesa acconto";
+      if (pagamento === "acconto") return "Acconto ricevuto";
+      if (pagamento === "saldo") return "Saldo completato";
+      return "";
+    }
+
+    // Genera nuovo codice prenotazione in base alla struttura
+    function generaNuovoCodicePrenotazione() {
+      const oggi = new Date();
+      const annoCorrente = oggi.getFullYear();
+
+      if (strutturaCorrente.ultimoAnno !== annoCorrente) {
+        strutturaCorrente.ultimoAnno = annoCorrente;
+        strutturaCorrente.ultimoNumero = 0;
+      }
+
+      strutturaCorrente.ultimoNumero += 1;
+
+      const numero = strutturaCorrente.ultimoNumero;
+      const codice = strutturaCorrente.sigla + "-" + numero + "/" + annoCorrente;
+
+      // In reale qui salveresti strutturaCorrente aggiornato nel DB
+      return { codice, numero, anno: annoCorrente };
+    }
+
+    // ==========================
+    // RENDER TABELLA
+    // ==========================
+
+    function renderPrenotazioni(lista) {
+      const tbody = document.getElementById("prenotazioniBody");
+      tbody.innerHTML = "";
+
+      lista.forEach(p => {
+        const tr = document.createElement("tr");
+
+        // Codice
+        const tdCodice = document.createElement("td");
+        tdCodice.textContent = p.codice;
+        tr.appendChild(tdCodice);
+
+        // Data prenotazione
+        const tdDataPren = document.createElement("td");
+        tdDataPren.textContent = formatDateForDisplay(p.dataPrenotazione);
+        tr.appendChild(tdDataPren);
+
+        // Cliente
+        const tdCliente = document.createElement("td");
+        tdCliente.textContent = p.cliente;
+        tr.appendChild(tdCliente);
+
+        // Stanze
+        const tdStanze = document.createElement("td");
+        if (p.stanze && p.stanze.length > 0) {
+          const first = p.stanze[0].stanzaNome || p.stanze[0].stanzaId;
+          if (p.stanze.length > 1) {
+            tdStanze.textContent = first + " +" + (p.stanze.length - 1);
+          } else {
+            tdStanze.textContent = first;
+          }
+        } else {
+          tdStanze.textContent = "-";
+        }
+        tr.appendChild(tdStanze);
+
+        // Check-in
+        const tdCheckin = document.createElement("td");
+        tdCheckin.textContent = formatDateForDisplay(p.checkin);
+        tr.appendChild(tdCheckin);
+
+        // Check-out
+        const tdCheckout = document.createElement("td");
+        tdCheckout.textContent = formatDateForDisplay(p.checkout);
+        tr.appendChild(tdCheckout);
+
+        // Pagamento
+        const tdPagamento = document.createElement("td");
+        const span = document.createElement("span");
+        span.className = getPaymentClass(p.pagamento);
+        span.textContent = getPaymentLabel(p.pagamento);
+        tdPagamento.appendChild(span);
+        tr.appendChild(tdPagamento);
+
+        // Azioni
+        const tdAzioni = document.createElement("td");
+        const btnModifica = document.createElement("button");
+        btnModifica.className = "btn-secondary";
+        btnModifica.textContent = "Modifica";
+        btnModifica.onclick = () => {
+          // In futuro: apri modal in modalità modifica
+          alert("Funzione modifica da implementare");
+        };
+
+        const btnElimina = document.createElement("button");
+        btnElimina.className = "btn-danger";
+        btnElimina.textContent = "Elimina";
+        btnElimina.style.marginLeft = "4px";
+        btnElimina.onclick = () => {
+          if (confirm("Vuoi davvero eliminare questa prenotazione?")) {
+            prenotazioni = prenotazioni.filter(x => x.id !== p.id);
+            renderPrenotazioni(prenotazioniFiltrate());
+          }
+        };
+
+        tdAzioni.appendChild(btnModifica);
+        tdAzioni.appendChild(btnElimina);
+        tr.appendChild(tdAzioni);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==========================
+    // FILTRO RICERCA
+    // ==========================
+
+    function prenotazioniFiltrate() {
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      if (!q) return prenotazioni;
+
+      return prenotazioni.filter(p => {
+        const campi = [
+          p.codice,
+          p.cliente,
+          p.telefono || "",
+          p.email || "",
+          ...(p.stanze || []).map(s => s.stanzaNome || s.stanzaId)
+        ].join(" ").toLowerCase();
+        return campi.includes(q);
+      });
+    }
+
+    // ==========================
+    // ORDINAMENTO
+    // ==========================
+
+    function sortPrenotazioni(field) {
+      prenotazioni.sort((a, b) => {
+        if (field === "codice") {
+          return a.codice.localeCompare(b.codice, "it", { numeric: true });
+        }
+        if (field === "dataPrenotazione") {
+          return (a.dataPrenotazione || "").localeCompare(b.dataPrenotazione || "");
+        }
+        if (field === "cliente") {
+          return (a.cliente || "").localeCompare(b.cliente || "", "it");
+        }
+        if (field === "checkin") {
+          return (a.checkin || "").localeCompare(b.checkin || "");
+        }
+        return 0;
+      });
+      renderPrenotazioni(prenotazioniFiltrate());
+    }
+
+    // ==========================
+    // MODAL NUOVA PRENOTAZIONE
+    // ==========================
+
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const btnNuovaPrenotazione = document.getElementById("btnNuovaPrenotazione");
+    const btnAnnulla = document.getElementById("btnAnnulla");
+    const btnSalvaPrenotazione = document.getElementById("btnSalvaPrenotazione");
+    const modalClose = document.getElementById("modalClose");
+    const modalError = document.getElementById("modalError");
+    const roomsList = document.getElementById("roomsList");
+    const btnAggiungiStanza = document.getElementById("btnAggiungiStanza");
+
+    function openModalNuovaPrenotazione() {
+      modalError.style.display = "none";
+      modalError.textContent = "";
+
+      // Genera codice e data prenotazione
+      const { codice } = generaNuovoCodicePrenotazione();
+      document.getElementById("codicePrenotazione").value = codice;
+      document.getElementById("dataPrenotazione").value = todayISO();
+
+      // Reset campi
+      document.getElementById("nomeCliente").value = "";
+      document.getElementById("telefonoCliente").value = "";
+      document.getElementById("emailCliente").value = "";
+      document.getElementById("checkin").value = "";
+      document.getElementById("checkout").value = "";
+      document.getElementById("acconto").value = "";
+
+      // Reset stanze
+      roomsList.innerHTML = "";
+      aggiungiRigaStanza();
+
+      modalBackdrop.style.display = "flex";
     }
 
     function closeModal() {
-      document.getElementById("modalBg").style.display = "none";
+      modalBackdrop.style.display = "none";
     }
 
-    function loadPrenotazioni() {
-      checkAuth();
+    function aggiungiRigaStanza() {
+      const row = document.createElement("div");
+      row.className = "room-row";
 
-      if (!structureId) {
-        alert("Seleziona prima una struttura dalla Dashboard");
-        window.location.href = "dashboard.html";
-        return;
-      }
-
-      document.getElementById("activeStructureLabel").innerText =
-        "Struttura attiva: " + localStorage.getItem("activeStructureName");
-
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          loadRooms();
-          loadBookings();
-        }
+      const select = document.createElement("select");
+      select.className = "room-select";
+      stanzeDisponibili.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.nome;
+        select.appendChild(opt);
       });
+
+      const inputCosto = document.createElement("input");
+      inputCosto.type = "number";
+      inputCosto.min = "0";
+      inputCosto.step = "0.01";
+      inputCosto.placeholder = "Costo €";
+      inputCosto.className = "room-cost";
+
+      const btnRemove = document.createElement("button");
+      btnRemove.className = "btn-secondary";
+      btnRemove.textContent = "Rimuovi";
+      btnRemove.onclick = () => {
+        row.remove();
+      };
+
+      row.appendChild(select);
+      row.appendChild(inputCosto);
+      row.appendChild(btnRemove);
+
+      roomsList.appendChild(row);
     }
 
-    function loadRooms() {
-      const select1 = document.getElementById("stanzaSelect");
-      const select2 = document.getElementById("m_stanzaSelect");
+    function validateAndSavePrenotazione() {
+      modalError.style.display = "none";
+      modalError.textContent = "";
 
-      db.collection("stanze")
-        .where("structureId", "==", structureId)
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            const opt1 = document.createElement("option");
-            opt1.value = doc.id;
-            opt1.textContent = doc.data().nome;
-
-            const opt2 = opt1.cloneNode(true);
-
-            select1.appendChild(opt1);
-            select2.appendChild(opt2);
-          });
-        });
-    }
-
-    function loadBookings() {
-      const list = document.getElementById("bookingsList");
-      list.innerHTML = "Caricamento...";
-
-      db.collection("prenotazioni")
-        .where("structureId", "==", structureId)
-        .orderBy("checkin")
-        .get()
-        .then(snapshot => {
-          list.innerHTML = "";
-
-          if (snapshot.empty) {
-            list.innerHTML = "<p>Nessuna prenotazione trovata.</p>";
-            return;
-          }
-
-          snapshot.forEach(doc => {
-            const data = doc.data();
-
-            const div = document.createElement("div");
-            div.className = "booking";
-
-            div.innerHTML = `
-              <h3>${data.cliente}</h3>
-              <small>Stanza: ${data.stanzaNome}</small><br>
-              <small>Check-in: ${data.checkin}</small><br>
-              <small>Check-out: ${data.checkout}</small><br>
-              <small>Codice: ${data.codice}</small><br>
-
-              <button class="edit-btn" onclick="editBooking('${doc.id}', '${data.cliente}', '${data.checkin}', '${data.checkout}')">Modifica</button>
-              <button class="delete-btn" onclick="deleteBooking('${doc.id}')">Elimina</button>
-            `;
-
-            list.appendChild(div);
-          });
-        });
-    }
-
-    function generateCode() {
-      return "RB-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
-
-    function addBooking() {
-      const cliente = document.getElementById("cliente").value.trim();
+      const codice = document.getElementById("codicePrenotazione").value;
+      const dataPrenotazione = document.getElementById("dataPrenotazione").value;
+      const cliente = document.getElementById("nomeCliente").value.trim();
+      const telefono = document.getElementById("telefonoCliente").value.trim();
+      const email = document.getElementById("emailCliente").value.trim();
       const checkin = document.getElementById("checkin").value;
       const checkout = document.getElementById("checkout").value;
-      const stanzaId = document.getElementById("stanzaSelect").value;
+      const accontoStr = document.getElementById("acconto").value;
 
-      if (!cliente || !checkin || !checkout || !stanzaId) {
-        alert("Compila tutti i campi");
+      if (!cliente) {
+        showModalError("Inserisci il nome del cliente.");
+        return;
+      }
+      if (!checkin) {
+        showModalError("Inserisci la data di check-in.");
+        return;
+      }
+      if (!checkout) {
+        showModalError("Inserisci la data di check-out.");
+        return;
+      }
+      if (checkout < checkin) {
+        showModalError("La data di check-out non può essere precedente al check-in.");
+        return;
+      }
+      if (!telefono && !email) {
+        showModalError("Inserisci almeno un recapito: telefono o email.");
+        return;
+      }
+      if (!accontoStr || Number(accontoStr) < 0) {
+        showModalError("Inserisci un acconto valido (anche 0 se non richiesto).");
         return;
       }
 
-      db.collection("stanze").doc(stanzaId).get().then(stanzaDoc => {
-        const stanzaNome = stanzaDoc.data().nome;
-
-        db.collection("prenotazioni").add({
-          cliente,
-          checkin,
-          checkout,
-          stanzaId,
-          stanzaNome,
-          structureId,
-          owner: currentUser.uid,
-          codice: generateCode()
-        }).then(() => {
-          loadBookings();
-          alert("Prenotazione aggiunta");
-        });
-      });
-    }
-
-    function addBookingModal() {
-      const cliente = document.getElementById("m_cliente").value.trim();
-      const checkin = document.getElementById("m_checkin").value;
-      const checkout = document.getElementById("m_checkout").value;
-      const stanzaId = document.getElementById("m_stanzaSelect").value;
-
-      if (!cliente || !checkin || !checkout || !stanzaId) {
-        alert("Compila tutti i campi");
+      const stanze = [];
+      const rows = roomsList.querySelectorAll(".room-row");
+      if (rows.length === 0) {
+        showModalError("Inserisci almeno una stanza.");
         return;
       }
-
-      db.collection("stanze").doc(stanzaId).get().then(stanzaDoc => {
-        const stanzaNome = stanzaDoc.data().nome;
-
-        db.collection("prenotazioni").add({
-          cliente,
-          checkin,
-          checkout,
+      for (const row of rows) {
+        const select = row.querySelector(".room-select");
+        const inputCosto = row.querySelector(".room-cost");
+        const stanzaId = select.value;
+        const costoStr = inputCosto.value;
+        if (!costoStr || Number(costoStr) < 0) {
+          showModalError("Inserisci un costo valido per ogni stanza.");
+          return;
+        }
+        const stanzaDef = stanzeDisponibili.find(s => s.id === stanzaId);
+        stanze.push({
           stanzaId,
-          stanzaNome,
-          structureId,
-          owner: currentUser.uid,
-          codice: generateCode()
-        }).then(() => {
-          closeModal();
-          loadBookings();
-          alert("Prenotazione aggiunta");
+          stanzaNome: stanzaDef ? stanzaDef.nome : stanzaId,
+          costo: Number(costoStr)
+        });
+      }
+
+      const nuovaPrenotazione = {
+        id: "p" + (prenotazioni.length + 1),
+        codice,
+        dataPrenotazione,
+        cliente,
+        telefono,
+        email,
+        checkin,
+        checkout,
+        stanze,
+        acconto: Number(accontoStr),
+        pagamento: "attesa" // In attesa acconto
+      };
+
+      prenotazioni.push(nuovaPrenotazione);
+      renderPrenotazioni(prenotazioniFiltrate());
+      closeModal();
+    }
+
+    function showModalError(msg) {
+      modalError.textContent = msg;
+      modalError.style.display = "block";
+    }
+
+    // ==========================
+    // EVENT LISTENERS
+    // ==========================
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPrenotazioni(prenotazioni);
+
+      btnNuovaPrenotazione.addEventListener("click", openModalNuovaPrenotazione);
+      btnAnnulla.addEventListener("click", closeModal);
+      modalClose.addEventListener("click", closeModal);
+
+      btnSalvaPrenotazione.addEventListener("click", validateAndSavePrenotazione);
+      btnAggiungiStanza.addEventListener("click", aggiungiRigaStanza);
+
+      document.getElementById("searchInput").addEventListener("input", () => {
+        renderPrenotazioni(prenotazioniFiltrate());
+      });
+
+      document.querySelectorAll(".sort-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const field = btn.getAttribute("data-sort");
+          sortPrenotazioni(field);
         });
       });
-    }
-
-    function editBooking(id, cliente, checkin, checkout) {
-      const nuovoCliente = prompt("Modifica nome cliente:", cliente);
-      const nuovoCheckin = prompt("Modifica check-in:", checkin);
-      const nuovoCheckout = prompt("Modifica check-out:", checkout);
-
-      if (!nuovoCliente || !nuovoCheckin || !nuovoCheckout) return;
-
-      db.collection("prenotazioni").doc(id).update({
-        cliente: nuovoCliente,
-        checkin: nuovoCheckin,
-        checkout: nuovoCheckout
-      }).then(() => loadBookings());
-    }
-
-    function deleteBooking(id) {
-      if (!confirm("Sei sicuro di voler eliminare questa prenotazione?")) return;
-
-      db.collection("prenotazioni").doc(id).delete()
-        .then(() => loadBookings());
-    }
+    });
   </script>
-
 </body>
 </html>
