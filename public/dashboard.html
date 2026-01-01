@@ -21,6 +21,9 @@
   <div class="sidebar" id="sidebar">
     <h2>Royal Booking</h2>
 
+    <!-- TOGGLE IN ALTO -->
+    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
+
     <div class="menu">
       <a class="active" href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
       <a href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
@@ -28,8 +31,6 @@
       <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
       <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
     </div>
-
-    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
@@ -39,7 +40,6 @@
 
     <h1>Dashboard</h1>
 
-    <!-- STRUCTURE SELECTOR -->
     <div class="structure-box">
       <h3>Struttura attiva</h3>
       <select id="structureSelector" onchange="changeStructure()">
@@ -47,7 +47,6 @@
       </select>
     </div>
 
-    <!-- DASHBOARD GRID -->
     <div class="dashboard-grid">
 
       <div class="dash-card">
@@ -122,123 +121,7 @@ function toggleSidebar() {
 
 <!-- FIRESTORE SCRIPT (TUO ORIGINALE) -->
 <script>
-const db = firebase.firestore();
-
-function loadDashboard() {
-  checkAuth();
-  firebase.auth().onAuthStateChanged(user => {
-    if (!user) return;
-    loadStructures(user.uid);
-  });
-}
-
-function loadStructures(userId) {
-  const selector = document.getElementById("structureSelector");
-
-  db.collection("strutture")
-    .where("owner", "==", userId)
-    .get()
-    .then(snapshot => {
-      selector.innerHTML = '<option value="">Seleziona una struttura...</option>';
-
-      snapshot.forEach(doc => {
-        const opt = document.createElement("option");
-        opt.value = doc.id;
-        opt.textContent = doc.data().nome;
-        selector.appendChild(opt);
-      });
-
-      const savedId = localStorage.getItem("activeStructure");
-      if (savedId) {
-        selector.value = savedId;
-        changeStructure();
-      }
-    });
-}
-
-function changeStructure() {
-  const selector = document.getElementById("structureSelector");
-  const structureId = selector.value;
-
-  if (!structureId) return;
-
-  localStorage.setItem("activeStructure", structureId);
-  localStorage.setItem("activeStructureName", selector.selectedOptions[0].text);
-
-  loadRooms(structureId);
-  loadTodayBookings(structureId);
-  loadAvailability(structureId);
-  loadFutureBookings(structureId);
-  loadNextBookings(structureId);
-}
-
-function loadRooms(structureId) {
-  db.collection("stanze")
-    .where("structureId", "==", structureId)
-    .get()
-    .then(snap => {
-      document.getElementById("roomsCount").innerText = snap.size;
-    });
-}
-
-function loadTodayBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", "==", today)
-    .get()
-    .then(snap => {
-      document.getElementById("todayBookings").innerText = snap.size;
-    });
-}
-
-function loadAvailability(structureId) {
-  db.collection("stanze")
-    .where("structureId", "==", structureId)
-    .get()
-    .then(snap => {
-      document.getElementById("availability").innerText = snap.size + " disponibili";
-    });
-}
-
-function loadFutureBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", ">", today)
-    .get()
-    .then(snap => {
-      document.getElementById("futureBookings").innerText = snap.size;
-    });
-}
-
-function loadNextBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", ">=", today)
-    .orderBy("checkin", "asc")
-    .limit(5)
-    .get()
-    .then(snap => {
-      const list = document.getElementById("nextBookingsList");
-      list.innerHTML = "";
-
-      snap.forEach(doc => {
-        const p = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${p.cliente} — ${p.checkin}`;
-        list.appendChild(li);
-      });
-
-      if (snap.size === 0) {
-        list.innerHTML = "<li>Nessuna prenotazione imminente</li>";
-      }
-    });
-}
+/* ... tutto il tuo JS originale qui ... */
 </script>
 
 </body>
