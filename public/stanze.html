@@ -1,15 +1,186 @@
-<div class="sidebar" id="sidebar">
-  <h2>Royal Booking</h2>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Stanze - Royal Booking</title>
 
-  <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <div class="menu">
-    <a href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
-    <a class="active" href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
-    <a href="prenotazioni.html" data-label="Prenotazioni">📅 <span>Prenotazioni</span></a>
-    <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
-    <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
+  <!-- Auth -->
+  <script src="auth.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="loadStanze()">
+
+  <!-- SIDEBAR SMART -->
+  <div class="sidebar" id="sidebar">
+    <h2>Royal Booking</h2>
+
+    <!-- TOGGLE IN ALTO -->
+    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
+
+    <div class="menu">
+      <a href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
+      <a class="active" href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
+      <a href="prenotazioni.html" data-label="Prenotazioni">📅 <span>Prenotazioni</span></a>
+      <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
+      <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
+    </div>
+
+    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
 
-  <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
-</div>
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+    <div class="page-header">
+      <h1>Stanze</h1>
+      <button class="btn-primary add-room-btn" onclick="openModal()">+ Nuova stanza</button>
+    </div>
+
+    <div class="rooms-grid" id="roomsGrid"></div>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Nuova stanza</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+
+      <div id="modalError" class="error-message" style="display:none;"></div>
+
+      <div class="modal-grid">
+        <div class="form-group">
+          <label>Nome stanza*</label>
+          <input type="text" id="nomeStanza">
+        </div>
+
+        <div class="form-group">
+          <label>Descrizione</label>
+          <input type="text" id="descrizioneStanza">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal()">Annulla</button>
+        <button class="btn-primary" onclick="salvaStanza()">Salva stanza</button>
+      </div>
+    </div>
+  </div>
+
+<!-- SIDEBAR SCRIPT -->
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const content = document.querySelector(".page-content");
+  const toggleBtn = document.getElementById("toggleBtn");
+
+  sidebar.classList.toggle("collapsed");
+  content.classList.toggle("expanded");
+
+  toggleBtn.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
+}
+</script>
+
+<!-- FIRESTORE SCRIPT (TUO ORIGINALE) -->
+<script>
+const db = firebase.firestore();
+const strutturaCorrenteId = localStorage.getItem("activeStructure");
+
+if (!strutturaCorrenteId) {
+  alert("Nessuna struttura selezionata. Torna in Dashboard.");
+  window.location.href = "dashboard.html";
+}
+
+let stanze = [];
+
+function loadStanze() {
+  checkAuth();
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) return;
+
+    db.collection("stanze")
+      .where("structureId", "==", strutturaCorrenteId)
+      .get()
+      .then(snapshot => {
+        stanze = [];
+        snapshot.forEach(doc => {
+          stanze.push({ id: doc.id, ...doc.data() });
+        });
+        renderStanze();
+      });
+  });
+}
+
+function renderStanze() {
+  const grid = document.getElementById("roomsGrid");
+  grid.innerHTML = "";
+
+  stanze.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "room-card";
+
+    card.innerHTML = `
+      <h3>${s.nome}</h3>
+      <p>${s.descrizione || "Nessuna descrizione"}</p>
+      <button class="btn-danger" style="margin-top:10px;" onclick="eliminaStanza('${s.id}')">Elimina</button>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+function openModal() {
+  document.getElementById("modalBackdrop").style.display = "flex";
+  document.getElementById("modalError").style.display = "none";
+}
+
+function closeModal() {
+  document.getElementById("modalBackdrop").style.display = "none";
+}
+
+function salvaStanza() {
+  const nome = document.getElementById("nomeStanza").value.trim();
+  const descrizione = document.getElementById("descrizioneStanza").value.trim();
+
+  if (!nome) {
+    showError("Inserisci il nome della stanza.");
+    return;
+  }
+
+  db.collection("stanze").add({
+    nome,
+    descrizione,
+    structureId: strutturaCorrenteId
+  }).then(() => {
+    closeModal();
+    loadStanze();
+  });
+}
+
+function showError(msg) {
+  const box = document.getElementById("modalError");
+  box.textContent = msg;
+  box.style.display = "block";
+}
+
+function eliminaStanza(id) {
+  if (!confirm("Eliminare questa stanza?")) return;
+
+  db.collection("stanze").doc(id).delete().then(() => {
+    loadStanze();
+  });
+}
+</script>
+
+</body>
+</html>
