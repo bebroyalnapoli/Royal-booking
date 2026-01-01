@@ -26,7 +26,7 @@ a {
 }
 
 /* ============================================================
-   SIDEBAR SMART A SCOMPARSA (VERSIONE PREMIUM)
+   SIDEBAR CON BOMBATURA
 ============================================================ */
 
 .sidebar {
@@ -46,7 +46,6 @@ a {
   z-index: 999;
 }
 
-/* Sidebar chiusa */
 .sidebar.collapsed {
   width: 70px;
   padding: 25px 10px;
@@ -65,20 +64,17 @@ a {
   opacity: 0;
 }
 
-/* ============================================================
-   TOGGLE IN ALTO STILE ADOBE / OFFICE
-============================================================ */
-
-.toggle-btn {
+/* Bombatura toggle */
+.sidebar-toggle {
   position: absolute;
-  top: 15px;
-  right: -15px;
-  width: 32px;
-  height: 32px;
+  top: 50%;
+  right: -18px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
   background: #1f2937;
+  border-radius: 50%;
   border: 2px solid #374151;
-  border-radius: 8px;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,14 +83,15 @@ a {
   z-index: 1000;
 }
 
-.toggle-btn:hover {
+.sidebar-toggle:hover {
   background: #374151;
-  transform: scale(1.05);
+  transform: translateY(-50%) scale(1.05);
 }
 
-/* Quando sidebar è chiusa */
-.sidebar.collapsed .toggle-btn {
-  right: -15px;
+.sidebar-toggle span {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* ============================================================
@@ -130,37 +127,12 @@ a {
   font-weight: 600;
 }
 
-/* Nasconde il testo quando collassata */
 .menu a span {
   transition: opacity 0.2s;
 }
 
 .sidebar.collapsed a span {
   opacity: 0;
-}
-
-/* ============================================================
-   TOOLTIP AUTOMATICI QUANDO CHIUSA
-============================================================ */
-
-.menu a:hover::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 80px;
-  background: #111827;
-  padding: 6px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  font-size: 14px;
-  opacity: 0;
-  transform: translateY(-50%);
-  top: 50%;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-.sidebar.collapsed .menu a:hover::after {
-  opacity: 1;
 }
 
 /* ============================================================
@@ -334,7 +306,7 @@ tbody tr:hover {
 }
 
 /* ============================================================
-   CARDS (Dashboard, Stanze, Strutture)
+   CARDS
 ============================================================ */
 
 .dashboard-grid,
@@ -425,9 +397,8 @@ tbody tr:hover {
   border: none;
   font-size: 28px;
   cursor: pointer;
-  color: #6b7280;
-  transition: 0.2s;
 }
+
 
 .modal-close:hover {
   color: #111827;
@@ -472,6 +443,32 @@ tbody tr:hover {
   border-radius: 10px;
   margin-bottom: 15px;
   font-size: 14px;
+}
+
+/* ============================================================
+   ROOMS LIST (Prenotazioni)
+============================================================ */
+
+.room-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.room-row select,
+.room-row input {
+  flex: 1;
+}
+
+.rooms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rooms-list {
+  margin-bottom: 20px;
 }
 
 /* ============================================================
