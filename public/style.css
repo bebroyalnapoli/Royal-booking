@@ -42,14 +42,17 @@ a {
   flex-direction: column;
   gap: 25px;
   transition: width 0.25s ease;
-  overflow: hidden;
+  overflow: visible; /* ✅ MODIFICATO */
   z-index: 999;
 }
+
 
 .sidebar.collapsed {
   width: 70px;
   padding: 25px 10px;
+  overflow: visible; /* ✅ Manteniamo visibilità anche da chiusa */
 }
+
 
 /* Logo */
 .sidebar h2 {
