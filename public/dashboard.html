@@ -17,12 +17,15 @@
 
 <body onload="loadDashboard()">
 
-  <!-- SIDEBAR SMART -->
+  <!-- SIDEBAR CON BOMBATURA -->
   <div class="sidebar" id="sidebar">
-    <h2>Royal Booking</h2>
 
-    <!-- TOGGLE IN ALTO -->
-    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
+    <!-- Bombatura toggle -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+      <span id="toggleArrow">←</span>
+    </div>
+
+    <h2>Royal Booking</h2>
 
     <div class="menu">
       <a class="active" href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
@@ -36,211 +39,109 @@
   </div>
 
   <!-- PAGE CONTENT -->
-  <div class="page-content">
+  <div class="page-content" id="pageContent">
 
-    <h1>Dashboard</h1>
-
-    <!-- STRUCTURE SELECTOR -->
-    <div class="structure-box">
-      <h3>Struttura attiva</h3>
-      <select id="structureSelector" onchange="changeStructure()">
-        <option value="">Seleziona una struttura...</option>
-      </select>
+    <div class="page-header">
+      <h1>Dashboard</h1>
     </div>
 
-    <!-- DASHBOARD GRID -->
     <div class="dashboard-grid">
-
-      <div class="dash-card">
-        <div class="dash-icon">🏨</div>
-        <div class="dash-info">
-          <h2>Stanze totali</h2>
-          <p id="roomsCount">—</p>
-        </div>
-      </div>
 
       <div class="dash-card">
         <div class="dash-icon">📅</div>
         <div class="dash-info">
-          <h2>Prenotazioni oggi</h2>
-          <p id="todayBookings">—</p>
+          <h2>Prenotazioni totali</h2>
+          <p id="totalBookings">0</p>
         </div>
       </div>
 
       <div class="dash-card">
+        <div class="dash-icon">🛏️</div>
+        <div class="dash-info">
+          <h2>Stanze totali</h2>
+          <p id="totalRooms">0</p>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-icon">🏢</div>
+        <div class="dash-info">
+          <h2>Strutture</h2>
+          <p id="totalStructures">0</p>
+        </div>
+      </div>
+
+      <div class="dash-card wide">
         <div class="dash-icon">📊</div>
         <div class="dash-info">
-          <h2>Occupazione</h2>
-          <p id="availability">—</p>
-        </div>
-      </div>
-
-      <div class="dash-card">
-        <div class="dash-icon">⏳</div>
-        <div class="dash-info">
-          <h2>Prenotazioni future</h2>
-          <p id="futureBookings">—</p>
-        </div>
-      </div>
-
-      <div class="dash-card wide">
-        <div class="dash-icon">🧾</div>
-        <div class="dash-info">
-          <h2>Prossime prenotazioni</h2>
-          <ul id="nextBookingsList" class="next-bookings"></ul>
-        </div>
-      </div>
-
-      <div class="dash-card wide">
-        <div class="dash-icon">⚡</div>
-        <div class="dash-info">
-          <h2>Azioni rapide</h2>
-          <div class="quick-buttons">
-            <button onclick="window.location.href='prenotazioni.html'">+ Nuova prenotazione</button>
-            <button onclick="window.location.href='stanze.html'">+ Nuova stanza</button>
-            <button onclick="window.location.href='prenotazioni.html'">Gestisci prenotazioni</button>
-            <button onclick="window.location.href='stanze.html'">Gestisci stanze</button>
-          </div>
+          <h2>Occupazione media</h2>
+          <p id="avgOccupancy">0%</p>
         </div>
       </div>
 
     </div>
+
   </div>
 
-<!-- SIDEBAR SCRIPT -->
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const content = document.querySelector(".page-content");
-  const toggleBtn = document.getElementById("toggleBtn");
+  <!-- SCRIPT SIDEBAR -->
+  <script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("pageContent");
+    const arrow = document.getElementById("toggleArrow");
 
-  sidebar.classList.toggle("collapsed");
-  content.classList.toggle("expanded");
+    sidebar.classList.toggle("collapsed");
+    content.classList.toggle("expanded");
 
-  toggleBtn.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
-}
-</script>
+    arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
+  }
+  </script>
 
-<!-- FIRESTORE SCRIPT (TUO ORIGINALE) -->
-<script>
-const db = firebase.firestore();
+  <!-- FIRESTORE SCRIPT -->
+  <script>
+  const db = firebase.firestore();
+  let currentUser = null;
 
-function loadDashboard() {
-  checkAuth();
-  firebase.auth().onAuthStateChanged(user => {
-    if (!user) return;
-    loadStructures(user.uid);
-  });
-}
+  function loadDashboard() {
+    checkAuth();
 
-function loadStructures(userId) {
-  const selector = document.getElementById("structureSelector");
-
-  db.collection("strutture")
-    .where("owner", "==", userId)
-    .get()
-    .then(snapshot => {
-      selector.innerHTML = '<option value="">Seleziona una struttura...</option>';
-
-      snapshot.forEach(doc => {
-        const opt = document.createElement("option");
-        opt.value = doc.id;
-        opt.textContent = doc.data().nome;
-        selector.appendChild(opt);
-      });
-
-      const savedId = localStorage.getItem("activeStructure");
-      if (savedId) {
-        selector.value = savedId;
-        changeStructure();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadCounts();
       }
     });
-}
+  }
 
-function changeStructure() {
-  const selector = document.getElementById("structureSelector");
-  const structureId = selector.value;
-
-  if (!structureId) return;
-
-  localStorage.setItem("activeStructure", structureId);
-  localStorage.setItem("activeStructureName", selector.selectedOptions[0].text);
-
-  loadRooms(structureId);
-  loadTodayBookings(structureId);
-  loadAvailability(structureId);
-  loadFutureBookings(structureId);
-  loadNextBookings(structureId);
-}
-
-function loadRooms(structureId) {
-  db.collection("stanze")
-    .where("structureId", "==", structureId)
-    .get()
-    .then(snap => {
-      document.getElementById("roomsCount").innerText = snap.size;
-    });
-}
-
-function loadTodayBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", "==", today)
-    .get()
-    .then(snap => {
-      document.getElementById("todayBookings").innerText = snap.size;
-    });
-}
-
-function loadAvailability(structureId) {
-  db.collection("stanze")
-    .where("structureId", "==", structureId)
-    .get()
-    .then(snap => {
-      document.getElementById("availability").innerText = snap.size + " disponibili";
-    });
-}
-
-function loadFutureBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", ">", today)
-    .get()
-    .then(snap => {
-      document.getElementById("futureBookings").innerText = snap.size;
-    });
-}
-
-function loadNextBookings(structureId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  db.collection("prenotazioni")
-    .where("structureId", "==", structureId)
-    .where("checkin", ">=", today)
-    .orderBy("checkin", "asc")
-    .limit(5)
-    .get()
-    .then(snap => {
-      const list = document.getElementById("nextBookingsList");
-      list.innerHTML = "";
-
-      snap.forEach(doc => {
-        const p = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${p.cliente} — ${p.checkin}`;
-        list.appendChild(li);
+  function loadCounts() {
+    // Prenotazioni
+    db.collection("prenotazioni")
+      .where("owner", "==", currentUser.uid)
+      .get()
+      .then(snap => {
+        document.getElementById("totalBookings").textContent = snap.size;
       });
 
-      if (snap.size === 0) {
-        list.innerHTML = "<li>Nessuna prenotazione imminente</li>";
-      }
-    });
-}
-</script>
+    // Stanze
+    db.collection("stanze")
+      .where("owner", "==", currentUser.uid)
+      .get()
+      .then(snap => {
+        document.getElementById("totalRooms").textContent = snap.size;
+      });
+
+    // Strutture
+    db.collection("strutture")
+      .where("owner", "==", currentUser.uid)
+      .get()
+      .then(snap => {
+        document.getElementById("totalStructures").textContent = snap.size;
+      });
+
+    // Occupazione media (placeholder)
+    document.getElementById("avgOccupancy").textContent = "0%";
+  }
+  </script>
 
 </body>
 </html>
