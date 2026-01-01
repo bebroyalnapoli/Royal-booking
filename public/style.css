@@ -26,7 +26,7 @@ a {
 }
 
 /* ============================================================
-   SIDEBAR SMART A SCOMPARSA
+   SIDEBAR SMART A SCOMPARSA (VERSIONE PREMIUM)
 ============================================================ */
 
 .sidebar {
@@ -46,6 +46,7 @@ a {
   z-index: 999;
 }
 
+/* Sidebar chiusa */
 .sidebar.collapsed {
   width: 70px;
   padding: 25px 10px;
@@ -64,7 +65,42 @@ a {
   opacity: 0;
 }
 
-/* Menu */
+/* ============================================================
+   TOGGLE IN ALTO STILE ADOBE / OFFICE
+============================================================ */
+
+.toggle-btn {
+  position: absolute;
+  top: 15px;
+  right: -15px;
+  width: 32px;
+  height: 32px;
+  background: #1f2937;
+  border: 2px solid #374151;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+  z-index: 1000;
+}
+
+.toggle-btn:hover {
+  background: #374151;
+  transform: scale(1.05);
+}
+
+/* Quando sidebar è chiusa */
+.sidebar.collapsed .toggle-btn {
+  right: -15px;
+}
+
+/* ============================================================
+   MENU
+============================================================ */
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -103,7 +139,10 @@ a {
   opacity: 0;
 }
 
-/* Tooltip quando sidebar è chiusa */
+/* ============================================================
+   TOOLTIP AUTOMATICI QUANDO CHIUSA
+============================================================ */
+
 .menu a:hover::after {
   content: attr(data-label);
   position: absolute;
@@ -124,25 +163,12 @@ a {
   opacity: 1;
 }
 
-/* Toggle button */
-.toggle-btn {
-  background: #1f2937;
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: 0.2s;
-  margin-top: auto;
-}
+/* ============================================================
+   LOGOUT
+============================================================ */
 
-.toggle-btn:hover {
-  background: #374151;
-}
-
-/* Logout */
 .logout-btn {
-  margin-top: 10px;
+  margin-top: auto;
   padding: 10px 12px;
   background: #dc2626;
   color: white;
@@ -156,7 +182,10 @@ a {
   background: #b91c1c;
 }
 
-/* PAGE CONTENT SHIFT */
+/* ============================================================
+   PAGE CONTENT SHIFT
+============================================================ */
+
 .page-content {
   margin-left: 250px;
   transition: margin-left 0.25s ease;
