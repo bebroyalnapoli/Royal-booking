@@ -65,13 +65,10 @@ h1, h2 {
   display: none;
 }
 
-/* ============================
-   LINGUETTA ESTERNA DEFINITIVA
-============================ */
 .sidebar-tab {
-  position: absolute;
-  top: 20px; /* altezza del titolo */
-  left: calc(100% - 16px); /* esce fuori dalla sidebar */
+  position: fixed;
+  top: 20px;
+  left: 150px;
   width: 32px;
   height: 32px;
   background: #111827;
@@ -94,8 +91,9 @@ h1, h2 {
 }
 
 .sidebar.collapsed .sidebar-tab {
-  left: calc(100% - 28px);
+  left: 54px;
 }
+
 
 /* ============================
    MENU
