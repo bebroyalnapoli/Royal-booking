@@ -1,21 +1,30 @@
 /* ============================
-   LAYOUT BASE
+   BASE
 ============================ */
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #f3f4f6;
+  background: #f9fafb;
   color: #111827;
 }
 
+h1, h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
 .page-content {
-  margin-left: 180px;
+  margin-left: 160px;
   padding: 20px;
   transition: margin-left 0.25s ease;
 }
 
 .sidebar.collapsed ~ .page-content {
-  margin-left: 60px;
+  margin-left: 56px;
 }
 
 /* ============================
@@ -25,7 +34,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 180px;
+  width: 160px;
   height: 100vh;
   background: #111827;
   color: white;
@@ -33,19 +42,21 @@ body {
   box-sizing: border-box;
   transition: width 0.25s ease;
   overflow: hidden;
+  z-index: 100;
 }
 
 .sidebar.collapsed {
-  width: 60px;
+  width: 56px;
 }
 
 /* Logo */
 .sidebar h2 {
-  font-size: 18px;
+  font-size: 16px;
   margin: 0 0 20px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0 10px;
 }
 
 .sidebar.collapsed h2 {
@@ -75,13 +86,14 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px;
+  padding: 10px;
   color: white;
   text-decoration: none;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
+  font-size: 14px;
 }
 
 .menu a:hover {
@@ -114,6 +126,7 @@ body {
   border-radius: 6px;
   border: none;
   margin-top: 5px;
+  font-size: 14px;
 }
 
 .sidebar.collapsed .structure-selector {
@@ -146,18 +159,66 @@ body {
 }
 
 .dash-icon {
-  font-size: 28px;
+  font-size: 26px;
 }
 
 .dash-info h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .dash-info p {
   margin: 3px 0 0 0;
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+/* ============================
+   BUTTONS
+============================ */
+.btn {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.btn-save {
+  background: #111827;
+  color: white;
+}
+
+.btn-delete {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-back {
+  background: #6b7280;
+  color: white;
+}
+
+/* ============================
+   FORM BOX
+============================ */
+.form-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-box input,
+.form-box textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
 }
 
 /* ============================
@@ -165,7 +226,7 @@ body {
 ============================ */
 @media (max-width: 768px) {
   .sidebar {
-    width: 150px;
+    width: 140px;
   }
 
   .sidebar.collapsed {
@@ -173,7 +234,7 @@ body {
   }
 
   .page-content {
-    margin-left: 150px;
+    margin-left: 140px;
   }
 
   .sidebar.collapsed ~ .page-content {
