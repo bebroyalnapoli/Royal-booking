@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Dashboard - Royal Booking</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -11,7 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- Auth esterno -->
+  <!-- Auth -->
   <script src="auth.js"></script>
 </head>
 
@@ -40,7 +41,6 @@
       <a href="stanze.html">🛏️ <span>Stanze</span></a>
       <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
       <a href="strutture.html">🏢 <span>Strutture</span></a>
-      <a href="#">⚙️ <span>Impostazioni</span></a>
     </div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
@@ -99,6 +99,9 @@
     let currentUser = null;
     let activeStructure = null;
 
+    /* -------------------------
+       SIDEBAR
+    ------------------------- */
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       const content = document.getElementById("pageContent");
@@ -110,41 +113,63 @@
       arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
     }
 
+    /* -------------------------
+       CARICAMENTO PAGINA
+    ------------------------- */
     function loadDashboard() {
       checkAuth();
 
       firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          loadStructures();
-        }
+        if (!user) return;
+        currentUser = user;
+
+        loadStructureSelector();
       });
     }
 
-    function loadStructures() {
+    /* -------------------------
+       CARICA STRUTTURE NEL SELECTOR
+    ------------------------- */
+    function loadStructureSelector() {
       db.collection("strutture")
         .where("owner", "==", currentUser.uid)
         .get()
         .then(snapshot => {
           const selector = document.getElementById("structureSelector");
+          selector.innerHTML = `<option value="default">Seleziona struttura</option>`;
+
           snapshot.forEach(doc => {
             const option = document.createElement("option");
             option.value = doc.id;
-            option.textContent = doc.data().nome || "Struttura";
+            option.textContent = doc.data().nome;
             selector.appendChild(option);
           });
+
+          const saved = localStorage.getItem("activeStructure");
+          if (saved) {
+            selector.value = saved;
+            activeStructure = saved;
+            loadCounts();
+          }
         });
     }
 
+    /* -------------------------
+       CAMBIO STRUTTURA
+    ------------------------- */
     function changeStructure() {
-      const selector = document.getElementById("structureSelector");
-      activeStructure = selector.value;
+      activeStructure = document.getElementById("structureSelector").value;
+      localStorage.setItem("activeStructure", activeStructure);
       loadCounts();
     }
 
+    /* -------------------------
+       CARICA I CONTEGGI
+    ------------------------- */
     function loadCounts() {
       if (!activeStructure || activeStructure === "default") return;
 
+      // Prenotazioni
       db.collection("prenotazioni")
         .where("owner", "==", currentUser.uid)
         .where("structureId", "==", activeStructure)
@@ -153,6 +178,7 @@
           document.getElementById("totalBookings").textContent = snap.size;
         });
 
+      // Stanze
       db.collection("stanze")
         .where("owner", "==", currentUser.uid)
         .where("structureId", "==", activeStructure)
@@ -161,7 +187,10 @@
           document.getElementById("totalRooms").textContent = snap.size;
         });
 
+      // Strutture (sempre 1 per selezione)
       document.getElementById("totalStructures").textContent = "1";
+
+      // Occupazione media (placeholder)
       document.getElementById("avgOccupancy").textContent = "0%";
     }
   </script>
