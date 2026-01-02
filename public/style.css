@@ -18,13 +18,13 @@ h1, h2 {
 }
 
 .page-content {
-  margin-left: 160px;
+  margin-left: 150px;
   padding: 20px;
   transition: margin-left 0.25s ease;
 }
 
 .sidebar.collapsed ~ .page-content {
-  margin-left: 56px;
+  margin-left: 54px;
 }
 
 /* ============================
@@ -34,7 +34,7 @@ h1, h2 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 150px; /* più snella */
+  width: 150px;
   height: 100vh;
   background: #111827;
   color: white;
@@ -46,12 +46,12 @@ h1, h2 {
 }
 
 .sidebar.collapsed {
-  width: 54px; /* super compatta */
+  width: 54px;
 }
 
 /* Logo */
 .sidebar h2 {
-  font-size: 14px; /* più piccolo */
+  font-size: 14px;
   font-weight: 600;
   margin: 0 0 18px 0;
   white-space: nowrap;
@@ -65,13 +65,15 @@ h1, h2 {
   display: none;
 }
 
-/* Linguetta */
+/* ============================
+   LINGUETTA ESTERNA DEFINITIVA
+============================ */
 .sidebar-tab {
   position: absolute;
-  top: 18px;
-  right: -14px;
-  width: 28px;
-  height: 28px;
+  top: 20px; /* altezza del titolo */
+  left: calc(100% - 16px); /* esce fuori dalla sidebar */
+  width: 32px;
+  height: 32px;
   background: #111827;
   border-radius: 50%;
   display: flex;
@@ -79,11 +81,25 @@ h1, h2 {
   justify-content: center;
   cursor: pointer;
   color: white;
-  font-size: 13px;
+  font-size: 15px;
   border: 2px solid #1f2937;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  transition: all 0.25s ease;
+  z-index: 200;
 }
 
-/* Menu */
+.sidebar-tab:hover {
+  background: #1f2937;
+  transform: scale(1.07);
+}
+
+.sidebar.collapsed .sidebar-tab {
+  left: calc(100% - 28px);
+}
+
+/* ============================
+   MENU
+============================ */
 .menu a {
   display: flex;
   align-items: center;
@@ -95,7 +111,7 @@ h1, h2 {
   margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
-  font-size: 13px; /* più piccolo */
+  font-size: 13px;
   opacity: 0.9;
 }
 
@@ -112,7 +128,9 @@ h1, h2 {
   display: none;
 }
 
-/* Selector struttura */
+/* ============================
+   SELECTOR STRUTTURA
+============================ */
 .structure-selector {
   margin-bottom: 18px;
 }
@@ -129,62 +147,6 @@ h1, h2 {
   border: none;
   margin-top: 4px;
   font-size: 13px;
-}
-
-.sidebar.collapsed .structure-selector {
-  display: none;
-}
-
-/* Page content spacing */
-.page-content {
-  margin-left: 150px;
-  padding: 20px;
-  transition: margin-left 0.25s ease;
-}
-
-.sidebar.collapsed ~ .page-content {
-  margin-left: 54px;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 130px;
-  }
-
-  .sidebar.collapsed {
-    width: 50px;
-  }
-
-  .page-content {
-    margin-left: 130px;
-  }
-
-  .sidebar.collapsed ~ .page-content {
-    margin-left: 50px;
-  }
-}
-
-
-/* ============================
-   SELECTOR STRUTTURA
-============================ */
-.structure-selector {
-  margin-bottom: 20px;
-}
-
-.structure-selector label {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.structure-selector select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  margin-top: 5px;
-  font-size: 14px;
 }
 
 .sidebar.collapsed .structure-selector {
@@ -284,7 +246,7 @@ h1, h2 {
 ============================ */
 @media (max-width: 768px) {
   .sidebar {
-    width: 140px;
+    width: 130px;
   }
 
   .sidebar.collapsed {
@@ -292,7 +254,7 @@ h1, h2 {
   }
 
   .page-content {
-    margin-left: 140px;
+    margin-left: 130px;
   }
 
   .sidebar.collapsed ~ .page-content {
