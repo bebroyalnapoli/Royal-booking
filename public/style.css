@@ -1,3 +1,16 @@
+/* ===========================
+   RESET
+=========================== */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
 .sidebar {
   position: fixed;
   top: 0;
@@ -18,4 +31,141 @@
 .sidebar.collapsed {
   width: 70px;
   padding: 25px 10px;
+}
+
+/* Linguetta */
+.sidebar-tab {
+  position: absolute;
+  top: 80px;
+  right: -14px;
+  width: 28px;
+  height: 48px;
+  background: #111827;
+  border-radius: 0 8px 8px 0;
+  border: 2px solid #374151;
+  border-left: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2000;
+  transition: 0.25s ease;
+}
+
+.sidebar-tab span {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Selettore struttura */
+.structure-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.structure-selector label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.structure-selector select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sidebar.collapsed .structure-selector {
+  display: none;
+}
+
+/* Menu */
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.menu a.active,
+.menu a:hover {
+  background: #1f2937;
+}
+
+.sidebar.collapsed a span {
+  display: none;
+}
+
+/* Logout */
+.logout-btn {
+  margin-top: auto;
+  padding: 12px;
+  background: #dc2626;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* ===========================
+   CONTENUTO
+=========================== */
+.page-content {
+  margin-left: 230px;
+  padding: 20px;
+  transition: margin-left 0.25s ease;
+}
+
+.page-content.expanded {
+  margin-left: 70px;
+}
+
+.page-header h1 {
+  margin: 0 0 20px 0;
+}
+
+/* Dashboard cards */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.dash-card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dash-card.wide {
+  grid-column: span 1;
+}
+
+.dash-icon {
+  font-size: 28px;
+}
+
+.dash-info h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #374151;
+}
+
+.dash-info p {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: bold;
 }
