@@ -4,403 +4,203 @@
   <meta charset="UTF-8">
   <title>Prenotazioni - Royal Booking</title>
 
+  <link rel="stylesheet" href="style.css">
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- Auth -->
+  <!-- Auth esterno -->
   <script src="auth.js"></script>
-
-  <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body onload="loadBookings()">
 
-  <!-- SIDEBAR SMART -->
+  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
+
+    <!-- Linguetta -->
+    <div class="sidebar-tab" onclick="toggleSidebar()">
+      <span id="toggleArrow">←</span>
+    </div>
+
     <h2>Royal Booking</h2>
 
-    <!-- TOGGLE IN ALTO -->
-    <div class="toggle-btn" onclick="toggleSidebar()" id="toggleBtn">←</div>
+    <!-- Selettore struttura -->
+    <div class="structure-selector">
+      <label>Struttura</label>
+      <select id="structureSelector" onchange="changeStructure()">
+        <option value="default">Seleziona struttura</option>
+      </select>
+    </div>
 
     <div class="menu">
-      <a href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
-      <a href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
-      <a class="active" href="prenotazioni.html" data-label="Prenotazioni">📅 <span>Prenotazioni</span></a>
-      <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
-      <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
+      <a href="dashboard.html">🏠 <span>Dashboard</span></a>
+      <a href="stanze.html">🛏️ <span>Stanze</span></a>
+      <a class="active" href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
+      <a href="strutture.html">🏢 <span>Strutture</span></a>
+      <a href="#">⚙️ <span>Impostazioni</span></a>
     </div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
 
-  <!-- PAGE CONTENT -->
-  <div class="page-content">
+  <!-- CONTENUTO -->
+  <div class="page-content" id="pageContent">
 
     <div class="page-header">
       <h1>Prenotazioni</h1>
-      <button class="btn-primary" id="btnNuovaPrenotazione">+ Nuova prenotazione</button>
     </div>
 
-    <div class="search-sort-bar">
-      <input type="text" id="searchInput" class="search-input" placeholder="Cerca per codice, cliente, stanza, telefono, email...">
-      <div class="sort-buttons">
-        <button class="btn-secondary" data-sort="codice">Ordina per codice</button>
-        <button class="btn-secondary" data-sort="dataPrenotazione">Ordina per data prenotazione</button>
-        <button class="btn-secondary" data-sort="cliente">Ordina per cliente</button>
-        <button class="btn-secondary" data-sort="checkin">Ordina per check-in</button>
-      </div>
-    </div>
+    <button id="addBookingBtn" style="
+      padding: 10px 15px;
+      background:#111827;
+      color:white;
+      border:none;
+      border-radius:8px;
+      margin-bottom:15px;
+      cursor:pointer;
+    ">+ Aggiungi prenotazione</button>
 
-    <table id="prenotazioniTable">
-      <thead>
-        <tr>
-          <th>Codice</th>
-          <th>Data prenotazione</th>
-          <th>Cliente</th>
-          <th>Stanze</th>
-          <th>Check-in</th>
-          <th>Check-out</th>
-          <th>Pagamento</th>
-          <th>Azioni</th>
-        </tr>
-      </thead>
-      <tbody id="prenotazioniBody"></tbody>
-    </table>
+    <div id="bookingsList" class="dashboard-grid"></div>
 
   </div>
 
-  <!-- MODAL -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Nuova prenotazione</h2>
-        <button class="modal-close" id="modalClose">&times;</button>
-      </div>
+  <!-- ===========================
+       JAVASCRIPT INTEGRATO
+  ============================ -->
+  <script>
+    const db = firebase.firestore();
+    let currentUser = null;
+    let activeStructure = null;
 
-      <div id="modalError" class="error-message" style="display:none;"></div>
+    /* -------------------------
+       SIDEBAR
+    ------------------------- */
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const content = document.getElementById("pageContent");
+      const arrow = document.getElementById("toggleArrow");
 
-      <div class="modal-grid">
-        <div class="form-group">
-          <label>Codice prenotazione</label>
-          <input type="text" id="codicePrenotazione" readonly>
-        </div>
-        <div class="form-group">
-          <label>Data prenotazione</label>
-          <input type="date" id="dataPrenotazione" readonly>
-        </div>
+      sidebar.classList.toggle("collapsed");
+      content.classList.toggle("expanded");
 
-        <div class="form-group">
-          <label>Nome cliente*</label>
-          <input type="text" id="nomeCliente">
-        </div>
-        <div class="form-group">
-          <label>Telefono</label>
-          <input type="text" id="telefonoCliente">
-        </div>
+      arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
+    }
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="emailCliente">
-        </div>
-        <div class="form-group">
-          <label>Check-in*</label>
-          <input type="date" id="checkin">
-        </div>
+    /* -------------------------
+       CARICAMENTO PAGINA
+    ------------------------- */
+    function loadBookings() {
+      checkAuth();
 
-        <div class="form-group">
-          <label>Check-out*</label>
-          <input type="date" id="checkout">
-        </div>
-        <div class="form-group">
-          <label>Acconto (€)*</label>
-          <input type="number" id="acconto" min="0" step="0.01">
-        </div>
-      </div>
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadStructures();
+        }
+      });
+    }
 
-      <div class="rooms-section">
-        <div class="rooms-header">
-          <span><strong>Stanze prenotate*</strong></span>
-          <button class="btn-secondary" id="btnAggiungiStanza">+ Aggiungi stanza</button>
-        </div>
-        <div class="rooms-list" id="roomsList"></div>
-      </div>
+    /* -------------------------
+       CARICA STRUTTURE
+    ------------------------- */
+    function loadStructures() {
+      db.collection("strutture")
+        .where("owner", "==", currentUser.uid)
+        .get()
+        .then(snapshot => {
+          const selector = document.getElementById("structureSelector");
+          snapshot.forEach(doc => {
+            const option = document.createElement("option");
+            option.value = doc.id;
+            option.textContent = doc.data().nome || "Struttura";
+            selector.appendChild(option);
+          });
+        });
+    }
 
-      <div class="modal-footer">
-        <button class="btn-secondary" id="btnAnnulla">Annulla</button>
-        <button class="btn-primary" id="btnSalvaPrenotazione">Salva prenotazione</button>
-      </div>
-    </div>
-  </div>
+    /* -------------------------
+       CAMBIO STRUTTURA
+    ------------------------- */
+    function changeStructure() {
+      const selector = document.getElementById("structureSelector");
+      activeStructure = selector.value;
+      loadBookingsList();
+    }
 
-<!-- SIDEBAR SCRIPT -->
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const content = document.querySelector(".page-content");
-  const toggleBtn = document.getElementById("toggleBtn");
+    /* -------------------------
+       CARICA PRENOTAZIONI
+    ------------------------- */
+    function loadBookingsList() {
+      if (!activeStructure || activeStructure === "default") return;
 
-  sidebar.classList.toggle("collapsed");
-  content.classList.toggle("expanded");
+      const container = document.getElementById("bookingsList");
+      container.innerHTML = "Caricamento...";
 
-  toggleBtn.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
-}
-</script>
+      db.collection("prenotazioni")
+        .where("owner", "==", currentUser.uid)
+        .where("structureId", "==", activeStructure)
+        .orderBy("checkin", "asc")
+        .get()
+        .then(snapshot => {
+          container.innerHTML = "";
 
-<!-- FIRESTORE SCRIPT (TUO ORIGINALE) -->
-<script>
-const db = firebase.firestore();
-const strutturaCorrenteId = localStorage.getItem("activeStructure");
+          if (snapshot.empty) {
+            container.innerHTML = "<p>Nessuna prenotazione trovata.</p>";
+            return;
+          }
 
-if (!strutturaCorrenteId) {
-  alert("Nessuna struttura selezionata. Torna in Dashboard.");
-  window.location.href = "dashboard.html";
-}
+          snapshot.forEach(doc => {
+            const b = doc.data();
 
-let strutturaCorrente = {
-  id: strutturaCorrenteId,
-  sigla: "",
-  ultimoNumero: 0,
-  ultimoAnno: 0
-};
+            const card = document.createElement("div");
+            card.className = "dash-card";
+            card.innerHTML = `
+              <div class="dash-icon">📅</div>
+              <div class="dash-info">
+                <h2>${b.nomeCliente || "Cliente"}</h2>
+                <p>${b.checkin} → ${b.checkout}</p>
+                <p>Stanza: ${b.stanzaNome || "-"}</p>
+              </div>
+            `;
 
-let stanzeDisponibili = [];
-let prenotazioni = [];
+            container.appendChild(card);
+          });
+        });
+    }
 
-function todayISO() {
-  return new Date().toISOString().split("T")[0];
-}
+    /* -------------------------
+       AGGIUNGI PRENOTAZIONE
+    ------------------------- */
+    document.getElementById("addBookingBtn").addEventListener("click", () => {
+      if (!activeStructure || activeStructure === "default") {
+        alert("Seleziona prima una struttura");
+        return;
+      }
 
-function formatDate(d) {
-  if (!d) return "";
-  const [y, m, g] = d.split("-");
-  return `${g}/${m}/${y}`;
-}
+      const nome = prompt("Nome cliente:");
+      if (!nome) return;
 
-async function caricaStruttura() {
-  const snap = await db.collection("strutture").doc(strutturaCorrente.id).get();
-  if (!snap.exists) return;
+      const checkin = prompt("Check-in (YYYY-MM-DD):");
+      if (!checkin) return;
 
-  const data = snap.data();
-  strutturaCorrente.sigla = data.sigla || "ST";
-  strutturaCorrente.ultimoNumero = data.ultimoNumero || 0;
-  strutturaCorrente.ultimoAnno = data.ultimoAnno || new Date().getFullYear();
-}
+      const checkout = prompt("Check-out (YYYY-MM-DD):");
+      if (!checkout) return;
 
-async function generaCodice() {
-  const anno = new Date().getFullYear();
-
-  if (strutturaCorrente.ultimoAnno !== anno) {
-    strutturaCorrente.ultimoAnno = anno;
-    strutturaCorrente.ultimoNumero = 0;
-  }
-
-  strutturaCorrente.ultimoNumero++;
-
-  await db.collection("strutture").doc(strutturaCorrente.id).update({
-    ultimoNumero: strutturaCorrente.ultimoNumero,
-    ultimoAnno: strutturaCorrente.ultimoAnno
-  });
-
-  return `${strutturaCorrente.sigla}-${strutturaCorrente.ultimoNumero}/${anno}`;
-}
-
-async function caricaStanze() {
-  stanzeDisponibili = [];
-  const snap = await db.collection("stanze")
-    .where("structureId", "==", strutturaCorrente.id)
-    .get();
-
-  snap.forEach(doc => {
-    stanzeDisponibili.push({
-      id: doc.id,
-      nome: doc.data().nome
+      db.collection("prenotazioni").add({
+        nomeCliente: nome,
+        checkin,
+        checkout,
+        stanzaNome: "-",
+        owner: currentUser.uid,
+        structureId: activeStructure
+      }).then(() => {
+        loadBookingsList();
+      });
     });
-  });
-}
-
-async function caricaPrenotazioni() {
-  prenotazioni = [];
-  const snap = await db.collection("prenotazioni")
-    .where("structureId", "==", strutturaCorrente.id)
-    .get();
-
-  snap.forEach(doc => {
-    prenotazioni.push({ id: doc.id, ...doc.data() });
-  });
-
-  renderPrenotazioni(prenotazioni);
-}
-
-function renderPrenotazioni(lista) {
-  const tbody = document.getElementById("prenotazioniBody");
-  tbody.innerHTML = "";
-
-  lista.forEach(p => {
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${p.codice}</td>
-      <td>${formatDate(p.dataPrenotazione)}</td>
-      <td>${p.cliente}</td>
-      <td>${p.stanze?.length ? p.stanze[0].stanzaNome + (p.stanze.length > 1 ? " +" + (p.stanze.length - 1) : "") : "-"}</td>
-      <td>${formatDate(p.checkin)}</td>
-      <td>${formatDate(p.checkout)}</td>
-      <td>${p.pagamento === "attesa" ? "In attesa acconto" : p.pagamento}</td>
-      <td>
-        <button class="btn-danger" onclick="eliminaPrenotazione('${p.id}')">Elimina</button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
-
-async function eliminaPrenotazione(id) {
-  if (!confirm("Eliminare questa prenotazione?")) return;
-
-  await db.collection("prenotazioni").doc(id).delete();
-  await caricaPrenotazioni();
-}
-
-const modal = document.getElementById("modalBackdrop");
-const modalError = document.getElementById("modalError");
-
-function openModal() {
-  modalError.style.display = "none";
-  modal.style.display = "flex";
-
-  document.getElementById("dataPrenotazione").value = todayISO();
-
-  generaCodice().then(codice => {
-    document.getElementById("codicePrenotazione").value = codice;
-  });
-
-  roomsList.innerHTML = "";
-  aggiungiRigaStanza();
-}
-
-function closeModal() {
-  modal.style.display = "none";
-}
-
-function aggiungiRigaStanza() {
-  const row = document.createElement("div");
-  row.className = "room-row";
-
-  const select = document.createElement("select");
-  stanzeDisponibili.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.nome;
-    select.appendChild(opt);
-  });
-
-  const costo = document.createElement("input");
-  costo.type = "number";
-  costo.placeholder = "Costo €";
-  costo.min = "0";
-  costo.step = "0.01";
-
-  const remove = document.createElement("button");
-  remove.className = "btn-secondary";
-  remove.textContent = "Rimuovi";
-  remove.onclick = () => row.remove();
-
-  row.appendChild(select);
-  row.appendChild(costo);
-  row.appendChild(remove);
-
-  roomsList.appendChild(row);
-}
-
-async function salvaPrenotazione() {
-  modalError.style.display = "none";
-
-  const codice = document.getElementById("codicePrenotazione").value;
-  const dataPrenotazione = document.getElementById("dataPrenotazione").value;
-  const cliente = document.getElementById("nomeCliente").value.trim();
-  const telefono = document.getElementById("telefonoCliente").value.trim();
-  const email = document.getElementById("emailCliente").value.trim();
-  const checkin = document.getElementById("checkin").value;
-  const checkout = document.getElementById("checkout").value;
-  const acconto = Number(document.getElementById("acconto").value);
-
-  if (!cliente) return showError("Inserisci il nome del cliente.");
-  if (!checkin) return showError("Inserisci il check-in.");
-  if (!checkout) return showError("Inserisci il check-out.");
-  if (!telefono && !email) return showError("Inserisci almeno un recapito.");
-  if (acconto < 0) return showError("Acconto non valido.");
-
-  const stanze = [];
-  document.querySelectorAll(".room-row").forEach(r => {
-    const stanzaId = r.querySelector("select").value;
-    const costo = Number(r.querySelector("input").value);
-    const stanza = stanzeDisponibili.find(s => s.id === stanzaId);
-
-    stanze.push({
-      stanzaId,
-      stanzaNome: stanza.nome,
-      costo
-    });
-  });
-
-  if (stanze.length === 0) return showError("Aggiungi almeno una stanza.");
-
-  const pren = {
-    codice,
-    dataPrenotazione,
-    cliente,
-    telefono,
-    email,
-    checkin,
-    checkout,
-    acconto,
-    pagamento: "attesa",
-    stanze,
-    structureId: strutturaCorrente.id
-  };
-
-  await db.collection("prenotazioni").add(pren);
-
-  closeModal();
-  await caricaPrenotazioni();
-}
-
-function showError(msg) {
-  modalError.textContent = msg;
-  modalError.style.display = "block";
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  await caricaStruttura();
-  await caricaStanze();
-  await caricaPrenotazioni();
-
-  document.getElementById("btnNuovaPrenotazione").onclick = openModal;
-  document.getElementById("modalClose").onclick = closeModal;
-  document.getElementById("btnAnnulla").onclick = closeModal;
-  document.getElementById("btnAggiungiStanza").onclick = aggiungiRigaStanza;
-  document.getElementById("btnSalvaPrenotazione").onclick = salvaPrenotazione;
-
-  document.getElementById("searchInput").oninput = () => {
-    const q = document.getElementById("searchInput").value.toLowerCase();
-    const filtrate = prenotazioni.filter(p =>
-      JSON.stringify(p).toLowerCase().includes(q)
-    );
-    renderPrenotazioni(filtrate);
-  };
-
-  document.querySelectorAll(".sort-buttons button").forEach(btn => {
-    btn.onclick = () => {
-      const field = btn.dataset.sort;
-      prenotazioni.sort((a, b) => (a[field] || "").localeCompare(b[field] || ""));
-      renderPrenotazioni(prenotazioni);
-    };
-  });
-});
-</script>
+  </script>
 
 </body>
 </html>
