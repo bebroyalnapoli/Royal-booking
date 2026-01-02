@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Stanze - Royal Booking</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -11,11 +12,11 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- Auth esterno -->
+  <!-- Auth -->
   <script src="auth.js"></script>
 </head>
 
-<body onload="loadRooms()">
+<body onload="loadRoomsPage()">
 
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
@@ -40,7 +41,6 @@
       <a class="active" href="stanze.html">🛏️ <span>Stanze</span></a>
       <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
       <a href="strutture.html">🏢 <span>Strutture</span></a>
-      <a href="#">⚙️ <span>Impostazioni</span></a>
     </div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
@@ -92,32 +92,41 @@
     /* -------------------------
        CARICAMENTO PAGINA
     ------------------------- */
-    function loadRooms() {
+    function loadRoomsPage() {
       checkAuth();
 
       firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          loadStructures();
-        }
+        if (!user) return;
+        currentUser = user;
+
+        loadStructureSelector();
       });
     }
 
     /* -------------------------
-       CARICA STRUTTURE
+       CARICA STRUTTURE NEL SELECTOR
     ------------------------- */
-    function loadStructures() {
+    function loadStructureSelector() {
       db.collection("strutture")
         .where("owner", "==", currentUser.uid)
         .get()
         .then(snapshot => {
           const selector = document.getElementById("structureSelector");
+          selector.innerHTML = `<option value="default">Seleziona struttura</option>`;
+
           snapshot.forEach(doc => {
             const option = document.createElement("option");
             option.value = doc.id;
-            option.textContent = doc.data().nome || "Struttura";
+            option.textContent = doc.data().nome;
             selector.appendChild(option);
           });
+
+          const saved = localStorage.getItem("activeStructure");
+          if (saved) {
+            selector.value = saved;
+            activeStructure = saved;
+            loadRoomsList();
+          }
         });
     }
 
@@ -125,8 +134,8 @@
        CAMBIO STRUTTURA
     ------------------------- */
     function changeStructure() {
-      const selector = document.getElementById("structureSelector");
-      activeStructure = selector.value;
+      activeStructure = document.getElementById("structureSelector").value;
+      localStorage.setItem("activeStructure", activeStructure);
       loadRoomsList();
     }
 
@@ -152,17 +161,23 @@
           }
 
           snapshot.forEach(doc => {
-            const room = doc.data();
+            const r = doc.data();
 
             const card = document.createElement("div");
             card.className = "dash-card";
+            card.style.cursor = "pointer";
+
             card.innerHTML = `
               <div class="dash-icon">🛏️</div>
               <div class="dash-info">
-                <h2>${room.nome}</h2>
-                <p>Capacità: ${room.capacita || "-"}</p>
+                <h2>${r.nome}</h2>
+                <p>Capacità: ${r.capacita || "-"}</p>
               </div>
             `;
+
+            card.onclick = () => {
+              window.location.href = "stanza_dettaglio.html?id=" + doc.id;
+            };
 
             container.appendChild(card);
           });
@@ -181,9 +196,13 @@
       const nome = prompt("Nome stanza:");
       if (!nome) return;
 
+      const capacita = prompt("Capacità:");
+      const descrizione = prompt("Descrizione:");
+
       db.collection("stanze").add({
         nome,
-        capacita: 2,
+        capacita: parseInt(capacita),
+        descrizione: descrizione || "",
         owner: currentUser.uid,
         structureId: activeStructure
       }).then(() => {
