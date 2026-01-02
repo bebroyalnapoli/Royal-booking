@@ -8,80 +8,20 @@
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="auth.js"></script>
 
   <script>
-    // Configurazione Firebase (usa la tua)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    // Se l'utente è già loggato → vai in dashboard
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "dashboard.html";
-      }
+      if (user) window.location.href = "dashboard.html";
     });
   </script>
-
-  <style>
-    /* Stile minimal per la homepage */
-    .home-container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .home-title {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #111827;
-    }
-
-    .home-subtitle {
-      font-size: 16px;
-      color: #4b5563;
-      margin-bottom: 30px;
-    }
-
-    .home-btn {
-      background: #111827;
-      color: white;
-      padding: 12px 22px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      transition: 0.2s;
-    }
-
-    .home-btn:hover {
-      background: #000;
-      transform: translateY(-1px);
-    }
-  </style>
 </head>
 
 <body>
-
   <div class="home-container">
     <h1 class="home-title">Royal Booking</h1>
     <p class="home-subtitle">Gestisci strutture, stanze e prenotazioni in modo semplice e professionale.</p>
-
-    <button class="home-btn" onclick="window.location.href='login.html'">
-      Accedi
-    </button>
+    <button class="home-btn" onclick="window.location.href='login.html'">Accedi</button>
   </div>
-
 </body>
 </html>
