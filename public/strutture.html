@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Strutture - Royal Booking</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -11,7 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- Auth esterno -->
+  <!-- Auth -->
   <script src="auth.js"></script>
 </head>
 
@@ -40,7 +41,6 @@
       <a href="stanze.html">🛏️ <span>Stanze</span></a>
       <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
       <a class="active" href="strutture.html">🏢 <span>Strutture</span></a>
-      <a href="#">⚙️ <span>Impostazioni</span></a>
     </div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
@@ -96,11 +96,11 @@
       checkAuth();
 
       firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          loadStructureSelector();
-          loadStructuresList();
-        }
+        if (!user) return;
+        currentUser = user;
+
+        loadStructureSelector();
+        loadStructuresList();
       });
     }
 
@@ -118,18 +118,25 @@
           snapshot.forEach(doc => {
             const option = document.createElement("option");
             option.value = doc.id;
-            option.textContent = doc.data().nome || "Struttura";
+            option.textContent = doc.data().nome;
             selector.appendChild(option);
           });
+
+          const saved = localStorage.getItem("activeStructure");
+          if (saved) selector.value = saved;
         });
     }
 
+    /* -------------------------
+       CAMBIO STRUTTURA
+    ------------------------- */
     function changeStructure() {
       activeStructure = document.getElementById("structureSelector").value;
+      localStorage.setItem("activeStructure", activeStructure);
     }
 
     /* -------------------------
-       CARICA LISTA STRUTTURE
+       CARICA STRUTTURE
     ------------------------- */
     function loadStructuresList() {
       const container = document.getElementById("structuresList");
@@ -151,13 +158,19 @@
 
             const card = document.createElement("div");
             card.className = "dash-card";
+            card.style.cursor = "pointer";
+
             card.innerHTML = `
               <div class="dash-icon">🏢</div>
               <div class="dash-info">
                 <h2>${s.nome}</h2>
-                <p>Indirizzo: ${s.indirizzo || "-"}</p>
+                <p>${s.indirizzo || "-"}</p>
               </div>
             `;
+
+            card.onclick = () => {
+              window.location.href = "struttura_dettaglio.html?id=" + doc.id;
+            };
 
             container.appendChild(card);
           });
@@ -171,14 +184,19 @@
       const nome = prompt("Nome struttura:");
       if (!nome) return;
 
-      const indirizzo = prompt("Indirizzo struttura:");
+      const indirizzo = prompt("Indirizzo:");
+      const telefono = prompt("Telefono:");
+      const email = prompt("Email:");
+      const iban = prompt("IBAN:");
 
       db.collection("strutture").add({
         nome,
         indirizzo: indirizzo || "",
+        telefono: telefono || "",
+        email: email || "",
+        iban: iban || "",
         owner: currentUser.uid
       }).then(() => {
-        loadStructureSelector();
         loadStructuresList();
       });
     });
