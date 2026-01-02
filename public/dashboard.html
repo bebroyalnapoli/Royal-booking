@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard - Royal Booking</title>
+
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Auth esterno -->
   <script src="auth.js"></script>
-  <script src="dashboard.js"></script>
 </head>
 
 <body onload="loadDashboard()">
@@ -88,6 +90,81 @@
     </div>
 
   </div>
+
+  <!-- ===========================
+       JAVASCRIPT INTEGRATO
+  ============================ -->
+  <script>
+    const db = firebase.firestore();
+    let currentUser = null;
+    let activeStructure = null;
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const content = document.getElementById("pageContent");
+      const arrow = document.getElementById("toggleArrow");
+
+      sidebar.classList.toggle("collapsed");
+      content.classList.toggle("expanded");
+
+      arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
+    }
+
+    function loadDashboard() {
+      checkAuth();
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadStructures();
+        }
+      });
+    }
+
+    function loadStructures() {
+      db.collection("strutture")
+        .where("owner", "==", currentUser.uid)
+        .get()
+        .then(snapshot => {
+          const selector = document.getElementById("structureSelector");
+          snapshot.forEach(doc => {
+            const option = document.createElement("option");
+            option.value = doc.id;
+            option.textContent = doc.data().nome || "Struttura";
+            selector.appendChild(option);
+          });
+        });
+    }
+
+    function changeStructure() {
+      const selector = document.getElementById("structureSelector");
+      activeStructure = selector.value;
+      loadCounts();
+    }
+
+    function loadCounts() {
+      if (!activeStructure || activeStructure === "default") return;
+
+      db.collection("prenotazioni")
+        .where("owner", "==", currentUser.uid)
+        .where("structureId", "==", activeStructure)
+        .get()
+        .then(snap => {
+          document.getElementById("totalBookings").textContent = snap.size;
+        });
+
+      db.collection("stanze")
+        .where("owner", "==", currentUser.uid)
+        .where("structureId", "==", activeStructure)
+        .get()
+        .then(snap => {
+          document.getElementById("totalRooms").textContent = snap.size;
+        });
+
+      document.getElementById("totalStructures").textContent = "1";
+      document.getElementById("avgOccupancy").textContent = "0%";
+    }
+  </script>
 
 </body>
 </html>
