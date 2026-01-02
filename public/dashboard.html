@@ -17,37 +17,39 @@
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
 
-    <!-- Bombatura in alto -->
-    <div class="sidebar-toggle" onclick="toggleSidebar()">
+    <!-- Linguetta laterale -->
+    <div class="sidebar-tab" onclick="toggleSidebar()">
       <span id="toggleArrow">←</span>
     </div>
 
     <h2>Royal Booking</h2>
 
+    <!-- Selettore struttura -->
+    <div class="structure-selector">
+      <label>Struttura</label>
+      <select id="structureSelector" onchange="changeStructure()">
+        <option value="default">Seleziona struttura</option>
+      </select>
+    </div>
+
     <div class="menu">
-      <a class="active" href="dashboard.html" data-label="Dashboard">🏠 <span>Dashboard</span></a>
-      <a href="stanze.html" data-label="Stanze">🛏️ <span>Stanze</span></a>
-      <a href="prenotazioni.html" data-label="Prenotazioni">📅 <span>Prenotazioni</span></a>
-      <a href="strutture.html" data-label="Strutture">🏢 <span>Strutture</span></a>
-      <a href="#" data-label="Impostazioni">⚙️ <span>Impostazioni</span></a>
+      <a class="active" href="dashboard.html">🏠 <span>Dashboard</span></a>
+      <a href="stanze.html">🛏️ <span>Stanze</span></a>
+      <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
+      <a href="strutture.html">🏢 <span>Strutture</span></a>
+      <a href="#">⚙️ <span>Impostazioni</span></a>
     </div>
 
     <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
   </div>
 
-  <!-- PAGE CONTENT -->
+  <!-- CONTENUTO -->
   <div class="page-content" id="pageContent">
 
-    <!-- HEADER CON SELEZIONE STRUTTURA -->
     <div class="page-header">
       <h1>Dashboard</h1>
-      <select id="structureSelector" onchange="changeStructure()">
-        <option value="default">Seleziona struttura</option>
-        <!-- Le strutture verranno caricate dinamicamente -->
-      </select>
     </div>
 
-    <!-- CARD METRICHE -->
     <div class="dashboard-grid">
 
       <div class="dash-card">
@@ -86,86 +88,7 @@
 
   </div>
 
-  <!-- SCRIPT SIDEBAR -->
-  <script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("pageContent");
-    const arrow = document.getElementById("toggleArrow");
-
-    sidebar.classList.toggle("collapsed");
-    content.classList.toggle("expanded");
-
-    arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
-  }
-  </script>
-
-  <!-- FIRESTORE SCRIPT -->
-  <script>
-  const db = firebase.firestore();
-  let currentUser = null;
-  let activeStructure = null;
-
-  function loadDashboard() {
-    checkAuth();
-
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        currentUser = user;
-        loadStructures();
-      }
-    });
-  }
-
-  function loadStructures() {
-    db.collection("strutture")
-      .where("owner", "==", currentUser.uid)
-      .get()
-      .then(snapshot => {
-        const selector = document.getElementById("structureSelector");
-        snapshot.forEach(doc => {
-          const option = document.createElement("option");
-          option.value = doc.id;
-          option.textContent = doc.data().nome || "Struttura";
-          selector.appendChild(option);
-        });
-      });
-  }
-
-  function changeStructure() {
-    const selector = document.getElementById("structureSelector");
-    activeStructure = selector.value;
-    loadCounts();
-  }
-
-  function loadCounts() {
-    if (!activeStructure || activeStructure === "default") return;
-
-    // Prenotazioni
-    db.collection("prenotazioni")
-      .where("owner", "==", currentUser.uid)
-      .where("structureId", "==", activeStructure)
-      .get()
-      .then(snap => {
-        document.getElementById("totalBookings").textContent = snap.size;
-      });
-
-    // Stanze
-    db.collection("stanze")
-      .where("owner", "==", currentUser.uid)
-      .where("structureId", "==", activeStructure)
-      .get()
-      .then(snap => {
-        document.getElementById("totalRooms").textContent = snap.size;
-      });
-
-    // Strutture
-    document.getElementById("totalStructures").textContent = "1";
-
-    // Occupazione media (placeholder)
-    document.getElementById("avgOccupancy").textContent = "0%";
-  }
-  </script>
+  <script src="dashboard.js"></script>
 
 </body>
 </html>
