@@ -3,203 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Dettaglio Struttura - Royal Booking</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <!-- Auth -->
   <script src="auth.js"></script>
-
-  <style>
-    .form-box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .form-box input {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    .btn {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .btn-save {
-      background: #111827;
-      color: white;
-    }
-
-    .btn-delete {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn-back {
-      background: #6b7280;
-      color: white;
-    }
-  </style>
 </head>
 
 <body onload="loadStructureDetail()">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
+  <?php include 'sidebar.html'; ?>
 
-    <div class="sidebar-tab" onclick="toggleSidebar()">
-      <span id="toggleArrow">←</span>
-    </div>
-
-    <h2>Royal Booking</h2>
-
-    <div class="structure-selector">
-      <label>Struttura</label>
-      <select id="structureSelector" onchange="changeStructure()">
-        <option value="default">Seleziona struttura</option>
-      </select>
-    </div>
-
-    <div class="menu">
-      <a href="dashboard.html">🏠 <span>Dashboard</span></a>
-      <a href="stanze.html">🛏️ <span>Stanze</span></a>
-      <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
-      <a class="active" href="strutture.html">🏢 <span>Strutture</span></a>
-    </div>
-
-    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
-  </div>
-
-  <!-- CONTENUTO -->
   <div class="page-content" id="pageContent">
 
     <div class="page-header">
       <h1>Dettaglio Struttura</h1>
     </div>
 
-    <div class="form-box">
-      <input id="nome" placeholder="Nome struttura">
-      <input id="indirizzo" placeholder="Indirizzo">
-      <input id="telefono" placeholder="Telefono">
-      <input id="email" placeholder="Email">
-      <input id="iban" placeholder="IBAN">
-
-      <button class="btn btn-save" onclick="saveStructure()">💾 Salva modifiche</button>
-      <button class="btn btn-delete" onclick="deleteStructure()">🗑️ Elimina struttura</button>
-      <button class="btn btn-back" onclick="window.location.href='strutture.html'">⬅️ Torna indietro</button>
-    </div>
+    <div id="structureDetail"></div>
 
   </div>
 
-  <!-- ===========================
-       JAVASCRIPT INTEGRATO
-  ============================ -->
-  <script>
-    const db = firebase.firestore();
-    let currentUser = null;
-    let structureId = null;
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      const content = document.getElementById("pageContent");
-      const arrow = document.getElementById("toggleArrow");
-
-      sidebar.classList.toggle("collapsed");
-      content.classList.toggle("expanded");
-
-      arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
-    }
-
-    function loadStructureDetail() {
-      checkAuth();
-
-      firebase.auth().onAuthStateChanged(user => {
-        if (!user) return;
-        currentUser = user;
-
-        const params = new URLSearchParams(window.location.search);
-        structureId = params.get("id");
-
-        loadStructureSelector();
-        loadData();
-      });
-    }
-
-    function loadStructureSelector() {
-      db.collection("strutture")
-        .where("owner", "==", currentUser.uid)
-        .get()
-        .then(snapshot => {
-          const selector = document.getElementById("structureSelector");
-          selector.innerHTML = `<option value="default">Seleziona struttura</option>`;
-
-          snapshot.forEach(doc => {
-            const option = document.createElement("option");
-            option.value = doc.id;
-            option.textContent = doc.data().nome;
-            selector.appendChild(option);
-          });
-
-          const saved = localStorage.getItem("activeStructure");
-          if (saved) selector.value = saved;
-        });
-    }
-
-    function changeStructure() {
-      const val = document.getElementById("structureSelector").value;
-      localStorage.setItem("activeStructure", val);
-    }
-
-    function loadData() {
-      db.collection("strutture").doc(structureId).get().then(doc => {
-        const s = doc.data();
-
-        document.getElementById("nome").value = s.nome || "";
-        document.getElementById("indirizzo").value = s.indirizzo || "";
-        document.getElementById("telefono").value = s.telefono || "";
-        document.getElementById("email").value = s.email || "";
-        document.getElementById("iban").value = s.iban || "";
-      });
-    }
-
-    function saveStructure() {
-      db.collection("strutture").doc(structureId).update({
-        nome: document.getElementById("nome").value,
-        indirizzo: document.getElementById("indirizzo").value,
-        telefono: document.getElementById("telefono").value,
-        email: document.getElementById("email").value,
-        iban: document.getElementById("iban").value
-      }).then(() => {
-        alert("Modifiche salvate");
-      });
-    }
-
-    function deleteStructure() {
-      if (!confirm("Sei sicuro di voler eliminare questa struttura?")) return;
-
-      db.collection("strutture").doc(structureId).delete().then(() => {
-        alert("Struttura eliminata");
-        window.location.href = "strutture.html";
-      });
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
