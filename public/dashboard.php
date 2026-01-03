@@ -16,8 +16,16 @@
 
 <body onload="loadDashboard()">
 
-  <!-- Sidebar -->
-  <?php include 'sidebar.html'; ?>
+  <!-- Sidebar caricata dinamicamente -->
+  <div id="sidebar"></div>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar").innerHTML = html;
+      });
+  </script>
 
   <!-- Contenuto pagina -->
   <div class="page-content" id="pageContent">
