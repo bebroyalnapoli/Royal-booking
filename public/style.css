@@ -70,12 +70,12 @@ h1, h2 {
 ============================ */
 .sidebar-tab {
   position: absolute;
-  top: calc(100% - 120px); /* centrata sotto logout */
+  top: calc(100% - 70px); /* subito dopo Logout */
   right: -14px; /* sporge dal bordo sinistro */
   width: 28px;
   height: 40px;
   background: #111827;
-  border-radius: 0 20px 20px 0; /* pillola verticale */
+  border-radius: 0 20px 20px 0;
   display: flex;
   align-items: center;
   justify-content: center;
