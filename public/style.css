@@ -31,9 +31,9 @@ h1, h2 {
    SIDEBAR
 ============================ */
 .sidebar {
-  position: absolute;
-  top: calc(100% - 70px);
-  right: -14px;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 150px;
   height: 100vh;
   background: #111827;
@@ -66,7 +66,7 @@ h1, h2 {
 }
 
 /* ============================
-   LINGUETTA CENTRATA SOTTO LOGOUT
+   LINGUETTA POSIZIONATA DOPO LOGOUT
 ============================ */
 .sidebar-tab {
   position: absolute;
@@ -262,7 +262,7 @@ h1, h2 {
   }
 
   .sidebar-tab {
-    top: calc(100% - 100px);
+    top: calc(100% - 60px);
     right: -12px;
   }
 }
