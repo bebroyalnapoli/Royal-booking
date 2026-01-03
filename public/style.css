@@ -8,15 +8,6 @@ body {
   color: #111827;
 }
 
-h1, h2 {
-  margin: 0;
-  font-weight: 600;
-}
-
-.page-header {
-  margin-bottom: 20px;
-}
-
 .page-content {
   margin-left: 150px;
   padding: 20px;
@@ -49,7 +40,6 @@ h1, h2 {
   width: 54px;
 }
 
-/* Logo */
 .sidebar h2 {
   font-size: 14px;
   font-weight: 600;
@@ -66,7 +56,7 @@ h1, h2 {
 }
 
 /* ============================
-   LINGUETTA CENTRATA VERTICALE
+   LINGUETTA
 ============================ */
 .sidebar-tab {
   position: absolute;
@@ -117,15 +107,6 @@ h1, h2 {
   background: #1f2937;
 }
 
-.menu a.active {
-  background: #374151;
-  opacity: 1;
-}
-
-.menu a i {
-  font-size: 16px;
-}
-
 .menu a span {
   font-size: 13px;
 }
@@ -160,7 +141,7 @@ h1, h2 {
 }
 
 /* ============================
-   CARD DASHBOARD / LISTE
+   DASHBOARD CARDS
 ============================ */
 .dashboard-grid {
   display: grid;
@@ -200,54 +181,6 @@ h1, h2 {
 }
 
 /* ============================
-   BUTTONS
-============================ */
-.btn {
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  margin-top: 10px;
-}
-
-.btn-save {
-  background: #111827;
-  color: white;
-}
-
-.btn-delete {
-  background: #dc2626;
-  color: white;
-}
-
-.btn-back {
-  background: #6b7280;
-  color: white;
-}
-
-/* ============================
-   FORM BOX
-============================ */
-.form-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.form-box input,
-.form-box textarea {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 15px;
-}
-
-/* ============================
    MOBILE
 ============================ */
 @media (max-width: 768px) {
@@ -269,11 +202,5 @@ h1, h2 {
 
   .dashboard-grid {
     grid-template-columns: 1fr;
-  }
-
-  .sidebar-tab {
-    right: -12px;
-    width: 26px;
-    height: 38px;
   }
 }
