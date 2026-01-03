@@ -31,9 +31,9 @@ h1, h2 {
    SIDEBAR
 ============================ */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: absolute;
+  top: calc(100% - 70px);
+  right: -14px;
   width: 150px;
   height: 100vh;
   background: #111827;
