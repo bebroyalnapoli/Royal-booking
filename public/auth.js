@@ -24,7 +24,7 @@ function loginUser() {
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
-      window.location.href = "dashboard.html"; // 🔥 ora è HTML, non PHP
+      window.location.href = "dashboard.html";
     })
     .catch(error => {
       alert(error.message);
