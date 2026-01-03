@@ -24,7 +24,7 @@ function loginUser() {
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
-      window.location.href = "dashboard.html";
+      window.location.href = "dashboard.php"; // 🔥 CORRETTO
     })
     .catch(error => {
       alert(error.message);
@@ -37,7 +37,7 @@ function loginUser() {
 function checkAuth() {
   firebase.auth().onAuthStateChanged(user => {
     if (!user) {
-      window.location.href = "login.html";
+      window.location.href = "login.html"; // login resta HTML
     }
   });
 }
@@ -48,7 +48,7 @@ function checkAuth() {
 function logoutUser() {
   firebase.auth().signOut()
     .then(() => {
-      window.location.href = "login.html";
+      window.location.href = "login.html"; // logout torna a login.html
     })
     .catch(error => {
       alert("Errore durante il logout: " + error.message);
