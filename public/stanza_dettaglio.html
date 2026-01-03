@@ -3,197 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Dettaglio Stanza - Royal Booking</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <!-- Auth -->
   <script src="auth.js"></script>
-
-  <style>
-    .form-box {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .form-box input, .form-box textarea {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    .btn {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .btn-save {
-      background: #111827;
-      color: white;
-    }
-
-    .btn-delete {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn-back {
-      background: #6b7280;
-      color: white;
-    }
-  </style>
 </head>
 
 <body onload="loadRoomDetail()">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
+  <?php include 'sidebar.html'; ?>
 
-    <div class="sidebar-tab" onclick="toggleSidebar()">
-      <span id="toggleArrow">←</span>
-    </div>
-
-    <h2>Royal Booking</h2>
-
-    <div class="structure-selector">
-      <label>Struttura</label>
-      <select id="structureSelector" onchange="changeStructure()">
-        <option value="default">Seleziona struttura</option>
-      </select>
-    </div>
-
-    <div class="menu">
-      <a href="dashboard.html">🏠 <span>Dashboard</span></a>
-      <a class="active" href="stanze.html">🛏️ <span>Stanze</span></a>
-      <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
-      <a href="strutture.html">🏢 <span>Strutture</span></a>
-    </div>
-
-    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
-  </div>
-
-  <!-- CONTENUTO -->
   <div class="page-content" id="pageContent">
 
     <div class="page-header">
       <h1>Dettaglio Stanza</h1>
     </div>
 
-    <div class="form-box">
-      <input id="nome" placeholder="Nome stanza">
-      <input id="capacita" type="number" placeholder="Capacità">
-      <textarea id="descrizione" placeholder="Descrizione" rows="3"></textarea>
-
-      <button class="btn btn-save" onclick="saveRoom()">💾 Salva modifiche</button>
-      <button class="btn btn-delete" onclick="deleteRoom()">🗑️ Elimina stanza</button>
-      <button class="btn btn-back" onclick="window.location.href='stanze.html'">⬅️ Torna indietro</button>
-    </div>
+    <div id="roomDetail"></div>
 
   </div>
 
-  <!-- ===========================
-       JAVASCRIPT INTEGRATO
-  ============================ -->
-  <script>
-    const db = firebase.firestore();
-    let currentUser = null;
-    let roomId = null;
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      const content = document.getElementById("pageContent");
-      const arrow = document.getElementById("toggleArrow");
-
-      sidebar.classList.toggle("collapsed");
-      content.classList.toggle("expanded");
-
-      arrow.textContent = sidebar.classList.contains("collapsed") ? "→" : "←";
-    }
-
-    function loadRoomDetail() {
-      checkAuth();
-
-      firebase.auth().onAuthStateChanged(user => {
-        if (!user) return;
-        currentUser = user;
-
-        const params = new URLSearchParams(window.location.search);
-        roomId = params.get("id");
-
-        loadStructureSelector();
-        loadData();
-      });
-    }
-
-    function loadStructureSelector() {
-      db.collection("strutture")
-        .where("owner", "==", currentUser.uid)
-        .get()
-        .then(snapshot => {
-          const selector = document.getElementById("structureSelector");
-          selector.innerHTML = `<option value="default">Seleziona struttura</option>`;
-
-          snapshot.forEach(doc => {
-            const option = document.createElement("option");
-            option.value = doc.id;
-            option.textContent = doc.data().nome;
-            selector.appendChild(option);
-          });
-
-          const saved = localStorage.getItem("activeStructure");
-          if (saved) selector.value = saved;
-        });
-    }
-
-    function changeStructure() {
-      const val = document.getElementById("structureSelector").value;
-      localStorage.setItem("activeStructure", val);
-    }
-
-    function loadData() {
-      db.collection("stanze").doc(roomId).get().then(doc => {
-        const r = doc.data();
-
-        document.getElementById("nome").value = r.nome || "";
-        document.getElementById("capacita").value = r.capacita || "";
-        document.getElementById("descrizione").value = r.descrizione || "";
-      });
-    }
-
-    function saveRoom() {
-      db.collection("stanze").doc(roomId).update({
-        nome: document.getElementById("nome").value,
-        capacita: parseInt(document.getElementById("capacita").value),
-        descrizione: document.getElementById("descrizione").value
-      }).then(() => {
-        alert("Modifiche salvate");
-      });
-    }
-
-    function deleteRoom() {
-      if (!confirm("Eliminare questa stanza?")) return;
-
-      db.collection("stanze").doc(roomId).delete().then(() => {
-        alert("Stanza eliminata");
-        window.location.href = "stanze.html";
-      });
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
