@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Accedi - Royal Booking</title>
 
   <link rel="stylesheet" href="style.css">
@@ -14,7 +15,6 @@
   <script src="auth.js"></script>
 
   <style>
-    /* Stile solo per la pagina login */
     .login-container {
       height: 100vh;
       display: flex;
@@ -73,21 +73,20 @@
     <div class="login-box">
       <h1>Royal Booking</h1>
 
-      <input type="email" id="email" placeholder="Email">
-      <input type="password" id="password" placeholder="Password">
+      <input type="email" id="email" placeholder="Email" autocomplete="off">
+      <input type="password" id="password" placeholder="Password" autocomplete="off">
 
       <button class="login-btn" onclick="loginUser()">Accedi</button>
     </div>
   </div>
 
-  <!-- ===========================
-       JAVASCRIPT INTEGRATO
-  ============================ -->
   <script>
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "dashboard.html";
-      }
+      if (user) window.location.href = "dashboard.html";
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter") loginUser();
     });
   </script>
 
