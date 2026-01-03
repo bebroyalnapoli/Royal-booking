@@ -70,12 +70,12 @@ h1, h2 {
 ============================ */
 .sidebar-tab {
   position: absolute;
-  top: 20px;
-  right: -14px;
+  top: 20px; /* allineata al titolo */
+  right: -14px; /* sporge dal bordo sinistro */
   width: 28px;
   height: 40px;
   background: #111827;
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 20px 20px 0; /* pillola verticale */
   display: flex;
   align-items: center;
   justify-content: center;
