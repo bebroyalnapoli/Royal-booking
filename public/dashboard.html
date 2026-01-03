@@ -21,29 +21,45 @@
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
 
-    <!-- Linguetta -->
-    <div class="sidebar-tab" onclick="toggleSidebar()">
-      <span id="toggleArrow">←</span>
-    </div>
+  <!-- Linguetta -->
+  <div class="sidebar-tab" onclick="toggleSidebar()">
+    <span id="toggleArrow">←</span>
+  </div>
 
-    <h2>Royal Booking</h2>
+  <h2>Royal Booking</h2>
 
-    <!-- Selettore struttura -->
-    <div class="structure-selector">
-      <label>Struttura</label>
-      <select id="structureSelector" onchange="changeStructure()">
-        <option value="default">Seleziona struttura</option>
-      </select>
-    </div>
+  <!-- Selettore struttura -->
+  <div class="structure-selector">
+    <label>Struttura</label>
+    <select id="structureSelector" onchange="changeStructure()">
+      <option value="default">Seleziona struttura</option>
+    </select>
+  </div>
 
-    <div class="menu">
-      <a class="active" href="dashboard.html">🏠 <span>Dashboard</span></a>
-      <a href="stanze.html">🛏️ <span>Stanze</span></a>
-      <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
-      <a href="strutture.html">🏢 <span>Strutture</span></a>
-    </div>
+  <!-- MENU UNIFICATO -->
+  <div class="menu">
 
-    <div class="logout-btn" onclick="logoutUser()">🚪 Logout</div>
+    <a class="active" href="dashboard.html">
+      🏠 <span>Dashboard</span>
+    </a>
+
+    <a href="stanze.html">
+      🛏️ <span>Stanze</span>
+    </a>
+
+    <a href="prenotazioni.html">
+      📅 <span>Prenotazioni</span>
+    </a>
+
+    <a href="strutture.html">
+      🏢 <span>Strutture</span>
+    </a>
+
+    <!-- LOGOUT CORRETTO -->
+    <a href="#" onclick="logoutUser()">
+      🚪 <span>Logout</span>
+    </a>
+
   </div>
 
   <!-- CONTENUTO -->
