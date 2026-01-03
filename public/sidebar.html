@@ -1,22 +1,14 @@
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-tab" onclick="toggleSidebar()">
-    <span id="toggleArrow">←</span>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>Royal Booking</h2>
   </div>
 
-  <h2>Royal Booking</h2>
+  <ul class="sidebar-menu">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="stanze.html">Stanze</a></li>
+    <li><a href="prenotazioni.html">Prenotazioni</a></li>
+    <li><a href="strutture.html">Strutture</a></li>
+  </ul>
 
-  <div class="structure-selector">
-    <label>Struttura</label>
-    <select id="structureSelector" onchange="changeStructure()">
-      <option value="default">Seleziona struttura</option>
-    </select>
-  </div>
-
-  <div class="menu">
-    <a href="dashboard.php">🏠 <span>Dashboard</span></a>
-    <a href="stanze.html">🛏️ <span>Stanze</span></a>
-    <a href="prenotazioni.html">📅 <span>Prenotazioni</span></a>
-    <a href="strutture.html">🏢 <span>Strutture</span></a>
-    <a href="#" onclick="logoutUser()">🚪 <span>Logout</span></a>
-  </div>
+  <button class="logout-btn" onclick="logoutUser()">Logout</button>
 </div>
