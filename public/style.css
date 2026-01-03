@@ -70,13 +70,13 @@ h1, h2 {
 ============================ */
 .sidebar-tab {
   position: absolute;
-  top: 50%;                     /* centro verticale */
-  transform: translateY(-50%);  /* centratura perfetta */
-  right: -14px;                 /* sporge dal bordo */
+  top: 50%;
+  transform: translateY(-50%);
+  right: -14px;
   width: 28px;
   height: 40px;
   background: #111827;
-  border-radius: 0 20px 20px 0; /* semicircolare verticale */
+  border-radius: 0 20px 20px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,13 +101,14 @@ h1, h2 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px;
+  padding: 9px 8px;
   color: white;
   text-decoration: none;
   border-radius: 6px;
   margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 13px;
   opacity: 0.9;
 }
@@ -119,6 +120,14 @@ h1, h2 {
 .menu a.active {
   background: #374151;
   opacity: 1;
+}
+
+.menu a i {
+  font-size: 16px;
+}
+
+.menu a span {
+  font-size: 13px;
 }
 
 .sidebar.collapsed .menu a span {
