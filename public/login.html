@@ -11,60 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <!-- Auth esterno -->
   <script src="auth.js"></script>
-
-  <style>
-    .login-container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .login-box {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 350px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .login-box h1 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      color: #111827;
-    }
-
-    .login-box input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 12px;
-      background: #111827;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    .login-btn:hover {
-      background: #000;
-    }
-  </style>
 </head>
 
 <body>
@@ -82,7 +29,7 @@
 
   <script>
     firebase.auth().onAuthStateChanged(user => {
-      if (user) window.location.href = "dashboard.php";
+      if (user) window.location.href = "dashboard.html";
     });
 
     document.addEventListener("keydown", e => {
