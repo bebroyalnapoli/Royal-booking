@@ -1,11 +1,7 @@
 <div class="sidebar-container">
 
-  <!-- Sidebar + linguetta integrata -->
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-tab" id="sidebarTab">
-      <span>≡</span>
-    </div>
-
     <h2 class="sidebar-title">Royal Booking</h2>
 
     <ul class="sidebar-menu">
@@ -18,6 +14,11 @@
     <button class="logout-btn" onclick="logoutUser()">Logout</button>
   </div>
 
+  <!-- Linguetta -->
+  <div class="sidebar-tab" id="sidebarTab">
+    <span>≡</span>
+  </div>
+
 </div>
 
 <script>
@@ -26,5 +27,6 @@
 
   tab.addEventListener("click", () => {
     sidebar.classList.toggle("sidebar-open");
+    tab.classList.toggle("tab-open");
   });
 </script>
