@@ -3,25 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>Royal Booking</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase -->
+  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="auth.js"></script>
 
+  <!-- Tua config Firebase -->
   <script>
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) window.location.href = "dashboard.html";
+    firebase.initializeApp({
+      apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
+      authDomain: "royal-booking-e6050.firebaseapp.com",
+      projectId: "royal-booking-e6050",
+      storageBucket: "royal-booking-e6050.firebasestorage.app",
+      messagingSenderId: "868870824428",
+      appId: "1:868870824428:web:58442b53ee5fbd847960c9"
     });
   </script>
 </head>
 
 <body>
-  <div class="home-container">
-    <h1 class="home-title">Royal Booking</h1>
-    <p class="home-subtitle">Gestisci strutture, stanze e prenotazioni in modo semplice e professionale.</p>
-    <button class="home-btn" onclick="window.location.href='login.html'">Accedi</button>
-  </div>
+  <p style="text-align:center;margin-top:40px;">
+    Caricamento...
+  </p>
+
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        window.location.href = "dashboard.html";
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
 </body>
 </html>
