@@ -102,111 +102,99 @@ body {
 }
 
 /* ===============================
-   SIDEBAR
+   SIDEBAR A SCOMPARSA CON LINGUETTA
 ================================*/
-.sidebar {
-  width: 240px;
-  background: #111827;
-  color: #f9fafb;
+
+.sidebar-container {
   position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
-  padding: 20px 16px;
-  transform: translateX(0);
-  transition: transform 0.25s ease;
+  height: 100vh;
   z-index: 1000;
 }
 
-.sidebar-header h2 {
-  font-size: 18px;
-  margin-bottom: 24px;
+/* Linguetta laterale */
+.sidebar-tab {
+  position: absolute;
+  top: 50%;
+  right: -22px;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 80px;
+  background: #111827;
+  color: white;
+  border-radius: 0 40px 40px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  transition: right 0.25s ease;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
 
+.sidebar-tab.tab-open {
+  right: -22px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background: #111827;
+  color: #f9fafb;
+  padding: 20px;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+
+.sidebar-open {
+  transform: translateX(0);
+}
+
+/* Titolo */
+.sidebar-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Menu */
 .sidebar-menu {
   list-style: none;
   padding: 0;
-  margin: 0 0 24px 0;
 }
 
 .sidebar-menu li {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .sidebar-menu a {
   color: #e5e7eb;
   text-decoration: none;
-  font-size: 15px;
-  display: block;
+  font-size: 16px;
   padding: 10px 12px;
+  display: block;
   border-radius: 8px;
 }
 
-.sidebar-menu li.active a,
 .sidebar-menu a:hover {
   background: #1f2937;
 }
 
+/* Logout */
 .logout-btn {
+  margin-top: 20px;
   width: 100%;
   padding: 10px;
-  border-radius: 8px;
-  border: none;
   background: #ef4444;
+  border: none;
+  border-radius: 8px;
   color: white;
   cursor: pointer;
-  font-size: 14px;
 }
 
 .logout-btn:hover {
   background: #dc2626;
-}
-
-/* ===============================
-   SIDEBAR TOGGLE (MOBILE)
-================================*/
-.sidebar-toggle {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 1100;
-  background: #111827;
-  color: #f9fafb;
-  border: none;
-  border-radius: 999px;
-  width: 42px;
-  height: 42px;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* MOBILE: sidebar chiusa di default */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  .sidebar.sidebar-open {
-    transform: translateX(0);
-  }
-
-  .page-content {
-    margin-left: 0 !important;
-    padding-top: 60px;
-  }
-}
-
-/* DESKTOP: sidebar sempre aperta */
-@media (min-width: 769px) {
-  .sidebar-toggle {
-    display: none;
-  }
-
-  .page-content {
-    margin-left: 240px;
-  }
 }
 
 /* ===============================
