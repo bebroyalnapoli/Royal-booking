@@ -20,20 +20,10 @@
   <div id="sidebar"></div>
 
   <script>
-    // Carica la sidebar
     fetch("sidebar.html")
       .then(res => res.text())
       .then(html => {
         document.getElementById("sidebar").innerHTML = html;
-
-        // Attiva la linguetta SOLO dopo che la sidebar è stata caricata
-        const sidebar = document.querySelector(".sidebar");
-        const tab = document.querySelector(".sidebar-tab");
-
-        tab.addEventListener("click", () => {
-          sidebar.classList.toggle("sidebar-open");
-          tab.classList.toggle("tab-open");
-        });
       });
   </script>
 
