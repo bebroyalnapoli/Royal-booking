@@ -105,6 +105,7 @@ body {
    SIDEBAR A SCOMPARSA CON LINGUETTA
 ================================*/
 
+/* Contenitore */
 .sidebar-container {
   position: fixed;
   top: 0;
@@ -115,7 +116,9 @@ body {
 
 /* Sidebar */
 .sidebar {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 240px;
   height: 100vh;
   background: #111827;
@@ -129,12 +132,12 @@ body {
   transform: translateX(0);
 }
 
-/* Linguetta attaccata al bordo della sidebar */
+/* Linguetta */
 .sidebar-tab {
   position: absolute;
   top: 50%;
-  right: -22px;
-  transform: translateY(-50%);
+  left: 0;
+  transform: translate(-50%, -50%);
   width: 40px;
   height: 80px;
   background: #111827;
@@ -146,7 +149,14 @@ body {
   cursor: pointer;
   font-size: 22px;
   box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.25s ease;
 }
+
+/* Quando la sidebar è aperta, la linguetta si sposta */
+.sidebar-tab.tab-open {
+  transform: translate(190px, -50%);
+}
+
 
 /* Titolo */
 .sidebar-title {
