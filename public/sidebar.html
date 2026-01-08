@@ -1,14 +1,32 @@
-<div class="sidebar">
-  <div class="sidebar-header">
-    <h2>Royal Booking</h2>
+<div class="sidebar-container">
+
+  <!-- Linguetta -->
+  <div class="sidebar-tab" id="sidebarTab">
+    <span>≡</span>
   </div>
 
-  <ul class="sidebar-menu">
-    <li class="active"><a href="dashboard.html">🏠 Dashboard</a></li>
-    <li><a href="stanze.html">🛏️ Stanze</a></li>
-    <li><a href="prenotazioni.html">📅 Prenotazioni</a></li>
-    <li><a href="strutture.html">🏢 Strutture</a></li>
-  </ul>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2 class="sidebar-title">Royal Booking</h2>
 
-  <button class="logout-btn" onclick="logoutUser()">Logout</button>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html">🏠 Dashboard</a></li>
+      <li><a href="stanze.html">🛏️ Stanze</a></li>
+      <li><a href="prenotazioni.html">📅 Prenotazioni</a></li>
+      <li><a href="strutture.html">🏢 Strutture</a></li>
+    </ul>
+
+    <button class="logout-btn" onclick="logoutUser()">Logout</button>
+  </div>
+
 </div>
+
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const tab = document.getElementById("sidebarTab");
+
+  tab.addEventListener("click", () => {
+    sidebar.classList.toggle("sidebar-open");
+    tab.classList.toggle("tab-open");
+  });
+</script>
