@@ -113,7 +113,23 @@ body {
   z-index: 1000;
 }
 
-/* Linguetta laterale */
+/* Sidebar */
+.sidebar {
+  position: relative;
+  width: 240px;
+  height: 100vh;
+  background: #111827;
+  color: #f9fafb;
+  padding: 20px;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+
+.sidebar.sidebar-open {
+  transform: translateX(0);
+}
+
+/* Linguetta attaccata al bordo della sidebar */
 .sidebar-tab {
   position: absolute;
   top: 50%;
@@ -129,27 +145,7 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 22px;
-  transition: right 0.25s ease;
   box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-}
-
-.sidebar-tab.tab-open {
-  right: -22px;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 240px;
-  height: 100vh;
-  background: #111827;
-  color: #f9fafb;
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.25s ease;
-}
-
-.sidebar-open {
-  transform: translateX(0);
 }
 
 /* Titolo */
@@ -196,6 +192,7 @@ body {
 .logout-btn:hover {
   background: #dc2626;
 }
+
 
 /* ===============================
    PAGE CONTENT
