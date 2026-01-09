@@ -1,24 +1,21 @@
-<!-- TOGGLE BUTTON (mobile) -->
 <button id="menuToggle" class="menu-toggle">☰</button>
 
-<!-- SIDEBAR -->
-<aside id="sidebar" class="sidebar">
+<aside id="sidebarMenu" class="sidebar">
   <div class="sidebar-header">
     <h2>Royal Booking</h2>
 
-    <select id="strutturaSelect" class="struttura-select">
+    <select id="strutturaSelect">
       <option value="">Seleziona struttura</option>
     </select>
   </div>
 
   <nav class="sidebar-menu">
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="stanze.html">🛏️ Stanze</a>
-    <a href="prenotazioni.html">📅 Prenotazioni</a>
-    <a href="strutture.html">🏨 Strutture</a>
-    <a href="#" id="logoutBtn">🚪 Logout</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="stanze.html">Stanze</a>
+    <a href="prenotazioni.html">Prenotazioni</a>
+    <a href="strutture.html">Strutture</a>
+    <a href="#" onclick="logoutUser()">Logout</a>
   </nav>
 </aside>
 
-<!-- OVERLAY (mobile) -->
 <div id="overlay" class="overlay"></div>
