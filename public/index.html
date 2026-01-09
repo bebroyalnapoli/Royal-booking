@@ -7,25 +7,12 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <script>
-    firebase.initializeApp({
-      apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
-      authDomain: "royal-booking-e6050.firebaseapp.com",
-      projectId: "royal-booking-e6050",
-      storageBucket: "royal-booking-e6050.firebasestorage.app",
-      messagingSenderId: "868870824428",
-      appId: "1:868870824428:web:58442b53ee5fbd847960c9"
-    });
-  </script>
+  <script src="firebase.js"></script>
 </head>
 <body>
   <script>
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "dashboard.html";
-      } else {
-        window.location.href = "login.html";
-      }
+      window.location.href = user ? "dashboard.html" : "login.html";
     });
   </script>
 </body>
