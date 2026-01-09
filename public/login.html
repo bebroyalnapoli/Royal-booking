@@ -3,42 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Login | Royal Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase config -->
-  <script>
-    firebase.initializeApp({
-      apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
-      authDomain: "royal-booking-e6050.firebaseapp.com",
-      projectId: "royal-booking-e6050",
-      storageBucket: "royal-booking-e6050.firebasestorage.app",
-      messagingSenderId: "868870824428",
-      appId: "1:868870824428:web:58442b53ee5fbd847960c9"
-    });
-  </script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
 </head>
 
 <body class="login-page">
-
   <div class="login-container">
-    <h1>Royal Booking</h1>
+    <h2>Royal Booking</h2>
 
-    <input type="email" id="email" placeholder="Email" autocomplete="username">
-    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
 
     <button onclick="loginUser()">Accedi</button>
-
-    <p id="loginError" class="error"></p>
   </div>
-
-  <!-- JS -->
-  <script src="script.js"></script>
 </body>
 </html>
