@@ -1,3 +1,40 @@
+/* ===== LOGIN ===== */
+
+.login-page {
+  background: #111827;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  background: #1f2937;
+  padding: 30px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 320px;
+  color: #fff;
+  text-align: center;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.error {
+  color: #f87171;
+  margin-top: 10px;
+}
+
 /* ===== SIDEBAR ===== */
 
 .menu-toggle {
