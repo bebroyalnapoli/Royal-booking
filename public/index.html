@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Royal Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <!-- Tua config Firebase -->
   <script>
     firebase.initializeApp({
       apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
@@ -21,12 +18,7 @@
     });
   </script>
 </head>
-
 <body>
-  <p style="text-align:center;margin-top:40px;">
-    Caricamento...
-  </p>
-
   <script>
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
