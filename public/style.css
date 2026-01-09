@@ -1,5 +1,4 @@
 /* ===== LOGIN ===== */
-
 .login-page {
   background: #111827;
   height: 100vh;
@@ -36,7 +35,6 @@
 }
 
 /* ===== SIDEBAR ===== */
-
 .struttura-select {
   width: 100%;
   margin-top: 10px;
@@ -55,7 +53,6 @@
   z-index: 1001;
 }
 
-/* Sidebar container */
 .sidebar {
   position: fixed;
   top: 0;
@@ -72,14 +69,11 @@
   left: 0;
 }
 
-/* Header */
 .sidebar-header {
   padding: 20px;
-  font-size: 18px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Menu */
 .sidebar-menu {
   display: flex;
   flex-direction: column;
@@ -96,7 +90,6 @@
   background: #374151;
 }
 
-/* Overlay */
 .overlay {
   position: fixed;
   inset: 0;
@@ -109,17 +102,14 @@
   display: block;
 }
 
-/* ===== DESKTOP ===== */
 @media (min-width: 768px) {
   .sidebar {
     left: 0;
   }
-
   .menu-toggle,
   .overlay {
     display: none;
   }
-
   body {
     margin-left: 260px;
   }
