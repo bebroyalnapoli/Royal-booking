@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+initStrutture();
+
   // Chiudi sidebar
   if (overlay) {
     overlay.onclick = closeSidebar;
@@ -59,6 +61,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     };
   }
+const db = firebase.firestore();
+
+function initStrutture() {
+  const select = document.getElementById("strutturaSelect");
+  if (!select) return;
+
+  const attiva = localStorage.getItem("strutturaAttiva");
+
+  db.collection("strutture").get().then(snap => {
+    snap.forEach(doc => {
+      const opt = document.createElement("option");
+      opt.value = doc.id;
+      opt.textContent = doc.data().nome;
+      if (doc.id === attiva) opt.selected = true;
+      select.appendChild(opt);
+    });
+  });
+
+  select.onchange = () => {
+    localStorage.setItem("strutturaAttiva", select.value);
+    location.reload();
+  };
+}
 
   // ESC per chiudere (mobile)
   document.addEventListener("keydown", e => {
