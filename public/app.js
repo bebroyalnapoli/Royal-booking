@@ -20,6 +20,7 @@ function initSidebar() {
   toggle.onclick = () => {
     sidebar.classList.add("open");
     overlay.classList.add("show");
+    toggle.style.display = "none";
   };
 
   overlay.onclick = closeSidebar;
@@ -32,6 +33,7 @@ function initSidebar() {
   function closeSidebar() {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
+    toggle.style.display = "block";
   }
 }
 
