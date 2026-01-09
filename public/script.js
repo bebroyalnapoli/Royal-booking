@@ -1,40 +1,19 @@
-function loginUser() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("loginError");
-
-  errorBox.textContent = "";
-
-  if (!email || !password) {
-    errorBox.textContent = "Inserisci email e password";
-    return;
-  }
-
-  firebase.auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
-    .catch(err => {
-      errorBox.textContent = "Credenziali non valide";
-    });
-}
+const db = firebase.firestore();
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const sidebar = document.getElementById("sidebar");
   const toggleBtn = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Apri sidebar (mobile)
+  // Apri sidebar mobile
   if (toggleBtn) {
     toggleBtn.onclick = () => {
       sidebar.classList.add("open");
       overlay.classList.add("show");
     };
   }
-
-initStrutture();
 
   // Chiudi sidebar
   if (overlay) {
@@ -61,7 +40,14 @@ initStrutture();
       });
     };
   }
-const db = firebase.firestore();
+
+  initStrutture();
+
+  // ESC
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeSidebar();
+  });
+});
 
 function initStrutture() {
   const select = document.getElementById("strutturaSelect");
@@ -84,9 +70,3 @@ function initStrutture() {
     location.reload();
   };
 }
-
-  // ESC per chiudere (mobile)
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeSidebar();
-  });
-});
