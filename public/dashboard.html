@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -18,8 +20,41 @@
   <div id="sidebar"></div>
 
   <main class="page-content">
-    <h1>Dashboard</h1>
-    <p>Benvenuto nel gestionale</p>
+    <div class="dash-grid">
+
+      <div class="dash-card">
+        <span class="icon">📅</span>
+        <div>
+          <h3>Oggi</h3>
+          <p>0 prenotazioni</p>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <span class="icon">🛏️</span>
+        <div>
+          <h3>Occupate</h3>
+          <p>0</p>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <span class="icon">🔓</span>
+        <div>
+          <h3>Libere</h3>
+          <p>0</p>
+        </div>
+      </div>
+
+      <div class="dash-card full">
+        <span class="icon">⏭️</span>
+        <div>
+          <h3>Prossimi check-in</h3>
+          <p>—</p>
+        </div>
+      </div>
+
+    </div>
   </main>
 
   <script src="app.js"></script>
