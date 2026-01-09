@@ -20,6 +20,14 @@
   <div id="sidebar"></div>
 
   <main class="page-content">
+
+    <!-- HEADER DASHBOARD -->
+    <div class="dashboard-header">
+      <h1 id="dashboardTitle">Dashboard</h1>
+      <p id="strutturaAttivaNome" class="struttura-label">—</p>
+    </div>
+
+    <!-- CARDS -->
     <div class="dash-grid">
 
       <div class="dash-card">
@@ -58,5 +66,19 @@
   </main>
 
   <script src="app.js"></script>
+
+  <script>
+    // Mostra nome struttura selezionata
+    const strutturaId = localStorage.getItem("strutturaAttiva");
+    if (strutturaId) {
+      db.collection("strutture").doc(strutturaId).get().then(doc => {
+        if (doc.exists) {
+          document.getElementById("strutturaAttivaNome").textContent =
+            "📍 " + doc.data().nome;
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
