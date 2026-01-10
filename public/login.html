@@ -2,17 +2,18 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Login | Royal Booking</title>
+  <title>Login - Royal Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <script src="firebase.js"></script>
-  <script src="auth.js"></script>
+  <script src="app.js"></script>
 </head>
 
 <body class="login-page">
+
   <div class="login-container">
     <h2>Royal Booking</h2>
 
@@ -20,6 +21,9 @@
     <input id="password" type="password" placeholder="Password">
 
     <button onclick="loginUser()">Accedi</button>
+
+    <p id="loginError" class="error"></p>
   </div>
+
 </body>
 </html>
