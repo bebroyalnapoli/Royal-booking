@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Strutture - Royal Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -27,19 +27,16 @@
 
   <!-- Contenuto -->
   <main class="page-content">
-    <div class="page-header">
-      <h1>Strutture</h1>
-    </div>
+    <h1>Strutture</h1>
 
     <!-- Form nuova struttura -->
     <section class="card">
       <h2>Aggiungi struttura</h2>
 
-      <input
-        type="text"
-        id="nomeStruttura"
-        placeholder="Nome struttura"
-      />
+      <input id="sNome" type="text" placeholder="Nome struttura">
+      <input id="sIndirizzo" type="text" placeholder="Indirizzo">
+      <input id="sEmail" type="email" placeholder="Email">
+      <input id="sTelefono" type="text" placeholder="Telefono">
 
       <button onclick="addStruttura()">Salva struttura</button>
     </section>
@@ -51,17 +48,20 @@
     </section>
   </main>
 
-  <!-- App JS (UNICO FILE) -->
+  <!-- App JS -->
   <script src="app.js"></script>
 
-  <!-- Caricamento sidebar -->
+  <!-- Init -->
   <script>
+    checkAuth();
+
     fetch("sidebar.html")
-      .then(res => res.text())
+      .then(r => r.text())
       .then(html => {
         document.getElementById("sidebar-container").innerHTML = html;
         initSidebar();
-        initStrutture(); // aggiorna select in sidebar
+        initStrutture();
+        loadStruttureList();
       });
   </script>
 
