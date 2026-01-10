@@ -16,7 +16,7 @@ body {
 .login-container {
   background: #1f2937;
   padding: 30px;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 100%;
   max-width: 320px;
   color: white;
@@ -25,7 +25,7 @@ body {
 .login-container input,
 .login-container button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
 }
 
@@ -77,8 +77,8 @@ body {
 
 .struttura-select {
   width: 100%;
+  padding: 8px;
   margin-top: 10px;
-  padding: 6px;
 }
 
 .overlay {
@@ -95,10 +95,6 @@ body {
 /* CONTENT */
 .page-content {
   padding: 20px;
-}
-
-.page-header {
-  margin-bottom: 20px;
 }
 
 .dashboard-grid {
@@ -127,12 +123,10 @@ body {
   .sidebar {
     left: 0;
   }
-
   .menu-toggle,
   .overlay {
     display: none;
   }
-
   body {
     margin-left: 260px;
   }
