@@ -2,82 +2,55 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Dashboard - Royal Booking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="style.css">
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <script src="firebase.js"></script>
-  <script src="auth.js"></script>
+  <script src="app.js"></script>
 </head>
 
-<body onload="checkAuth()">
+<body onload="checkAuth();">
 
-  <div id="sidebar"></div>
+  <div id="sidebar-container"></div>
 
   <main class="page-content">
 
-    <!-- HEADER DASHBOARD -->
-    <div class="dashboard-header">
-      <h1 id="dashboardTitle">Dashboard</h1>
-      <p id="strutturaAttivaNome" class="struttura-label">—</p>
+    <header class="page-header">
+      <h1 id="strutturaTitle">Dashboard</h1>
+    </header>
+
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona una struttura dal menu
     </div>
 
-    <!-- CARDS -->
-    <div class="dash-grid">
+    <div class="dashboard-grid" id="dashboardGrid">
 
       <div class="dash-card">
-        <span class="icon">📅</span>
-        <div>
-          <h3>Oggi</h3>
-          <p>0 prenotazioni</p>
-        </div>
+        <h3>Prenotazioni</h3>
+        <p id="totPrenotazioni">0</p>
       </div>
 
       <div class="dash-card">
-        <span class="icon">🛏️</span>
-        <div>
-          <h3>Occupate</h3>
-          <p>0</p>
-        </div>
+        <h3>Check-in oggi</h3>
+        <p id="checkinOggi">0</p>
       </div>
 
       <div class="dash-card">
-        <span class="icon">🔓</span>
-        <div>
-          <h3>Libere</h3>
-          <p>0</p>
-        </div>
-      </div>
-
-      <div class="dash-card full">
-        <span class="icon">⏭️</span>
-        <div>
-          <h3>Prossimi check-in</h3>
-          <p>—</p>
-        </div>
+        <h3>Check-out oggi</h3>
+        <p id="checkoutOggi">0</p>
       </div>
 
     </div>
+
   </main>
 
-  <script src="app.js"></script>
-
   <script>
-    // Mostra nome struttura selezionata
-    const strutturaId = localStorage.getItem("strutturaAttiva");
-    if (strutturaId) {
-      db.collection("strutture").doc(strutturaId).get().then(doc => {
-        if (doc.exists) {
-          document.getElementById("strutturaAttivaNome").textContent =
-            "📍 " + doc.data().nome;
-        }
-      });
-    }
+    loadSidebar();
+    loadDashboard();
   </script>
 
 </body>
