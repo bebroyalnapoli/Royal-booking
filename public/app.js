@@ -1,4 +1,6 @@
-// FIREBASE CONFIG
+// ===============================
+// FIREBASE
+// ===============================
 firebase.initializeApp({
   apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
   authDomain: "royal-booking-e6050.firebaseapp.com",
@@ -7,16 +9,20 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
+// ===============================
 // AUTH
+// ===============================
 function loginUser() {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-  const error = document.getElementById("loginError");
+  const errorBox = document.getElementById("loginError");
 
-  error.textContent = "";
+  if (!emailInput || !passwordInput) return;
+
+  errorBox.textContent = "";
 
   if (!emailInput.value || !passwordInput.value) {
-    error.textContent = "Inserisci email e password";
+    errorBox.textContent = "Inserisci email e password";
     return;
   }
 
@@ -26,56 +32,89 @@ function loginUser() {
       window.location.href = "dashboard.html";
     })
     .catch(err => {
-      error.textContent = "Credenziali errate";
       console.error(err);
+      errorBox.textContent = "Credenziali errate";
     });
 }
 
 function checkAuth() {
   firebase.auth().onAuthStateChanged(user => {
-    if (!user) location.href = "login.html";
+    if (!user) {
+      window.location.href = "login.html";
+    }
   });
 }
 
 function logoutUser() {
-  firebase.auth().signOut().then(() => location.href = "login.html");
+  firebase.auth().signOut().then(() => {
+    window.location.href = "login.html";
+  });
 }
 
-// SIDEBAR
+// ===============================
+// SIDEBAR (DINAMICA)
+// ===============================
 function loadSidebar() {
   fetch("sidebar.html")
-    .then(r => r.text())
+    .then(res => res.text())
     .then(html => {
       document.getElementById("sidebar-container").innerHTML = html;
       initSidebar();
-      loadStrutture();
+      initStrutture();
     });
 }
 
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
-  const toggle = document.getElementById("menuToggle");
+  const toggleBtn = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  toggle.onclick = () => {
+  if (!sidebar || !toggleBtn || !overlay) return;
+
+  // Apri sidebar (mobile)
+  toggleBtn.onclick = () => {
     sidebar.classList.add("open");
     overlay.classList.add("show");
-    toggle.style.display = "none";
+    toggleBtn.style.display = "none"; // 🔴 FIX sovrapposizione
   };
 
-  overlay.onclick = close;
-
-  function close() {
+  // Chiudi sidebar
+  function closeSidebar() {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
-    toggle.style.display = "block";
+    toggleBtn.style.display = "block";
+  }
+
+  overlay.onclick = closeSidebar;
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeSidebar();
+  });
+
+  // Evidenzia pagina attiva
+  document.querySelectorAll(".sidebar-menu a").forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.onclick = logoutUser;
   }
 }
 
-// STRUTTURE
-function loadStrutture() {
+// ===============================
+// STRUTTURE (MULTI)
+// ===============================
+function initStrutture() {
   const select = document.getElementById("strutturaSelect");
+  if (!select) return;
+
   const attiva = localStorage.getItem("strutturaAttiva");
+
+  select.innerHTML = `<option value="">Seleziona struttura</option>`;
 
   db.collection("strutture").get().then(snap => {
     snap.forEach(doc => {
@@ -93,30 +132,45 @@ function loadStrutture() {
   };
 }
 
+// ===============================
 // DASHBOARD
+// ===============================
 function loadDashboard() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  const noStruttura = document.getElementById("noStruttura");
+  const grid = document.getElementById("dashboardGrid");
+  const title = document.getElementById("strutturaTitle");
+
   if (!strutturaId) {
-    document.getElementById("noStruttura").classList.remove("hidden");
-    document.getElementById("dashboardGrid").classList.add("hidden");
+    if (noStruttura) noStruttura.classList.remove("hidden");
+    if (grid) grid.classList.add("hidden");
     return;
   }
 
-  const oggi = new Date().toISOString().slice(0,10);
+  const oggi = new Date().toISOString().slice(0, 10);
+
+  db.collection("strutture").doc(strutturaId).get().then(doc => {
+    if (doc.exists && title) {
+      title.textContent = "🏨 " + doc.data().nome;
+    }
+  });
 
   db.collection("prenotazioni")
     .where("structureId", "==", strutturaId)
     .get()
     .then(snap => {
-      document.getElementById("totPrenotazioni").textContent = snap.size;
+      let checkin = 0;
+      let checkout = 0;
 
-      let ci = 0, co = 0;
       snap.forEach(d => {
-        if (d.data().checkin === oggi) ci++;
-        if (d.data().checkout === oggi) co++;
+        const p = d.data();
+        if (p.checkin === oggi) checkin++;
+        if (p.checkout === oggi) checkout++;
       });
 
-      document.getElementById("checkinOggi").textContent = ci;
-      document.getElementById("checkoutOggi").textContent = co;
+      document.getElementById("totPrenotazioni").textContent = snap.size;
+      document.getElementById("checkinOggi").textContent = checkin;
+      document.getElementById("checkoutOggi").textContent = checkout;
     });
 }
