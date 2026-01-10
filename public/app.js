@@ -9,13 +9,26 @@ const db = firebase.firestore();
 
 // AUTH
 function loginUser() {
-  const email = email.value;
-  const password = password.value;
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
   const error = document.getElementById("loginError");
 
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => location.href = "dashboard.html")
-    .catch(() => error.textContent = "Credenziali errate");
+  error.textContent = "";
+
+  if (!emailInput.value || !passwordInput.value) {
+    error.textContent = "Inserisci email e password";
+    return;
+  }
+
+  firebase.auth()
+    .signInWithEmailAndPassword(emailInput.value, passwordInput.value)
+    .then(() => {
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => {
+      error.textContent = "Credenziali errate";
+      console.error(err);
+    });
 }
 
 function checkAuth() {
