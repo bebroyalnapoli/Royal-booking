@@ -1,5 +1,5 @@
 /*************************
- * FIREBASE CONFIG
+ * FIREBASE
  *************************/
 firebase.initializeApp({
   apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
@@ -16,6 +16,14 @@ const db = firebase.firestore();
 /*************************
  * AUTH
  *************************/
+function checkAuth() {
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+}
+
 function loginUser() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -26,20 +34,8 @@ function loginUser() {
   }
 
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
-    .catch(() => {
-      alert("Credenziali non valide");
-    });
-}
-
-function checkAuth() {
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
-  });
+    .then(() => window.location.href = "dashboard.html")
+    .catch(() => alert("Credenziali non valide"));
 }
 
 function logoutUser() {
@@ -54,46 +50,85 @@ function logoutUser() {
  *************************/
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
-  const toggleBtn = document.getElementById("menuToggle");
+  const toggle = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
   const logoutBtn = document.getElementById("logoutBtn");
 
   if (!sidebar) return;
 
-  if (toggleBtn) {
-    toggleBtn.onclick = () => {
+  if (toggle) {
+    toggle.onclick = () => {
       sidebar.classList.add("open");
       overlay.classList.add("show");
-      toggleBtn.style.display = "none";
+      toggle.style.display = "none";
     };
   }
 
-  function closeSidebar() {
+  function close() {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
-    if (toggleBtn) toggleBtn.style.display = "block";
+    if (toggle) toggle.style.display = "block";
   }
 
-  if (overlay) overlay.onclick = closeSidebar;
+  if (overlay) overlay.onclick = close;
 
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeSidebar();
-  });
-
-  document.querySelectorAll(".sidebar-menu a").forEach(link => {
-    if (link.href === window.location.href) {
-      link.classList.add("active");
-    }
-  });
-
-  if (logoutBtn) {
-    logoutBtn.onclick = logoutUser;
-  }
+  if (logoutBtn) logoutBtn.onclick = logoutUser;
 }
 
 /*************************
  * STRUTTURE
  *************************/
+function addStruttura() {
+  const nome = document.getElementById("sNome").value.trim();
+  const indirizzo = document.getElementById("sIndirizzo").value.trim();
+  const email = document.getElementById("sEmail").value.trim();
+  const telefono = document.getElementById("sTelefono").value.trim();
+
+  if (!nome) return alert("Nome obbligatorio");
+
+  db.collection("strutture").add({
+    nome,
+    indirizzo,
+    email,
+    telefono,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    loadStruttureList();
+    initStrutture();
+  });
+}
+
+function loadStruttureList() {
+  const list = document.getElementById("listaStrutture");
+  if (!list) return;
+
+  list.innerHTML = "";
+  const attiva = localStorage.getItem("strutturaAttiva");
+
+  db.collection("strutture").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const li = document.createElement("li");
+      li.className = doc.id === attiva ? "active" : "";
+
+      li.innerHTML = `
+        <strong>${doc.data().nome}</strong><br>
+        <small>${doc.data().indirizzo || ""}</small><br>
+        <button onclick="setStrutturaAttiva('${doc.id}')">
+          Usa questa struttura
+        </button>
+      `;
+
+      list.appendChild(li);
+    });
+  });
+}
+
+function setStrutturaAttiva(id) {
+  localStorage.setItem("strutturaAttiva", id);
+  location.reload();
+}
+
 function initStrutture() {
   const select = document.getElementById("strutturaSelect");
   if (!select) return;
@@ -116,73 +151,3 @@ function initStrutture() {
     location.reload();
   };
 }
-
-function addStruttura() {
-  const nome = document.getElementById("nomeStruttura").value.trim();
-  if (!nome) return alert("Inserisci il nome");
-
-  db.collection("strutture").add({
-    nome,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    document.getElementById("nomeStruttura").value = "";
-    loadStruttureList();
-    initStrutture();
-  });
-}
-
-function loadStruttureList() {
-  const list = document.getElementById("listaStrutture");
-  if (!list) return;
-
-  list.innerHTML = "";
-
-  db.collection("strutture").get().then(snapshot => {
-    snapshot.forEach(doc => {
-      const li = document.createElement("li");
-      li.textContent = doc.data().nome;
-      list.appendChild(li);
-    });
-  });
-}
-
-/*************************
- * DASHBOARD
- *************************/
-function loadDashboard() {
-  const strutturaId = localStorage.getItem("strutturaAttiva");
-  if (!strutturaId) return;
-
-  // Prenotazioni
-  db.collection("prenotazioni")
-    .where("structureId", "==", strutturaId)
-    .get()
-    .then(snap => {
-      document.getElementById("totalBookings").textContent = snap.size;
-    });
-
-  // Stanze
-  db.collection("stanze")
-    .where("structureId", "==", strutturaId)
-    .get()
-    .then(snap => {
-      document.getElementById("totalRooms").textContent = snap.size;
-    });
-
-  // Strutture totali
-  db.collection("strutture").get().then(snap => {
-    const el = document.getElementById("totalStructures");
-    if (el) el.textContent = snap.size;
-  });
-}
-
-/*************************
- * AUTO INIT
- *************************/
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.body.dataset.auth === "true") {
-    checkAuth();
-  }
-
-  loadStruttureList();
-});
