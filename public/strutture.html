@@ -1,29 +1,69 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Strutture - Royal Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Royal Booking">
+
   <link rel="stylesheet" href="style.css">
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="auth.js"></script>
 </head>
 
-<body onload="loadStructures()">
+<body>
 
-  <?php include 'sidebar.html'; ?>
+  <!-- Sidebar -->
+  <div id="sidebar-container"></div>
 
-  <div class="page-content" id="pageContent">
+  <!-- Contenuto -->
+  <main class="page-content">
     <div class="page-header">
       <h1>Strutture</h1>
     </div>
 
-    <div id="structuresList"></div>
-  </div>
+    <!-- Form nuova struttura -->
+    <section class="card">
+      <h2>Aggiungi struttura</h2>
 
-  <script src="script.js"></script>
+      <input
+        type="text"
+        id="nomeStruttura"
+        placeholder="Nome struttura"
+      />
+
+      <button onclick="addStruttura()">Salva struttura</button>
+    </section>
+
+    <!-- Lista strutture -->
+    <section class="card">
+      <h2>Elenco strutture</h2>
+      <ul id="listaStrutture" class="list"></ul>
+    </section>
+  </main>
+
+  <!-- App JS (UNICO FILE) -->
+  <script src="app.js"></script>
+
+  <!-- Caricamento sidebar -->
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        initSidebar();
+        initStrutture(); // aggiorna select in sidebar
+      });
+  </script>
+
 </body>
 </html>
