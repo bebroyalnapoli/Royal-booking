@@ -1,5 +1,5 @@
 // ===============================
-// FIREBASE INIT
+// FIREBASE INIT (UNA SOLA VOLTA)
 // ===============================
 if (!firebase.apps.length) {
   firebase.initializeApp({
@@ -17,29 +17,33 @@ const db = firebase.firestore();
 // ===============================
 function checkAuth() {
   auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "login.html";
+    if (!user) {
+      window.location.href = "login.html";
+    }
   });
 }
 
 function loginUser() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value.trim();
   const errorBox = document.getElementById("loginError");
 
-  errorBox.textContent = "";
-
   if (!email || !password) {
-    errorBox.textContent = "Inserisci email e password";
+    if (errorBox) errorBox.textContent = "Inserisci email e password";
     return;
   }
 
   auth.signInWithEmailAndPassword(email, password)
     .then(() => window.location.href = "dashboard.html")
-    .catch(() => errorBox.textContent = "Credenziali non valide");
+    .catch(() => {
+      if (errorBox) errorBox.textContent = "Credenziali non valide";
+    });
 }
 
 function logoutUser() {
-  auth.signOut().then(() => window.location.href = "login.html");
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
 }
 
 // ===============================
@@ -50,7 +54,8 @@ function loadSidebar() {
     .then(res => res.text())
     .then(html => {
       document.getElementById("sidebar-container").innerHTML = html;
-      initSidebar(); // 🔥 IMPORTANTISSIMO
+      initSidebar();
+      initStruttureSelect();
     });
 }
 
@@ -62,20 +67,132 @@ function initSidebar() {
 
   if (!sidebar || !toggle || !overlay) return;
 
-  // APRI
   toggle.onclick = () => {
     sidebar.classList.add("open");
     overlay.classList.add("show");
     toggle.style.display = "none";
   };
 
-  // CHIUDI
   overlay.onclick = () => {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
     toggle.style.display = "block";
   };
 
-  // LOGOUT
-  logoutBtn.onclick = logoutUser;
+  if (logoutBtn) logoutBtn.onclick = logoutUser;
+}
+
+function initStruttureSelect() {
+  const select = document.getElementById("strutturaSelect");
+  if (!select) return;
+
+  const attiva = localStorage.getItem("strutturaAttiva");
+
+  select.innerHTML = `<option value="">Seleziona struttura</option>`;
+
+  db.collection("strutture").get().then(snap => {
+    snap.forEach(doc => {
+      const opt = document.createElement("option");
+      opt.value = doc.id;
+      opt.textContent = doc.data().nome;
+      if (doc.id === attiva) opt.selected = true;
+      select.appendChild(opt);
+    });
+  });
+
+  select.onchange = () => {
+    localStorage.setItem("strutturaAttiva", select.value);
+    location.reload();
+  };
+}
+
+// ===============================
+// STRUTTURE
+// ===============================
+function addStruttura() {
+  const nome = document.getElementById("sNome").value.trim();
+  const indirizzo = document.getElementById("sIndirizzo").value.trim();
+  const email = document.getElementById("sEmail").value.trim();
+  const telefono = document.getElementById("sTelefono").value.trim();
+
+  if (!nome || !indirizzo) {
+    alert("Nome e indirizzo obbligatori");
+    return;
+  }
+
+  db.collection("strutture").add({
+    nome,
+    indirizzo,
+    email,
+    telefono,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    document.getElementById("sNome").value = "";
+    document.getElementById("sIndirizzo").value = "";
+    document.getElementById("sEmail").value = "";
+    document.getElementById("sTelefono").value = "";
+    loadStruttureList();
+  });
+}
+
+function loadStruttureList() {
+  const list = document.getElementById("listaStrutture");
+  if (!list) return;
+
+  const attiva = localStorage.getItem("strutturaAttiva");
+  list.innerHTML = "";
+
+  db.collection("strutture").orderBy("createdAt", "desc").get().then(snap => {
+    snap.forEach(doc => {
+      const d = doc.data();
+      const li = document.createElement("li");
+      li.className = "list-item";
+      if (doc.id === attiva) li.classList.add("active");
+
+      li.innerHTML = `
+        <strong>${d.nome}</strong><br>
+        ${d.indirizzo}<br>
+        <button onclick="setStrutturaAttiva('${doc.id}')">
+          ${doc.id === attiva ? "✔ Attiva" : "Usa questa struttura"}
+        </button>
+      `;
+
+      list.appendChild(li);
+    });
+  });
+}
+
+function setStrutturaAttiva(id) {
+  localStorage.setItem("strutturaAttiva", id);
+  location.reload();
+}
+
+// ===============================
+// DASHBOARD (BASE)
+// ===============================
+function loadDashboard() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  const title = document.getElementById("strutturaTitle");
+  const warning = document.getElementById("noStruttura");
+  const grid = document.getElementById("dashboardGrid");
+
+  if (!strutturaId) {
+    if (warning) warning.classList.remove("hidden");
+    if (grid) grid.classList.add("hidden");
+    return;
+  }
+
+  if (warning) warning.classList.add("hidden");
+  if (grid) grid.classList.remove("hidden");
+
+  db.collection("strutture").doc(strutturaId).get().then(doc => {
+    if (doc.exists && title) {
+      title.textContent = `Dashboard – ${doc.data().nome}`;
+    }
+  });
+
+  // Numeri placeholder (verranno reali con prenotazioni)
+  document.getElementById("totPrenotazioni").textContent = "0";
+  document.getElementById("checkinOggi").textContent = "0";
+  document.getElementById("checkoutOggi").textContent = "0";
 }
