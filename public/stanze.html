@@ -30,43 +30,42 @@
     <h1>Stanze</h1>
 
     <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona una struttura dal menu
+      ⚠️ Seleziona prima una struttura dal menu
     </div>
 
-    <!-- Form -->
-    <section id="stanzeBox" class="card hidden">
-      <h2>Aggiungi stanza</h2>
+    <section id="stanzeContent" class="hidden">
 
-      <input id="roomNome" type="text" placeholder="Nome stanza">
-      
-      <select id="roomTipo">
-        <option value="">Tipologia</option>
-        <option>Singola</option>
-        <option>Doppia</option>
-        <option>Tripla</option>
-        <option>Quadrupla</option>
-      </select>
+      <!-- Aggiungi stanza -->
+      <section class="card">
+        <h2>Aggiungi stanza</h2>
+        <input id="nomeStanza" type="text" placeholder="Nome stanza">
+        <button onclick="addStanza()">Salva stanza</button>
+      </section>
 
-      <textarea id="roomNote" placeholder="Note (opzionale)"></textarea>
+      <!-- Elenco stanze -->
+      <section class="card">
+        <h2>Elenco stanze</h2>
+        <ul id="listaStanze" class="list"></ul>
+      </section>
 
-      <button onclick="addStanza()">Salva stanza</button>
-    </section>
-
-    <!-- Lista -->
-    <section id="listaBox" class="card hidden">
-      <h2>Elenco stanze</h2>
-      <ul id="listaStanze" class="list"></ul>
     </section>
   </main>
 
-  <!-- App -->
+  <!-- App JS -->
   <script src="app.js"></script>
 
   <!-- Init -->
   <script>
     checkAuth();
-    loadSidebar();
-    loadStanze();
+
+    fetch("sidebar.html")
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        initSidebar();
+        initStrutture();
+        loadStanze();
+      });
   </script>
 
 </body>
