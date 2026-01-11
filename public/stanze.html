@@ -37,10 +37,14 @@
 
       <!-- Aggiungi stanza -->
       <section class="card">
-        <h2>Aggiungi stanza</h2>
-        <input id="stanzaNome" type="text" placeholder="Nome stanza">
-        <button onclick="addStanza()">Salva stanza</button>
-      </section>
+  <h2>Aggiungi stanza</h2>
+
+  <input id="stanzaNumero" type="text" placeholder="Numero stanza">
+  <input id="stanzaDescrizione" type="text" placeholder="Descrizione">
+  <input id="stanzaOspiti" type="number" placeholder="Numero ospiti" min="1">
+
+  <button onclick="addStanza()">Salva stanza</button>
+</section>
 
       <!-- Elenco stanze -->
       <section class="card">
