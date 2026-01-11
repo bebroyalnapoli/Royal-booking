@@ -171,26 +171,37 @@ function setStrutturaAttiva(id) {
 // STANZE
 // ======================================
 function addStanza() {
-  const nome = document.getElementById("stanzaNome").value.trim();
+  const numero = document.getElementById("stanzaNumero").value.trim();
+  const descrizione = document.getElementById("stanzaDescrizione").value.trim();
+  const ospitiMax = parseInt(document.getElementById("stanzaOspiti").value);
   const strutturaId = localStorage.getItem("strutturaAttiva");
 
   if (!strutturaId) return alert("Seleziona una struttura");
-  if (!nome) return alert("Nome stanza obbligatorio");
+  if (!numero) return alert("Numero stanza obbligatorio");
+  if (!ospitiMax || ospitiMax < 1) return alert("Numero ospiti non valido");
 
   db.collection("stanze").add({
-    nome,
     strutturaId,
+    numeroCamera: numero,
+    descrizione,
+    ospitiMax,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => location.reload());
 }
 
 function loadStanze() {
   const ul = document.getElementById("listaStanze");
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  const warning = document.getElementById("noStruttura");
+
   if (!ul) return;
 
-  const strutturaId = localStorage.getItem("strutturaAttiva");
-  if (!strutturaId) return;
+  if (!strutturaId) {
+    if (warning) warning.classList.remove("hidden");
+    return;
+  }
 
+  if (warning) warning.classList.add("hidden");
   ul.innerHTML = "";
 
   db.collection("stanze")
@@ -198,13 +209,15 @@ function loadStanze() {
     .get()
     .then(snap => {
       snap.forEach(doc => {
+        const s = doc.data();
         const li = document.createElement("li");
-        li.textContent = doc.data().nome;
+        li.className = "list-item";
+        li.textContent =
+          `${s.numeroCamera} – ${s.descrizione || "—"} (${s.ospitiMax} ospiti)`;
         ul.appendChild(li);
       });
     });
 }
-
 // ======================================
 // DASHBOARD
 // ======================================
