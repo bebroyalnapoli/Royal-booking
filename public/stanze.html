@@ -33,12 +33,12 @@
       ⚠️ Seleziona prima una struttura dal menu
     </div>
 
-    <section id="stanzeContent" class="hidden">
+    <section id="stanzeContent">
 
       <!-- Aggiungi stanza -->
       <section class="card">
         <h2>Aggiungi stanza</h2>
-        <input id="nomeStanza" type="text" placeholder="Nome stanza">
+        <input id="stanzaNome" type="text" placeholder="Nome stanza">
         <button onclick="addStanza()">Salva stanza</button>
       </section>
 
@@ -51,21 +51,14 @@
     </section>
   </main>
 
-  <!-- App JS -->
+  <!-- App -->
   <script src="app.js"></script>
 
   <!-- Init -->
   <script>
     checkAuth();
-
-    fetch("sidebar.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("sidebar-container").innerHTML = html;
-        initSidebar();
-        initStrutture();
-        loadStanze();
-      });
+    loadSidebar();
+    loadStanze();
   </script>
 
 </body>
