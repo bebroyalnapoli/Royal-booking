@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Stanze - Royal Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <script src="app.js"></script>
+</head>
+
+<body onload="checkAuth(); loadSidebar(); loadStanze();">
+
+  <div id="sidebar-container"></div>
+
+  <main class="page-content">
+
+    <h1 id="pageTitle">Stanze</h1>
+
+    <!-- BLOCCO SE NESSUNA STRUTTURA -->
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona prima una struttura dal menu
+    </div>
+
+    <!-- CONTENUTO STANZE -->
+    <section id="stanzeSection" class="hidden">
+
+      <form id="stanzaForm" class="card">
+        <h3>Nuova stanza</h3>
+
+        <input type="text" id="nomeStanza" placeholder="Nome stanza" required>
+        <input type="number" id="postiLetto" placeholder="Posti letto" min="1" required>
+        <input type="number" id="prezzo" placeholder="Prezzo per notte (€)" min="0" required>
+
+        <button type="submit">➕ Aggiungi stanza</button>
+      </form>
+
+      <div id="stanzeList" class="list"></div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
