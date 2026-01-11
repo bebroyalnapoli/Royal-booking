@@ -49,23 +49,14 @@
     </div>
   </main>
 
-  <!-- App JS -->
+  <!-- App -->
   <script src="app.js"></script>
 
-  <!-- Init -->
+  <!-- Init pagina -->
   <script>
     checkAuth();
-
-    fetch("sidebar.html")
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById("sidebar-container").innerHTML = html;
-
-        // 🔥 QUESTE DUE RIGHE SONO FONDAMENTALI
-        initSidebar();
-        initStrutture();
-        loadDashboard();
-      });
+    loadSidebar();
+    loadDashboard();
   </script>
 
 </body>
