@@ -48,21 +48,14 @@
     </section>
   </main>
 
-  <!-- App JS -->
+  <!-- App -->
   <script src="app.js"></script>
 
-  <!-- Init -->
+  <!-- Init pagina -->
   <script>
     checkAuth();
-
-    fetch("sidebar.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("sidebar-container").innerHTML = html;
-        initSidebar();
-        initStrutture();
-        loadStruttureList();
-      });
+    loadSidebar();
+    loadStruttureList();
   </script>
 
 </body>
