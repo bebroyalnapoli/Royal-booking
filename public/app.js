@@ -1,6 +1,6 @@
-/*************************
- * FIREBASE
- *************************/
+// ===============================
+// FIREBASE CONFIG
+// ===============================
 firebase.initializeApp({
   apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
   authDomain: "royal-booking-e6050.firebaseapp.com",
@@ -13,48 +13,38 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/*************************
- * AUTH
- *************************/
+// ===============================
+// AUTH
+// ===============================
 function checkAuth() {
   auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
+    if (!user) window.location.href = "login.html";
   });
-}
-
-function loginUser() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!email || !password) {
-    alert("Inserisci email e password");
-    return;
-  }
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => window.location.href = "dashboard.html")
-    .catch(() => alert("Credenziali non valide"));
 }
 
 function logoutUser() {
   auth.signOut().then(() => {
-    localStorage.removeItem("strutturaAttiva");
     window.location.href = "login.html";
   });
 }
 
-/*************************
- * SIDEBAR
- *************************/
+// ===============================
+// SIDEBAR
+// ===============================
+function loadSidebar() {
+  fetch("sidebar.html")
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById("sidebar-container").innerHTML = html;
+      initSidebar();
+    });
+}
+
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
   const logoutBtn = document.getElementById("logoutBtn");
-
-  if (!sidebar) return;
 
   if (toggle) {
     toggle.onclick = () => {
@@ -64,80 +54,26 @@ function initSidebar() {
     };
   }
 
-  function close() {
+  overlay.onclick = () => {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
-    if (toggle) toggle.style.display = "block";
-  }
+    toggle.style.display = "block";
+  };
 
-  if (overlay) overlay.onclick = close;
+  logoutBtn.onclick = logoutUser;
 
-  if (logoutBtn) logoutBtn.onclick = logoutUser;
+  initStruttureSelect();
 }
 
-/*************************
- * STRUTTURE
- *************************/
-function addStruttura() {
-  const nome = document.getElementById("sNome").value.trim();
-  const indirizzo = document.getElementById("sIndirizzo").value.trim();
-  const email = document.getElementById("sEmail").value.trim();
-  const telefono = document.getElementById("sTelefono").value.trim();
-
-  if (!nome) return alert("Nome obbligatorio");
-
-  db.collection("strutture").add({
-    nome,
-    indirizzo,
-    email,
-    telefono,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    document.querySelectorAll("input").forEach(i => i.value = "");
-    loadStruttureList();
-    initStrutture();
-  });
-}
-
-function loadStruttureList() {
-  const list = document.getElementById("listaStrutture");
-  if (!list) return;
-
-  list.innerHTML = "";
-  const attiva = localStorage.getItem("strutturaAttiva");
-
-  db.collection("strutture").get().then(snapshot => {
-    snapshot.forEach(doc => {
-      const li = document.createElement("li");
-      li.className = doc.id === attiva ? "active" : "";
-
-      li.innerHTML = `
-        <strong>${doc.data().nome}</strong><br>
-        <small>${doc.data().indirizzo || ""}</small><br>
-        <button onclick="setStrutturaAttiva('${doc.id}')">
-          Usa questa struttura
-        </button>
-      `;
-
-      list.appendChild(li);
-    });
-  });
-}
-
-function setStrutturaAttiva(id) {
-  localStorage.setItem("strutturaAttiva", id);
-  location.reload();
-}
-
-function initStrutture() {
+function initStruttureSelect() {
   const select = document.getElementById("strutturaSelect");
   if (!select) return;
 
-  select.innerHTML = `<option value="">Seleziona struttura</option>`;
   const attiva = localStorage.getItem("strutturaAttiva");
 
-  db.collection("strutture").get().then(snapshot => {
-    snapshot.forEach(doc => {
+  db.collection("strutture").get().then(snap => {
+    select.innerHTML = `<option value="">Seleziona struttura</option>`;
+    snap.forEach(doc => {
       const opt = document.createElement("option");
       opt.value = doc.id;
       opt.textContent = doc.data().nome;
@@ -149,5 +85,65 @@ function initStrutture() {
   select.onchange = () => {
     localStorage.setItem("strutturaAttiva", select.value);
     location.reload();
+  };
+}
+
+// ===============================
+// STANZE
+// ===============================
+function loadStanze() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  const noStruttura = document.getElementById("noStruttura");
+  const section = document.getElementById("stanzeSection");
+
+  if (!strutturaId) {
+    noStruttura.classList.remove("hidden");
+    section.classList.add("hidden");
+    return;
+  }
+
+  noStruttura.classList.add("hidden");
+  section.classList.remove("hidden");
+
+  const list = document.getElementById("stanzeList");
+  list.innerHTML = "";
+
+  db.collection("stanze")
+    .where("strutturaId", "==", strutturaId)
+    .get()
+    .then(snap => {
+      snap.forEach(doc => {
+        const d = doc.data();
+        list.innerHTML += `
+          <div class="list-item">
+            <strong>${d.nome}</strong><br>
+            🛏️ ${d.postiLetto} posti — €${d.prezzo}/notte
+          </div>
+        `;
+      });
+    });
+
+  document.getElementById("stanzaForm").onsubmit = e => {
+    e.preventDefault();
+
+    const nome = nomeStanza.value.trim();
+    const posti = Number(postiLetto.value);
+    const prezzo = Number(prezzo.value);
+
+    if (!nome || posti < 1) return;
+
+    db.collection("stanze").add({
+      nome,
+      postiLetto: posti,
+      prezzo,
+      strutturaId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      nomeStanza.value = "";
+      postiLetto.value = "";
+      prezzo.value = "";
+      loadStanze();
+    });
   };
 }
