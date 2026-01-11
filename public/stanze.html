@@ -5,8 +5,12 @@
   <title>Stanze - Royal Booking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Royal Booking">
 
   <link rel="stylesheet" href="style.css">
 
@@ -14,41 +18,56 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <script src="app.js"></script>
 </head>
 
-<body onload="checkAuth(); loadSidebar(); loadStanze();">
+<body>
 
+  <!-- Sidebar -->
   <div id="sidebar-container"></div>
 
+  <!-- Contenuto -->
   <main class="page-content">
+    <h1>Stanze</h1>
 
-    <h1 id="pageTitle">Stanze</h1>
-
-    <!-- BLOCCO SE NESSUNA STRUTTURA -->
     <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona prima una struttura dal menu
+      ⚠️ Seleziona una struttura dal menu
     </div>
 
-    <!-- CONTENUTO STANZE -->
-    <section id="stanzeSection" class="hidden">
+    <!-- Form -->
+    <section id="stanzeBox" class="card hidden">
+      <h2>Aggiungi stanza</h2>
 
-      <form id="stanzaForm" class="card">
-        <h3>Nuova stanza</h3>
+      <input id="roomNome" type="text" placeholder="Nome stanza">
+      
+      <select id="roomTipo">
+        <option value="">Tipologia</option>
+        <option>Singola</option>
+        <option>Doppia</option>
+        <option>Tripla</option>
+        <option>Quadrupla</option>
+      </select>
 
-        <input type="text" id="nomeStanza" placeholder="Nome stanza" required>
-        <input type="number" id="postiLetto" placeholder="Posti letto" min="1" required>
-        <input type="number" id="prezzo" placeholder="Prezzo per notte (€)" min="0" required>
+      <textarea id="roomNote" placeholder="Note (opzionale)"></textarea>
 
-        <button type="submit">➕ Aggiungi stanza</button>
-      </form>
-
-      <div id="stanzeList" class="list"></div>
-
+      <button onclick="addStanza()">Salva stanza</button>
     </section>
 
+    <!-- Lista -->
+    <section id="listaBox" class="card hidden">
+      <h2>Elenco stanze</h2>
+      <ul id="listaStanze" class="list"></ul>
+    </section>
   </main>
+
+  <!-- App -->
+  <script src="app.js"></script>
+
+  <!-- Init -->
+  <script>
+    checkAuth();
+    loadSidebar();
+    loadStanze();
+  </script>
 
 </body>
 </html>
