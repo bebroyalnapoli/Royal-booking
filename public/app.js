@@ -1,5 +1,5 @@
 // ===============================
-// FIREBASE INIT (UNA SOLA VOLTA)
+// FIREBASE INIT
 // ===============================
 if (!firebase.apps.length) {
   firebase.initializeApp({
@@ -10,10 +10,17 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 // ===============================
-// LOGIN
+// AUTH
 // ===============================
+function checkAuth() {
+  auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "login.html";
+  });
+}
+
 function loginUser() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -27,30 +34,48 @@ function loginUser() {
   }
 
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
-    .catch(err => {
-      errorBox.textContent = "Credenziali non valide";
+    .then(() => window.location.href = "dashboard.html")
+    .catch(() => errorBox.textContent = "Credenziali non valide");
+}
+
+function logoutUser() {
+  auth.signOut().then(() => window.location.href = "login.html");
+}
+
+// ===============================
+// SIDEBAR
+// ===============================
+function loadSidebar() {
+  fetch("sidebar.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("sidebar-container").innerHTML = html;
+      initSidebar(); // 🔥 IMPORTANTISSIMO
     });
 }
 
-// ===============================
-// PROTEZIONE PAGINE
-// ===============================
-function checkAuth() {
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
-  });
-}
+function initSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const toggle = document.getElementById("menuToggle");
+  const overlay = document.getElementById("overlay");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-// ===============================
-// LOGOUT
-// ===============================
-function logoutUser() {
-  auth.signOut().then(() => {
-    window.location.href = "login.html";
-  });
+  if (!sidebar || !toggle || !overlay) return;
+
+  // APRI
+  toggle.onclick = () => {
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
+    toggle.style.display = "none";
+  };
+
+  // CHIUDI
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+    toggle.style.display = "block";
+  };
+
+  // LOGOUT
+  logoutBtn.onclick = logoutUser;
 }
