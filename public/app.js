@@ -1,6 +1,6 @@
-// ===============================
-// FIREBASE INIT
-// ===============================
+// ======================================
+// FIREBASE INIT (SAFE)
+// ======================================
 if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: "AIzaSyDVmp6c4_9gg_nyIvkLPvy9BE4U5DlDP2w",
@@ -12,31 +12,49 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ===============================
+// ======================================
 // AUTH
-// ===============================
+// ======================================
+function loginUser() {
+  const emailEl = document.getElementById("email");
+  const passEl = document.getElementById("password");
+  const errorEl = document.getElementById("loginError");
+
+  if (!emailEl || !passEl) return;
+
+  const email = emailEl.value.trim();
+  const password = passEl.value.trim();
+
+  if (!email || !password) {
+    if (errorEl) errorEl.textContent = "Inserisci email e password";
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      window.location.href = "dashboard.html";
+    })
+    .catch(() => {
+      if (errorEl) errorEl.textContent = "Credenziali non valide";
+    });
+}
+
 function checkAuth() {
   auth.onAuthStateChanged(user => {
     if (!user) window.location.href = "login.html";
   });
 }
 
-function loginUser() {
-  const email = email?.value || document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => location.href = "dashboard.html")
-    .catch(() => alert("Credenziali errate"));
-}
-
 function logoutUser() {
-  auth.signOut().then(() => location.href = "login.html");
+  auth.signOut().then(() => {
+    localStorage.removeItem("strutturaAttiva");
+    window.location.href = "login.html";
+  });
 }
 
-// ===============================
+// ======================================
 // SIDEBAR
-// ===============================
+// ======================================
 function loadSidebar() {
   fetch("sidebar.html")
     .then(r => r.text())
@@ -51,22 +69,36 @@ function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  toggle.onclick = () => {
-    sidebar.classList.add("open");
-    overlay.classList.add("show");
-    toggle.style.display = "none";
-  };
+  if (toggle) {
+    toggle.onclick = () => {
+      sidebar.classList.add("open");
+      overlay.classList.add("show");
+    };
+  }
 
-  overlay.onclick = () => {
+  function close() {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
-    toggle.style.display = "block";
-  };
+  }
 
-  document.getElementById("logoutBtn").onclick = logoutUser;
+  if (overlay) overlay.onclick = close;
+
+  if (logoutBtn) logoutBtn.onclick = logoutUser;
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") close();
+  });
+
+  document.querySelectorAll(".sidebar-menu a").forEach(a => {
+    if (a.href === window.location.href) a.classList.add("active");
+  });
 }
 
+// ======================================
+// STRUTTURA ATTIVA
+// ======================================
 function initStruttureSelect() {
   const select = document.getElementById("strutturaSelect");
   if (!select) return;
@@ -90,72 +122,115 @@ function initStruttureSelect() {
   };
 }
 
-// ===============================
+// ======================================
+// STRUTTURE (CRUD)
+// ======================================
+function addStruttura() {
+  const nome = document.getElementById("sNome").value.trim();
+  const indirizzo = document.getElementById("sIndirizzo").value.trim();
+  const email = document.getElementById("sEmail").value.trim();
+  const telefono = document.getElementById("sTelefono").value.trim();
+
+  if (!nome) return alert("Nome obbligatorio");
+
+  db.collection("strutture").add({
+    nome, indirizzo, email, telefono,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    location.reload();
+  });
+}
+
+function loadStruttureList() {
+  const ul = document.getElementById("listaStrutture");
+  if (!ul) return;
+
+  const attiva = localStorage.getItem("strutturaAttiva");
+  ul.innerHTML = "";
+
+  db.collection("strutture").get().then(snap => {
+    snap.forEach(doc => {
+      const li = document.createElement("li");
+      li.className = "list-item";
+      li.innerHTML = `
+        <strong>${doc.data().nome}</strong>
+        ${doc.id === attiva ? " ✅" : ""}
+        <button onclick="setStrutturaAttiva('${doc.id}')">Usa</button>
+      `;
+      ul.appendChild(li);
+    });
+  });
+}
+
+function setStrutturaAttiva(id) {
+  localStorage.setItem("strutturaAttiva", id);
+  location.reload();
+}
+
+// ======================================
 // STANZE
-// ===============================
-function loadStanze() {
+// ======================================
+function addStanza() {
+  const nome = document.getElementById("stanzaNome").value.trim();
   const strutturaId = localStorage.getItem("strutturaAttiva");
-  const warn = document.getElementById("noStruttura");
-  const box = document.getElementById("stanzeBox");
-  const listBox = document.getElementById("listaBox");
 
-  if (!strutturaId) {
-    warn.classList.remove("hidden");
-    return;
-  }
+  if (!strutturaId) return alert("Seleziona una struttura");
+  if (!nome) return alert("Nome stanza obbligatorio");
 
-  warn.classList.add("hidden");
-  box.classList.remove("hidden");
-  listBox.classList.remove("hidden");
+  db.collection("stanze").add({
+    nome,
+    strutturaId,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => location.reload());
+}
 
-  const list = document.getElementById("listaStanze");
-  list.innerHTML = "";
+function loadStanze() {
+  const ul = document.getElementById("listaStanze");
+  if (!ul) return;
 
-  db.collection("strutture")
-    .doc(strutturaId)
-    .collection("stanze")
-    .orderBy("nome")
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  if (!strutturaId) return;
+
+  ul.innerHTML = "";
+
+  db.collection("stanze")
+    .where("strutturaId", "==", strutturaId)
     .get()
     .then(snap => {
       snap.forEach(doc => {
-        const s = doc.data();
         const li = document.createElement("li");
-        li.className = "list-item";
-        li.innerHTML = `
-          <strong>${s.nome}</strong> (${s.tipo || "-"})<br>
-          <small>${s.note || ""}</small>
-        `;
-        list.appendChild(li);
+        li.textContent = doc.data().nome;
+        ul.appendChild(li);
       });
     });
 }
 
-function addStanza() {
+// ======================================
+// DASHBOARD
+// ======================================
+function loadDashboard() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
-  if (!strutturaId) return;
+  const warning = document.getElementById("noStruttura");
+  const grid = document.getElementById("dashboardGrid");
+  const title = document.getElementById("strutturaTitle");
 
-  const nome = document.getElementById("roomNome").value.trim();
-  const tipo = document.getElementById("roomTipo").value;
-  const note = document.getElementById("roomNote").value.trim();
-
-  if (!nome) {
-    alert("Nome stanza obbligatorio");
+  if (!strutturaId) {
+    if (warning) warning.classList.remove("hidden");
+    if (grid) grid.style.display = "none";
     return;
   }
 
-  db.collection("strutture")
-    .doc(strutturaId)
-    .collection("stanze")
-    .add({
-      nome,
-      tipo,
-      note,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-      document.getElementById("roomNome").value = "";
-      document.getElementById("roomTipo").value = "";
-      document.getElementById("roomNote").value = "";
-      loadStanze();
+  if (warning) warning.classList.add("hidden");
+  if (grid) grid.style.display = "grid";
+
+  db.collection("strutture").doc(strutturaId).get().then(doc => {
+    if (doc.exists && title) title.textContent = doc.data().nome;
+  });
+
+  db.collection("prenotazioni")
+    .where("strutturaId", "==", strutturaId)
+    .get()
+    .then(snap => {
+      document.getElementById("totPrenotazioni").textContent = snap.size;
     });
 }
