@@ -5,8 +5,12 @@
   <title>Prenotazioni - Royal Booking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Royal Booking">
 
   <link rel="stylesheet" href="style.css">
 
@@ -18,6 +22,7 @@
 
 <body>
 
+  <!-- Sidebar -->
   <div id="sidebar-container"></div>
 
   <main class="page-content">
@@ -29,33 +34,39 @@
 
     <section id="prenotazioniContent" class="hidden">
 
-      <!-- Nuova prenotazione -->
+      <!-- DATI CLIENTE -->
       <section class="card">
-        <h2>Nuova prenotazione</h2>
-
+        <h2>Dati cliente</h2>
         <input id="clienteNome" type="text" placeholder="Nome cliente">
+        <input id="clienteTelefono" type="text" placeholder="Telefono">
+      </section>
+
+      <!-- DATE -->
+      <section class="card">
+        <h2>Date</h2>
         <input id="checkin" type="date">
         <input id="checkout" type="date">
-
-        <h3>Stanze</h3>
-        <div id="stanzePrenotazione"></div>
-
-        <input id="acconto" type="number" placeholder="Acconto" value="0">
-
-        <p><strong>Totale: € <span id="totale">0</span></strong></p>
-
-        <button onclick="salvaPrenotazione()">Salva prenotazione</button>
       </section>
 
-      <!-- Elenco -->
+      <!-- STANZE -->
       <section class="card">
-        <h2>Elenco prenotazioni</h2>
-        <ul id="listaPrenotazioni" class="list"></ul>
+        <h2>Stanze</h2>
+        <div id="listaStanzePrenotazione"></div>
       </section>
+
+      <!-- PAGAMENTI -->
+      <section class="card">
+        <h2>Pagamento</h2>
+        <input id="acconto" type="number" placeholder="Acconto">
+        <p><strong>Totale:</strong> € <span id="totale">0</span></p>
+      </section>
+
+      <button onclick="salvaPrenotazione()">💾 Salva prenotazione</button>
 
     </section>
   </main>
 
+  <!-- App JS -->
   <script src="app.js"></script>
 
   <script>
@@ -67,8 +78,7 @@
         document.getElementById("sidebar-container").innerHTML = html;
         initSidebar();
         initStruttureSelect();
-        loadPrenotazioni();
-        loadStanzePerPrenotazione();
+        initPrenotazioni();
       });
   </script>
 
