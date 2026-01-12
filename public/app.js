@@ -12,71 +12,52 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ======================================
-// AUTH
-// ======================================
+/* ======================================
+   AUTH
+====================================== */
 function loginUser() {
-  const emailEl = document.getElementById("email");
-  const passEl = document.getElementById("password");
-  const errorEl = document.getElementById("loginError");
-
-  if (!emailEl || !passEl) return;
-
-  const email = emailEl.value.trim();
-  const password = passEl.value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const err = document.getElementById("loginError");
 
   if (!email || !password) {
-    if (errorEl) errorEl.textContent = "Inserisci email e password";
+    if (err) err.textContent = "Inserisci email e password";
     return;
   }
 
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      window.location.href = "dashboard.html";
-    })
+    .then(() => location.href = "dashboard.html")
     .catch(() => {
-      if (errorEl) errorEl.textContent = "Credenziali non valide";
+      if (err) err.textContent = "Credenziali non valide";
     });
 }
 
 function checkAuth() {
   auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "login.html";
+    if (!user) location.href = "login.html";
   });
 }
 
 function logoutUser() {
   auth.signOut().then(() => {
     localStorage.removeItem("strutturaAttiva");
-    window.location.href = "login.html";
+    location.href = "login.html";
   });
 }
 
-// ======================================
-// SIDEBAR
-// ======================================
-function loadSidebar() {
-  fetch("sidebar.html")
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById("sidebar-container").innerHTML = html;
-      initSidebar();
-      initStruttureSelect();
-    });
-}
-
+/* ======================================
+   SIDEBAR
+====================================== */
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("menuToggle");
   const overlay = document.getElementById("overlay");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  if (toggle) {
-    toggle.onclick = () => {
-      sidebar.classList.add("open");
-      overlay.classList.add("show");
-    };
-  }
+  if (toggle) toggle.onclick = () => {
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
+  };
 
   function close() {
     sidebar.classList.remove("open");
@@ -84,7 +65,6 @@ function initSidebar() {
   }
 
   if (overlay) overlay.onclick = close;
-
   if (logoutBtn) logoutBtn.onclick = logoutUser;
 
   document.addEventListener("keydown", e => {
@@ -92,13 +72,13 @@ function initSidebar() {
   });
 
   document.querySelectorAll(".sidebar-menu a").forEach(a => {
-    if (a.href === window.location.href) a.classList.add("active");
+    if (a.href === location.href) a.classList.add("active");
   });
 }
 
-// ======================================
-// STRUTTURA ATTIVA
-// ======================================
+/* ======================================
+   STRUTTURA ATTIVA
+====================================== */
 function initStruttureSelect() {
   const select = document.getElementById("strutturaSelect");
   if (!select) return;
@@ -108,11 +88,11 @@ function initStruttureSelect() {
 
   db.collection("strutture").get().then(snap => {
     snap.forEach(doc => {
-      const opt = document.createElement("option");
-      opt.value = doc.id;
-      opt.textContent = doc.data().nome;
-      if (doc.id === attiva) opt.selected = true;
-      select.appendChild(opt);
+      const o = document.createElement("option");
+      o.value = doc.id;
+      o.textContent = doc.data().nome;
+      if (doc.id === attiva) o.selected = true;
+      select.appendChild(o);
     });
   });
 
@@ -122,23 +102,20 @@ function initStruttureSelect() {
   };
 }
 
-// ======================================
-// STRUTTURE (CRUD)
-// ======================================
+/* ======================================
+   STRUTTURE (CRUD)
+====================================== */
 function addStruttura() {
-  const nome = document.getElementById("sNome").value.trim();
-  const indirizzo = document.getElementById("sIndirizzo").value.trim();
-  const email = document.getElementById("sEmail").value.trim();
-  const telefono = document.getElementById("sTelefono").value.trim();
-
+  const nome = sNome.value.trim();
   if (!nome) return alert("Nome obbligatorio");
 
   db.collection("strutture").add({
-    nome, indirizzo, email, telefono,
+    nome,
+    indirizzo: sIndirizzo.value.trim(),
+    email: sEmail.value.trim(),
+    telefono: sTelefono.value.trim(),
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    location.reload();
-  });
+  }).then(() => location.reload());
 }
 
 function loadStruttureList() {
@@ -167,24 +144,18 @@ function setStrutturaAttiva(id) {
   location.reload();
 }
 
-// ======================================
-// STANZE
-// ======================================
+/* ======================================
+   STANZE (CRUD)
+====================================== */
 function addStanza() {
-  const numero = document.getElementById("stanzaNumero").value.trim();
-  const descrizione = document.getElementById("stanzaDescrizione").value.trim();
-  const ospitiMax = parseInt(document.getElementById("stanzaOspiti").value);
   const strutturaId = localStorage.getItem("strutturaAttiva");
-
   if (!strutturaId) return alert("Seleziona una struttura");
-  if (!numero) return alert("Numero stanza obbligatorio");
-  if (!ospitiMax || ospitiMax < 1) return alert("Numero ospiti non valido");
 
   db.collection("stanze").add({
     strutturaId,
-    numeroCamera: numero,
-    descrizione,
-    ospitiMax,
+    numeroCamera: stanzaNumero.value.trim(),
+    descrizione: stanzaDescrizione.value.trim(),
+    ospitiMax: parseInt(stanzaOspiti.value),
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => location.reload());
 }
@@ -192,16 +163,8 @@ function addStanza() {
 function loadStanze() {
   const ul = document.getElementById("listaStanze");
   const strutturaId = localStorage.getItem("strutturaAttiva");
-  const warning = document.getElementById("noStruttura");
+  if (!ul || !strutturaId) return;
 
-  if (!ul) return;
-
-  if (!strutturaId) {
-    if (warning) warning.classList.remove("hidden");
-    return;
-  }
-
-  if (warning) warning.classList.add("hidden");
   ul.innerHTML = "";
 
   db.collection("stanze")
@@ -211,16 +174,16 @@ function loadStanze() {
       snap.forEach(doc => {
         const s = doc.data();
         const li = document.createElement("li");
-        li.className = "list-item";
         li.textContent =
           `${s.numeroCamera} – ${s.descrizione || "—"} (${s.ospitiMax} ospiti)`;
         ul.appendChild(li);
       });
     });
 }
-// ======================================
-// DASHBOARD
-// ======================================
+
+/* ======================================
+   DASHBOARD
+====================================== */
 function loadDashboard() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
   const warning = document.getElementById("noStruttura");
@@ -246,4 +209,86 @@ function loadDashboard() {
     .then(snap => {
       document.getElementById("totPrenotazioni").textContent = snap.size;
     });
+}
+
+/* ======================================
+   PRENOTAZIONI (MULTI-STANZA)
+====================================== */
+let stanzeSelezionate = [];
+
+function initPrenotazioni() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  if (!strutturaId) return;
+
+  const box = document.getElementById("listaStanzePrenotazione");
+  box.innerHTML = "";
+
+  db.collection("stanze")
+    .where("strutturaId", "==", strutturaId)
+    .get()
+    .then(snap => {
+      snap.forEach(doc => {
+        const s = doc.data();
+        const row = document.createElement("div");
+        row.innerHTML = `
+          <label>
+            <input type="checkbox"
+              onchange="toggleStanza(this,'${doc.id}','${s.numeroCamera}')">
+            Camera ${s.numeroCamera}
+          </label>
+          <input type="number" placeholder="Prezzo €"
+            oninput="calcolaTotale()">
+        `;
+        box.appendChild(row);
+      });
+    });
+
+  acconto.oninput = calcolaTotale;
+}
+
+function toggleStanza(cb, id, numero) {
+  const prezzoInput = cb.parentElement.nextElementSibling;
+
+  if (cb.checked) {
+    stanzeSelezionate.push({ stanzaId: id, numeroCamera: numero, prezzoInput });
+  } else {
+    stanzeSelezionate = stanzeSelezionate.filter(s => s.stanzaId !== id);
+  }
+  calcolaTotale();
+}
+
+function calcolaTotale() {
+  let tot = 0;
+  stanzeSelezionate.forEach(s => {
+    const p = parseFloat(s.prezzoInput.value);
+    if (!isNaN(p)) tot += p;
+  });
+  totale.textContent = tot.toFixed(2);
+}
+
+function salvaPrenotazione() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  const stanze = stanzeSelezionate.map(s => ({
+    stanzaId: s.stanzaId,
+    numeroCamera: s.numeroCamera,
+    prezzo: parseFloat(s.prezzoInput.value) || 0
+  }));
+
+  const totaleCalc = stanze.reduce((t, s) => t + s.prezzo, 0);
+
+  db.collection("prenotazioni").add({
+    strutturaId,
+    clienteNome: clienteNome.value.trim(),
+    clienteTelefono: clienteTelefono.value.trim(),
+    checkin: checkin.value,
+    checkout: checkout.value,
+    stanze,
+    acconto: parseFloat(acconto.value) || 0,
+    totale: totaleCalc,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    alert("Prenotazione salvata");
+    location.reload();
+  });
 }
