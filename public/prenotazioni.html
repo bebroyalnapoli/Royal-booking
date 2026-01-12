@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Prenotazioni - Royal Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body>
+
+  <div id="sidebar-container"></div>
+
+  <main class="page-content">
+    <h1>Prenotazioni</h1>
+
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona prima una struttura
+    </div>
+
+    <section id="prenotazioniContent" class="hidden">
+
+      <!-- Nuova prenotazione -->
+      <section class="card">
+        <h2>Nuova prenotazione</h2>
+
+        <input id="clienteNome" type="text" placeholder="Nome cliente">
+        <input id="checkin" type="date">
+        <input id="checkout" type="date">
+
+        <h3>Stanze</h3>
+        <div id="stanzePrenotazione"></div>
+
+        <input id="acconto" type="number" placeholder="Acconto" value="0">
+
+        <p><strong>Totale: € <span id="totale">0</span></strong></p>
+
+        <button onclick="salvaPrenotazione()">Salva prenotazione</button>
+      </section>
+
+      <!-- Elenco -->
+      <section class="card">
+        <h2>Elenco prenotazioni</h2>
+        <ul id="listaPrenotazioni" class="list"></ul>
+      </section>
+
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+
+  <script>
+    checkAuth();
+
+    fetch("sidebar.html")
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        initSidebar();
+        initStruttureSelect();
+        loadPrenotazioni();
+        loadStanzePerPrenotazione();
+      });
+  </script>
+
+</body>
+</html>
