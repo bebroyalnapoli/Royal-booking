@@ -326,9 +326,13 @@ function loadPrenotazioniList() {
 
   db.collection("prenotazioni")
     .where("strutturaId", "==", strutturaId)
-    .orderBy("createdAt", "desc")
     .get()
     .then(snap => {
+      if (snap.empty) {
+        ul.innerHTML = "<li class='muted'>Nessuna prenotazione</li>";
+        return;
+      }
+
       snap.forEach(doc => {
         const p = doc.data();
         ul.innerHTML += `
