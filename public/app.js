@@ -217,40 +217,6 @@ function loadStanze() {
 }
 
 // ======================================
-// PRENOTAZIONI (BASE, MULTI STANZA)
-// ======================================
-function addPrenotazione() {
-  const strutturaId = localStorage.getItem("strutturaAttiva");
-  if (!strutturaId) return alert("Seleziona struttura");
-
-  const cliente = document.getElementById("pCliente").value.trim();
-  const checkin = document.getElementById("pCheckin").value;
-  const checkout = document.getElementById("pCheckout").value;
-  const acconto = parseFloat(document.getElementById("pAcconto").value) || 0;
-
-  const stanze = Array.from(
-    document.querySelectorAll("input[name='stanze']:checked")
-  ).map(cb => ({
-    stanzaId: cb.value,
-    prezzo: parseFloat(cb.dataset.prezzo) || 0
-  }));
-
-  if (!cliente || !checkin || !checkout || stanze.length === 0) {
-    return alert("Compila tutti i campi");
-  }
-
-  db.collection("prenotazioni").add({
-    strutturaId,
-    cliente,
-    checkin,
-    checkout,
-    stanze,
-    acconto,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => location.reload());
-}
-
-// ======================================
 // DASHBOARD
 // ======================================
 function loadDashboard() {
@@ -278,4 +244,119 @@ function loadDashboard() {
     .then(snap => {
       document.getElementById("totPrenotazioni").textContent = snap.size;
     });
+}
+
+// ======================================
+// PRENOTAZIONI (BASE, MULTI STANZA)
+// ======================================
+
+// ➕ Aggiungi prenotazione
+function addPrenotazione() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  if (!strutturaId) return alert("Seleziona una struttura");
+
+  const cliente = document.getElementById("pCliente")?.value.trim();
+  const checkin = document.getElementById("pCheckin")?.value;
+  const checkout = document.getElementById("pCheckout")?.value;
+  const acconto = parseFloat(document.getElementById("pAcconto")?.value) || 0;
+
+  const stanze = Array.from(
+    document.querySelectorAll("input[name='stanze']:checked")
+  ).map(cb => ({
+    stanzaId: cb.value,
+    prezzo: parseFloat(cb.dataset.prezzo) || 0
+  }));
+
+  if (!cliente || !checkin || !checkout || stanze.length === 0) {
+    return alert("Compila tutti i campi");
+  }
+
+  db.collection("prenotazioni").add({
+    strutturaId,
+    cliente,
+    checkin,
+    checkout,
+    stanze,
+    acconto,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => location.reload());
+}
+
+// 📥 Carica stanze per selezione prenotazione
+function loadStanzeForPrenotazione() {
+  const box = document.getElementById("stanzePrenotazione");
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  if (!box || !strutturaId) return;
+
+  box.innerHTML = "";
+
+  db.collection("stanze")
+    .where("strutturaId", "==", strutturaId)
+    .get()
+    .then(snap => {
+      snap.forEach(doc => {
+        const s = doc.data();
+        box.innerHTML += `
+          <div class="stanza-pren">
+            <label>
+              <input type="checkbox" name="stanze"
+                value="${doc.id}"
+                data-prezzo="0">
+              Camera ${s.numeroCamera} (${s.ospitiMax} ospiti)
+            </label>
+            <input type="number" placeholder="Prezzo €"
+              oninput="this.previousElementSibling
+                .querySelector('input')
+                .dataset.prezzo=this.value">
+          </div>
+        `;
+      });
+    });
+}
+
+// 📋 Lista prenotazioni
+function loadPrenotazioniList() {
+  const ul = document.getElementById("listaPrenotazioni");
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  if (!ul || !strutturaId) return;
+
+  ul.innerHTML = "";
+
+  db.collection("prenotazioni")
+    .where("strutturaId", "==", strutturaId)
+    .orderBy("createdAt", "desc")
+    .get()
+    .then(snap => {
+      snap.forEach(doc => {
+        const p = doc.data();
+        ul.innerHTML += `
+          <li class="list-item">
+            <strong>${p.cliente}</strong><br>
+            ${p.checkin} → ${p.checkout}<br>
+            Stanze: ${p.stanze.length} |
+            Acconto €${p.acconto}
+          </li>
+        `;
+      });
+    });
+}
+
+// 🚀 Init pagina prenotazioni
+function loadPrenotazioniPage() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+  const warning = document.getElementById("noStruttura");
+  const content = document.getElementById("prenotazioniContent");
+
+  if (!strutturaId) {
+    if (warning) warning.classList.remove("hidden");
+    return;
+  }
+
+  if (warning) warning.classList.add("hidden");
+  if (content) content.classList.remove("hidden");
+
+  loadStanzeForPrenotazione();
+  loadPrenotazioniList();
 }
