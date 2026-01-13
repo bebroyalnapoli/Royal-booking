@@ -8,6 +8,9 @@
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Royal Booking">
 
   <link rel="stylesheet" href="style.css">
 
@@ -24,41 +27,52 @@
 
   <!-- Contenuto -->
   <main class="page-content">
+
     <h1>Prenotazioni</h1>
 
+    <!-- Avviso struttura -->
     <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona prima una struttura
+      ⚠️ Seleziona prima una struttura dal menu
     </div>
 
+    <!-- Contenuto prenotazioni -->
     <section id="prenotazioniContent" class="hidden">
 
       <!-- Nuova prenotazione -->
       <section class="card">
         <h2>Nuova prenotazione</h2>
 
-        <input id="pCliente" placeholder="Nome cliente">
-        <input id="pCheckin" type="date">
-        <input id="pCheckout" type="date">
+        <input id="pCliente" type="text" placeholder="Nome cliente">
 
-        <h3>Stanze</h3>
-        <div id="stanzePrenotazione"></div>
+        <div class="row">
+          <input id="pCheckin" type="date">
+          <input id="pCheckout" type="date">
+        </div>
 
         <input id="pAcconto" type="number" placeholder="Acconto €">
+
+        <h3>Stanze</h3>
+        <div id="stanzePrenotazione" class="stanze-box">
+          <!-- popolato da JS -->
+        </div>
 
         <button onclick="addPrenotazione()">Salva prenotazione</button>
       </section>
 
-      <!-- Elenco prenotazioni -->
+      <!-- Lista prenotazioni -->
       <section class="card">
         <h2>Elenco prenotazioni</h2>
         <ul id="listaPrenotazioni" class="list"></ul>
       </section>
 
     </section>
+
   </main>
 
+  <!-- App JS -->
   <script src="app.js"></script>
 
+  <!-- Init -->
   <script>
     checkAuth();
     loadSidebar(() => {
