@@ -25,61 +25,58 @@
   <!-- Sidebar -->
   <div id="sidebar-container"></div>
 
+  <!-- CONTENUTO -->
   <main class="page-content">
     <h1>Prenotazioni</h1>
 
     <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona prima una struttura
+      ⚠️ Seleziona prima una struttura dal menu
     </div>
 
     <section id="prenotazioniContent" class="hidden">
 
-      <!-- DATI CLIENTE -->
+      <!-- NUOVA PRENOTAZIONE -->
       <section class="card">
-        <h2>Dati cliente</h2>
-        <input id="clienteNome" type="text" placeholder="Nome cliente">
-        <input id="clienteTelefono" type="text" placeholder="Telefono">
+        <h2>Nuova prenotazione</h2>
+
+        <input id="pCliente" type="text" placeholder="Nome cliente">
+
+        <label>Check-in</label>
+        <input id="pCheckin" type="date">
+
+        <label>Check-out</label>
+        <input id="pCheckout" type="date">
+
+        <label>Acconto (€)</label>
+        <input id="pAcconto" type="number" min="0" step="0.01">
+
+        <h3>Stanze</h3>
+        <div id="stanzePrenotazione" class="checkbox-list">
+          <!-- caricate da JS -->
+        </div>
+
+        <button onclick="addPrenotazione()">Salva prenotazione</button>
       </section>
 
-      <!-- DATE -->
+      <!-- ELENCO PRENOTAZIONI -->
       <section class="card">
-        <h2>Date</h2>
-        <input id="checkin" type="date">
-        <input id="checkout" type="date">
+        <h2>Elenco prenotazioni</h2>
+        <ul id="listaPrenotazioni" class="list"></ul>
       </section>
-
-      <!-- STANZE -->
-      <section class="card">
-        <h2>Stanze</h2>
-        <div id="listaStanzePrenotazione"></div>
-      </section>
-
-      <!-- PAGAMENTI -->
-      <section class="card">
-        <h2>Pagamento</h2>
-        <input id="acconto" type="number" placeholder="Acconto">
-        <p><strong>Totale:</strong> € <span id="totale">0</span></p>
-      </section>
-
-      <button onclick="salvaPrenotazione()">💾 Salva prenotazione</button>
 
     </section>
   </main>
 
-  <!-- App JS -->
+  <!-- APP JS -->
   <script src="app.js"></script>
 
+  <!-- INIT -->
   <script>
     checkAuth();
 
-    fetch("sidebar.html")
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById("sidebar-container").innerHTML = html;
-        initSidebar();
-        initStruttureSelect();
-        initPrenotazioni();
-      });
+    loadSidebar(() => {
+      initPrenotazioniPage();
+    });
   </script>
 
 </body>
