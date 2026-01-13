@@ -8,9 +8,6 @@
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Royal Booking">
 
   <link rel="stylesheet" href="style.css">
 
@@ -25,40 +22,33 @@
   <!-- Sidebar -->
   <div id="sidebar-container"></div>
 
-  <!-- CONTENUTO -->
+  <!-- Contenuto -->
   <main class="page-content">
     <h1>Prenotazioni</h1>
 
     <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona prima una struttura dal menu
+      ⚠️ Seleziona prima una struttura
     </div>
 
     <section id="prenotazioniContent" class="hidden">
 
-      <!-- NUOVA PRENOTAZIONE -->
+      <!-- Nuova prenotazione -->
       <section class="card">
         <h2>Nuova prenotazione</h2>
 
-        <input id="pCliente" type="text" placeholder="Nome cliente">
-
-        <label>Check-in</label>
+        <input id="pCliente" placeholder="Nome cliente">
         <input id="pCheckin" type="date">
-
-        <label>Check-out</label>
         <input id="pCheckout" type="date">
 
-        <label>Acconto (€)</label>
-        <input id="pAcconto" type="number" min="0" step="0.01">
-
         <h3>Stanze</h3>
-        <div id="stanzePrenotazione" class="checkbox-list">
-          <!-- caricate da JS -->
-        </div>
+        <div id="stanzePrenotazione"></div>
+
+        <input id="pAcconto" type="number" placeholder="Acconto €">
 
         <button onclick="addPrenotazione()">Salva prenotazione</button>
       </section>
 
-      <!-- ELENCO PRENOTAZIONI -->
+      <!-- Elenco prenotazioni -->
       <section class="card">
         <h2>Elenco prenotazioni</h2>
         <ul id="listaPrenotazioni" class="list"></ul>
@@ -67,15 +57,12 @@
     </section>
   </main>
 
-  <!-- APP JS -->
   <script src="app.js"></script>
 
-  <!-- INIT -->
   <script>
     checkAuth();
-
     loadSidebar(() => {
-      initPrenotazioniPage();
+      loadPrenotazioniPage();
     });
   </script>
 
