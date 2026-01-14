@@ -18,6 +18,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Core -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/strutture.js"></script>
+  <script src="js/stanze.js"></script>
 </head>
 
 <body>
@@ -37,14 +44,14 @@
 
       <!-- Aggiungi stanza -->
       <section class="card">
-  <h2>Aggiungi stanza</h2>
+        <h2>Aggiungi stanza</h2>
 
-  <input id="stanzaNumero" type="text" placeholder="Numero stanza">
-  <input id="stanzaDescrizione" type="text" placeholder="Descrizione">
-  <input id="stanzaOspiti" type="number" placeholder="Numero ospiti" min="1">
+        <input id="stanzaNumero" type="text" placeholder="Numero stanza">
+        <input id="stanzaDescrizione" type="text" placeholder="Descrizione">
+        <input id="stanzaOspiti" type="number" placeholder="Numero ospiti" min="1">
 
-  <button onclick="addStanza()">Salva stanza</button>
-</section>
+        <button onclick="addStanza()">Salva stanza</button>
+      </section>
 
       <!-- Elenco stanze -->
       <section class="card">
@@ -55,14 +62,12 @@
     </section>
   </main>
 
-  <!-- App -->
-  <script src="app.js"></script>
-
   <!-- Init -->
   <script>
     checkAuth();
-    loadSidebar();
-    loadStanze();
+    loadSidebar(() => {
+      loadStanze();
+    });
   </script>
 
 </body>
