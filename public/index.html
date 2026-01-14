@@ -10,15 +10,21 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Royal Booking">
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="app.js"></script>
+
+  <!-- APP JS -->
+  <script src="js/firebase.js"></script>
 </head>
+
 <body>
+
 <script>
   firebase.auth().onAuthStateChanged(user => {
     window.location.href = user ? "dashboard.html" : "login.html";
   });
 </script>
+
 </body>
 </html>
