@@ -14,10 +14,16 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- APP JS (SEPARATI) -->
+  <script src="js/firebase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/dashboard.js"></script>
 </head>
 
 <body>
@@ -38,10 +44,12 @@
         <h3>Prenotazioni</h3>
         <p id="totPrenotazioni">0</p>
       </div>
+
       <div class="dash-card">
         <h3>Check-in oggi</h3>
         <p id="checkinOggi">0</p>
       </div>
+
       <div class="dash-card">
         <h3>Check-out oggi</h3>
         <p id="checkoutOggi">0</p>
@@ -49,14 +57,10 @@
     </div>
   </main>
 
-  <!-- App -->
-  <script src="app.js"></script>
-
   <!-- Init pagina -->
   <script>
     checkAuth();
-    loadSidebar();
-    loadDashboard();
+    loadSidebar(loadDashboard);
   </script>
 
 </body>
