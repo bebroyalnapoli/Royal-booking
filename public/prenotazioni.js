@@ -78,3 +78,23 @@ function loadPrenotazioniList() {
       });
     });
 }
+
+function loadPrenotazioniPage() {
+  const strutturaId = localStorage.getItem("strutturaAttiva");
+
+  if (!strutturaId) {
+    document.getElementById("noStruttura")?.classList.remove("hidden");
+    return;
+  }
+
+  document.getElementById("prenotazioniContent")?.classList.remove("hidden");
+
+  loadStanzeForPrenotazione();
+  loadPrenotazioniList();
+}
+
+/* EXPORT GLOBALI */
+window.loadPrenotazioniPage = loadPrenotazioniPage;
+window.addPrenotazione = addPrenotazione;
+window.loadPrenotazioniList = loadPrenotazioniList;
+window.loadStanzeForPrenotazione = loadStanzeForPrenotazione;
