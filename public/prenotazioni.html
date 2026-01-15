@@ -45,6 +45,7 @@
     <section id="prenotazioniContent" class="hidden">
 
       <section class="card">
+
         <div class="row space-between">
           <h2>Elenco prenotazioni</h2>
 
@@ -60,6 +61,13 @@
               ➕ Nuova prenotazione
             </button>
           </div>
+        </div>
+
+        <!-- NAVIGAZIONE MESE -->
+        <div class="row space-between month-nav">
+          <button onclick="cambiaMese(-1)">⬅ Mese precedente</button>
+          <h3 id="titoloMese"></h3>
+          <button onclick="cambiaMese(1)">Mese successivo ➡</button>
         </div>
 
         <ul id="listaPrenotazioni" class="list"></ul>
