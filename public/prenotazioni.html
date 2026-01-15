@@ -19,7 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- APP JS -->
+  <!-- JS APP -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="sidebar.js"></script>
@@ -38,46 +38,38 @@
 
     <h1>Prenotazioni</h1>
 
-    <!-- Avviso struttura -->
     <div id="noStruttura" class="warning hidden">
       ⚠️ Seleziona prima una struttura dal menu
     </div>
 
-    <!-- Contenuto prenotazioni -->
     <section id="prenotazioniContent" class="hidden">
 
-      <!-- Nuova prenotazione -->
       <section class="card">
-        <h2>Nuova prenotazione</h2>
+        <div class="row space-between">
+          <h2>Elenco prenotazioni</h2>
 
-        <input id="pCliente" type="text" placeholder="Nome cliente">
+          <div>
+            <label>Ordina per:</label>
+            <select id="ordinePrenotazioni" onchange="loadPrenotazioniList()">
+              <option value="checkin">Check-in</option>
+              <option value="checkout">Check-out</option>
+              <option value="acconto">Acconto confermato</option>
+            </select>
 
-        <div class="row">
-          <input id="pCheckin" type="date">
-          <input id="pCheckout" type="date">
+            <button onclick="window.location.href='nuova_prenotazione.html'">
+              ➕ Nuova prenotazione
+            </button>
+          </div>
         </div>
 
-        <input id="pAcconto" type="number" placeholder="Acconto €">
-
-        <h3>Stanze</h3>
-        <div id="stanzePrenotazione" class="stanze-box">
-          <!-- popolato da JS -->
-        </div>
-
-        <button onclick="addPrenotazione()">Salva prenotazione</button>
-      </section>
-
-      <!-- Lista prenotazioni -->
-      <section class="card">
-        <h2>Elenco prenotazioni</h2>
         <ul id="listaPrenotazioni" class="list"></ul>
+
       </section>
 
     </section>
 
   </main>
 
-  <!-- Init pagina -->
   <script>
     checkAuth();
     loadSidebar(() => {
