@@ -18,6 +18,8 @@ async function generaCodicePrenotazione(strutturaId) {
   });
 }
 
+/* ===== ANTEPRIMA CODICE ===== */
+
 async function mostraAnteprimaCodice(strutturaId) {
   try {
     const doc = await db.collection("strutture").doc(strutturaId).get();
@@ -39,6 +41,8 @@ async function mostraAnteprimaCodice(strutturaId) {
     console.error("Errore anteprima codice:", err);
   }
 }
+
+/* ===== CREAZIONE PRENOTAZIONE ===== */
 
 async function addPrenotazione() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
@@ -90,6 +94,8 @@ async function addPrenotazione() {
   }
 }
 
+/* ===== CARICAMENTO STANZE ===== */
+
 function loadStanzeForPrenotazione() {
   const box = document.getElementById("stanzePrenotazione");
   const strutturaId = localStorage.getItem("strutturaAttiva");
@@ -117,6 +123,8 @@ function loadStanzeForPrenotazione() {
       });
     });
 }
+
+/* ===== CALCOLO TOTALI ===== */
 
 function calcolaTotali() {
   const acconto = parseFloat(document.getElementById("pAcconto")?.value) || 0;
@@ -160,7 +168,7 @@ function formattaMeseAnno() {
   return `${mesi[meseCorrente]} ${annoCorrente}`;
 }
 
-/* ===== LISTA PRENOTAZIONI FILTRATA PER MESE ===== */
+/* ===== LISTA PRENOTAZIONI ===== */
 
 function loadPrenotazioniList() {
   const ul = document.getElementById("listaPrenotazioni");
@@ -195,7 +203,7 @@ function loadPrenotazioniList() {
         const p = doc.data();
 
         ul.innerHTML += `
-          <li onclick="apriDettaglioPrenotazione('${doc.id}')">
+          <li onclick="apriDettaglioPrenotazione('${doc.id}')" style="cursor:pointer">
             <strong>${p.codice}</strong> -
             ${p.cliente}
             (${p.checkin} → ${p.checkout})
@@ -206,11 +214,106 @@ function loadPrenotazioniList() {
     });
 }
 
-/* ===== APERTURA DETTAGLIO PRENOTAZIONE (base) ===== */
+/* ===== APERTURA DETTAGLIO ===== */
 
 function apriDettaglioPrenotazione(id) {
-  localStorage.setItem("prenotazioneAperta", id);
-  window.location.href = "dettaglio_prenotazione.html";
+  window.location.href = "dettaglio_prenotazione.html?id=" + id;
+}
+
+/* ===== DETTAGLIO PRENOTAZIONE ===== */
+
+async function loadDettaglioPrenotazione() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) return alert("ID prenotazione mancante");
+
+  const doc = await db.collection("prenotazioni").doc(id).get();
+
+  if (!doc.exists) return alert("Prenotazione non trovata");
+
+  const p = doc.data();
+
+  document.getElementById("dCodice").innerText = p.codice;
+  document.getElementById("dCliente").value = p.cliente;
+  document.getElementById("dTelefono").value = p.telefono;
+  document.getElementById("dCheckin").value = p.checkin;
+  document.getElementById("dCheckout").value = p.checkout;
+
+  document.getElementById("dTotale").innerText = p.totale.toFixed(2);
+  document.getElementById("dAcconto").innerText = p.acconto.toFixed(2);
+  document.getElementById("dResto").innerText = p.resto.toFixed(2);
+}
+
+/* ===== MODIFICA PRENOTAZIONE ===== */
+
+function abilitaModifica() {
+  document.getElementById("dCliente").disabled = false;
+  document.getElementById("dTelefono").disabled = false;
+  document.getElementById("dCheckin").disabled = false;
+  document.getElementById("dCheckout").disabled = false;
+
+  document.getElementById("pulsantiNormali").classList.add("hidden");
+  document.getElementById("pulsantiModifica").classList.remove("hidden");
+}
+
+function annullaModifica() {
+  location.reload();
+}
+
+async function salvaModifichePrenotazione() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  await db.collection("prenotazioni").doc(id).update({
+    cliente: document.getElementById("dCliente").value,
+    telefono: document.getElementById("dTelefono").value,
+    checkin: document.getElementById("dCheckin").value,
+    checkout: document.getElementById("dCheckout").value
+  });
+
+  alert("Modifiche salvate");
+  location.reload();
+}
+
+/* ===== ELIMINA PRENOTAZIONE ===== */
+
+async function eliminaPrenotazione() {
+  if (!confirm("Vuoi eliminare questa prenotazione?")) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  await db.collection("prenotazioni").doc(id).delete();
+
+  alert("Prenotazione eliminata");
+  window.location.href = "prenotazioni.html";
+}
+
+/* ===== GENERAZIONE PDF ===== */
+
+function generaPDFPrenotazione() {
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Riepilogo Prenotazione", 20, 20);
+
+  doc.setFontSize(12);
+
+  doc.text("Codice: " + document.getElementById("dCodice").innerText, 20, 40);
+  doc.text("Cliente: " + document.getElementById("dCliente").value, 20, 50);
+  doc.text("Telefono: " + document.getElementById("dTelefono").value, 20, 60);
+
+  doc.text("Check-in: " + document.getElementById("dCheckin").value, 20, 80);
+  doc.text("Check-out: " + document.getElementById("dCheckout").value, 20, 90);
+
+  doc.text("Totale: " + document.getElementById("dTotale").innerText + " €", 20, 110);
+  doc.text("Acconto: " + document.getElementById("dAcconto").innerText + " €", 20, 120);
+  doc.text("Resto: " + document.getElementById("dResto").innerText + " €", 20, 130);
+
+  doc.save("Prenotazione_" + document.getElementById("dCodice").innerText + ".pdf");
 }
 
 /* ===== CARICAMENTO PAGINE ===== */
@@ -246,7 +349,8 @@ function loadNuovaPrenotazionePage() {
     ?.addEventListener("input", calcolaTotali);
 }
 
-/* EXPORT GLOBALI */
+/* ===== EXPORT GLOBALI ===== */
+
 window.loadPrenotazioniPage = loadPrenotazioniPage;
 window.loadNuovaPrenotazionePage = loadNuovaPrenotazionePage;
 window.addPrenotazione = addPrenotazione;
@@ -255,3 +359,10 @@ window.loadStanzeForPrenotazione = loadStanzeForPrenotazione;
 window.calcolaTotali = calcolaTotali;
 window.cambiaMese = cambiaMese;
 window.apriDettaglioPrenotazione = apriDettaglioPrenotazione;
+
+window.loadDettaglioPrenotazione = loadDettaglioPrenotazione;
+window.abilitaModifica = abilitaModifica;
+window.annullaModifica = annullaModifica;
+window.salvaModifichePrenotazione = salvaModifichePrenotazione;
+window.eliminaPrenotazione = eliminaPrenotazione;
+window.generaPDFPrenotazione = generaPDFPrenotazione;
