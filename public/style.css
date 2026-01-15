@@ -106,25 +106,24 @@ body {
 
 .sidebar-header {
   padding: 20px;
-  border-bottom: 1px solid #1f2937;
-}
-
-.sidebar-header h2 {
-  margin: 0;
+  font-weight: bold;
   font-size: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
 .sidebar-menu a {
-  display: block;
-  padding: 14px 20px;
-  color: #d1d5db;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  color: white;
   text-decoration: none;
-  transition: background 0.2s;
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .sidebar-menu a:hover {
-  background: #1f2937;
-  color: white;
+  background: #374151;
 }
 
 .struttura-select {
