@@ -129,22 +129,65 @@ function calcolaTotali() {
   document.getElementById("restoDaPagare").innerText = (totale - acconto).toFixed(2);
 }
 
+/* ===== NAVIGAZIONE PER MESE ===== */
+
+let meseCorrente = new Date().getMonth();
+let annoCorrente = new Date().getFullYear();
+
+function cambiaMese(delta) {
+  meseCorrente += delta;
+
+  if (meseCorrente < 0) {
+    meseCorrente = 11;
+    annoCorrente--;
+  }
+
+  if (meseCorrente > 11) {
+    meseCorrente = 0;
+    annoCorrente++;
+  }
+
+  loadPrenotazioniList();
+}
+
+function formattaMeseAnno() {
+  const mesi = [
+    "Gennaio", "Febbraio", "Marzo", "Aprile",
+    "Maggio", "Giugno", "Luglio", "Agosto",
+    "Settembre", "Ottobre", "Novembre", "Dicembre"
+  ];
+
+  return `${mesi[meseCorrente]} ${annoCorrente}`;
+}
+
+/* ===== LISTA PRENOTAZIONI FILTRATA PER MESE ===== */
+
 function loadPrenotazioniList() {
   const ul = document.getElementById("listaPrenotazioni");
   const strutturaId = localStorage.getItem("strutturaAttiva");
+  const titolo = document.getElementById("titoloMese");
+
   if (!ul || !strutturaId) return;
 
-  const ordine = document.getElementById("ordinePrenotazioni")?.value || "checkin";
+  if (titolo) {
+    titolo.innerText = formattaMeseAnno();
+  }
 
   ul.innerHTML = "";
 
+  const inizio = `${annoCorrente}-${String(meseCorrente + 1).padStart(2, "0")}-01`;
+  const fine = `${annoCorrente}-${String(meseCorrente + 1).padStart(2, "0")}-31`;
+
   db.collection("prenotazioni")
     .where("strutturaId", "==", strutturaId)
-    .orderBy(ordine)
+    .where("checkin", ">=", inizio)
+    .where("checkin", "<=", fine)
+    .orderBy("checkin")
     .get()
     .then(snap => {
+
       if (snap.empty) {
-        ul.innerHTML = "<li>Nessuna prenotazione</li>";
+        ul.innerHTML = "<li>Nessuna prenotazione in questo mese</li>";
         return;
       }
 
@@ -152,7 +195,7 @@ function loadPrenotazioniList() {
         const p = doc.data();
 
         ul.innerHTML += `
-          <li>
+          <li onclick="apriDettaglioPrenotazione('${doc.id}')">
             <strong>${p.codice}</strong> -
             ${p.cliente}
             (${p.checkin} → ${p.checkout})
@@ -162,6 +205,15 @@ function loadPrenotazioniList() {
       });
     });
 }
+
+/* ===== APERTURA DETTAGLIO PRENOTAZIONE (base) ===== */
+
+function apriDettaglioPrenotazione(id) {
+  localStorage.setItem("prenotazioneAperta", id);
+  window.location.href = "dettaglio_prenotazione.html";
+}
+
+/* ===== CARICAMENTO PAGINE ===== */
 
 function loadPrenotazioniPage() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
@@ -201,3 +253,5 @@ window.addPrenotazione = addPrenotazione;
 window.loadPrenotazioniList = loadPrenotazioniList;
 window.loadStanzeForPrenotazione = loadStanzeForPrenotazione;
 window.calcolaTotali = calcolaTotali;
+window.cambiaMese = cambiaMese;
+window.apriDettaglioPrenotazione = apriDettaglioPrenotazione;
