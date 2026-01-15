@@ -26,7 +26,13 @@
 
 <main class="page-content">
 
-  <h1>Nuova Prenotazione</h1>
+  <div class="row space-between">
+    <h1>Nuova Prenotazione</h1>
+
+    <button onclick="window.location.href='prenotazioni.html'">
+      ⬅ Torna alle prenotazioni
+    </button>
+  </div>
 
   <div id="noStruttura" class="warning hidden">
     ⚠️ Seleziona prima una struttura dal menu
@@ -40,26 +46,35 @@
       <strong id="codicePreview">--</strong>
     </p>
 
-    <input id="pCliente" type="text" placeholder="Nome cliente">
-    <input id="pTelefono" type="text" placeholder="Telefono cliente">
+    <input id="pCliente" type="text" placeholder="Nome cliente" required>
+    <input id="pTelefono" type="text" placeholder="Telefono cliente" required>
 
     <div class="row">
-      <input id="pCheckin" type="date">
-      <input id="pCheckout" type="date">
+      <input id="pCheckin" type="date" required>
+      <input id="pCheckout" type="date" required>
     </div>
 
     <h3>Seleziona stanze</h3>
 
-    <div id="stanzePrenotazione" class="stanze-box"></div>
+    <div id="stanzePrenotazione" class="stanze-box">
+      <!-- popolato da JS -->
+    </div>
 
-    <input id="pAcconto" type="number" placeholder="Acconto €">
+    <input
+      id="pAcconto"
+      type="number"
+      placeholder="Acconto €"
+      oninput="calcolaTotali()"
+    >
 
     <div class="totali">
       <p>Totale: <span id="totalePrenotazione">0</span> €</p>
       <p>Resta da pagare: <span id="restoDaPagare">0</span> €</p>
     </div>
 
-    <button onclick="addPrenotazione()">Salva prenotazione</button>
+    <button onclick="addPrenotazione()">
+      💾 Salva prenotazione
+    </button>
 
   </section>
 
