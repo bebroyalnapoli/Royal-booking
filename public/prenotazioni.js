@@ -18,6 +18,28 @@ async function generaCodicePrenotazione(strutturaId) {
   });
 }
 
+async function mostraAnteprimaCodice(strutturaId) {
+  try {
+    const doc = await db.collection("strutture").doc(strutturaId).get();
+
+    if (!doc.exists) return;
+
+    const data = doc.data();
+    const sigla = data.sigla || "XX";
+    const anno = new Date().getFullYear();
+    const prossimo = (data.progressivo || 0) + 1;
+
+    const codice = `${sigla}${anno}-${String(prossimo).padStart(4, "0")}`;
+
+    const preview = document.getElementById("codicePreview");
+    if (preview) {
+      preview.innerText = codice;
+    }
+  } catch (err) {
+    console.error("Errore anteprima codice:", err);
+  }
+}
+
 async function addPrenotazione() {
   const strutturaId = localStorage.getItem("strutturaAttiva");
   if (!strutturaId) return alert("Seleziona struttura");
@@ -165,6 +187,8 @@ function loadNuovaPrenotazionePage() {
   document.getElementById("prenotazioneForm")?.classList.remove("hidden");
 
   loadStanzeForPrenotazione();
+
+  mostraAnteprimaCodice(strutturaId);
 
   document.getElementById("pAcconto")
     ?.addEventListener("input", calcolaTotali);
