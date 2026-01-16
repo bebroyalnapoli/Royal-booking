@@ -9,12 +9,16 @@ function loadSidebar(callback) {
     .then(r => r.text())
     .then(html => {
       container.innerHTML = html;
+
       setTimeout(() => {
         initSidebar();
         initStruttureSelect();
+        highlightActiveMenu();
+
         if (callback) callback();
       }, 0);
-    });
+    })
+    .catch(err => console.error("Errore caricamento sidebar:", err));
 }
 
 function initSidebar() {
@@ -26,22 +30,55 @@ function initSidebar() {
   if (!sidebar || !toggle || !overlay) return;
 
   toggle.onclick = () => {
-    sidebar.classList.add("open");
-    overlay.classList.add("show");
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
   };
 
-  function close() {
+  function closeSidebar() {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
   }
 
-  overlay.onclick = close;
-  document.addEventListener("keydown", e => e.key === "Escape" && close());
+  overlay.onclick = closeSidebar;
 
-  if (logoutBtn) logoutBtn.onclick = logoutUser;
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeSidebar();
+  });
+
+  if (logoutBtn) {
+    logoutBtn.onclick = () => {
+      closeSidebar();
+      logoutUser();
+    };
+  }
 
   document.querySelectorAll(".sidebar-menu a").forEach(a => {
-    if (a.href === window.location.href) a.classList.add("active");
+    a.addEventListener("click", () => {
+      if (window.innerWidth < 768) {
+        closeSidebar();
+      }
+    });
+  });
+}
+
+// ======================================
+// EVIDENZIA MENU ATTIVO
+// ======================================
+function highlightActiveMenu() {
+  const path = window.location.pathname.toLowerCase();
+
+  const map = {
+    "dashboard": "menu-dashboard",
+    "stanze": "menu-stanze",
+    "prenotazioni": "menu-prenotazioni",
+    "strutture": "menu-strutture"
+  };
+
+  Object.keys(map).forEach(key => {
+    if (path.includes(key)) {
+      const el = document.getElementById(map[key]);
+      if (el) el.classList.add("active");
+    }
   });
 }
 
@@ -53,20 +90,41 @@ function initStruttureSelect() {
   if (!select) return;
 
   const attiva = localStorage.getItem("strutturaAttiva");
+
   select.innerHTML = `<option value="">Seleziona struttura</option>`;
 
-  db.collection("strutture").get().then(snap => {
-    snap.forEach(doc => {
-      const opt = document.createElement("option");
-      opt.value = doc.id;
-      opt.textContent = doc.data().nome;
-      if (doc.id === attiva) opt.selected = true;
-      select.appendChild(opt);
-    });
-  });
+  db.collection("strutture")
+    .orderBy("nome")
+    .get()
+    .then(snap => {
+      snap.forEach(doc => {
+        const opt = document.createElement("option");
+        opt.value = doc.id;
+        opt.textContent = doc.data().nome;
+
+        if (doc.id === attiva) {
+          opt.selected = true;
+        }
+
+        select.appendChild(opt);
+      });
+    })
+    .catch(err => console.error("Errore caricamento strutture:", err));
 
   select.onchange = () => {
-    localStorage.setItem("strutturaAttiva", select.value);
+    const nuova = select.value;
+
+    if (!nuova) {
+      localStorage.removeItem("strutturaAttiva");
+    } else {
+      localStorage.setItem("strutturaAttiva", nuova);
+    }
+
     location.reload();
   };
 }
+
+// ======================================
+// EXPORT GLOBALI
+// ======================================
+window.loadSidebar = loadSidebar;
