@@ -275,6 +275,22 @@ button.danger {
   min-width: 120px;
 }
 
+.stanze-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.stanza-item {
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+
+
 /* AVVISI */
 .warning {
   background: #fffbeb;
@@ -332,6 +348,29 @@ button.danger {
   font-size: 22px;
   font-weight: bold;
   margin: 5px 0 0 0;
+}
+
+input, select, button {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.card input {
+  width: 100%;
+  margin-top: 8px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1d4ed8;
 }
 
 /* DESKTOP */
