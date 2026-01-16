@@ -111,15 +111,15 @@ function loadStanzeForPrenotazione() {
         const s = doc.data();
 
         box.innerHTML += `
-          <label>
-            <input type="checkbox"
-                   name="stanze"
-                   value="${doc.id}"
-                   data-prezzo="0"
-                   onchange="calcolaTotali()">
-            Camera ${s.numeroCamera}
-          </label>
-        `;
+  <label class="stanza-item">
+    <input type="checkbox"
+           name="stanze"
+           value="${doc.id}"
+           data-prezzo="${s.prezzo || 0}"
+           onchange="calcolaTotali()">
+    Camera ${s.numeroCamera} - ${s.prezzo || 0} €
+  </label>
+`;
       });
     });
 }
