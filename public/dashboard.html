@@ -19,7 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- APP JS (SEPARATI) -->
+  <!-- APP JS -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="sidebar.js"></script>
@@ -33,15 +33,30 @@
 
   <!-- Contenuto -->
   <main class="page-content">
-    <h1 id="strutturaTitle">Dashboard</h1>
 
-    <div id="noStruttura" class="warning hidden">
-      ⚠️ Seleziona una struttura dal menu
+    <!-- HEADER SUPERIORE -->
+    <div class="card header-bar">
+      <div class="header-left">
+        <h1 id="strutturaTitle">Dashboard</h1>
+      </div>
+
+      <div class="header-right">
+        <button class="secondary" onclick="toggleSidebarDesktop()">
+          ☰ Menu
+        </button>
+      </div>
     </div>
 
-    <div id="dashboardGrid" class="dashboard-grid">
+    <!-- AVVISO NESSUNA STRUTTURA -->
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona una struttura dal menu laterale
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="dashboardGrid" class="dashboard-grid">
+
       <div class="dash-card">
-        <h3>Prenotazioni</h3>
+        <h3>Totale prenotazioni</h3>
         <p id="totPrenotazioni">0</p>
       </div>
 
@@ -54,7 +69,14 @@
         <h3>Check-out oggi</h3>
         <p id="checkoutOggi">0</p>
       </div>
-    </div>
+
+      <div class="dash-card">
+        <h3>Incasso mese</h3>
+        <p id="incassoMese">0 €</p>
+      </div>
+
+    </section>
+
   </main>
 
   <!-- Init pagina -->
