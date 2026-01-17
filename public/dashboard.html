@@ -5,72 +5,150 @@
   <title>Dashboard - Royal Booking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+
   <link rel="stylesheet" href="style.css">
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+  <!-- App JS -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="sidebar.js"></script>
-  <script src="dashboard.js"></script>
 </head>
 
 <body>
 
-<div id="sidebar-container"></div>
+  <!-- SIDEBAR -->
+  <div id="sidebar-container"></div>
 
-<header class="app-header">
-  <button id="menuToggle" class="menu-btn">☰</button>
+  <!-- HEADER DASHBOARD -->
+  <header class="dashboard-header">
+    <button class="menu-btn" onclick="document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');">
+      ☰
+    </button>
 
-  <div class="header-titles">
     <h1>ROYAL BOOKING</h1>
-    <p id="nomeStrutturaHeader" onclick="openStrutturaSelect()">
-      Seleziona struttura
-    </p>
-  </div>
-</header>
 
-<main class="page-content">
+    <div class="struttura-attiva" onclick="document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');">
+      <span id="nomeStruttura">Nessuna struttura selezionata</span>
+    </div>
+  </header>
 
-  <div id="noStruttura" class="warning hidden">
-    ⚠️ Seleziona una struttura per visualizzare i dati
-  </div>
+  <!-- CONTENUTO -->
+  <main class="page-content">
 
-  <section id="dashboardKpi" class="kpi-grid hidden">
-
-    <div class="kpi-card">
-      <span class="kpi-label">STRUTTURE</span>
-      <span id="kpiStrutture" class="kpi-value">0</span>
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona una struttura dal menu
     </div>
 
-    <div class="kpi-card">
-      <span class="kpi-label">OCCUPAZIONE</span>
-      <span id="kpiOccupazione" class="kpi-value">0%</span>
-      <span class="kpi-sub">oggi</span>
-    </div>
+    <!-- KPI GRID -->
+    <section id="dashboardGrid" class="dashboard-grid hidden">
 
-    <div class="kpi-card">
-      <span class="kpi-label">CHECK-IN</span>
-      <span id="kpiCheckin" class="kpi-value">0</span>
-      <span class="kpi-sub">arrivi</span>
-    </div>
+      <div class="dash-card">
+        <h3>STRUTTURE</h3>
+        <p id="kpiStrutture">0</p>
+      </div>
 
-    <div class="kpi-card">
-      <span class="kpi-label">CHECK-OUT</span>
-      <span id="kpiCheckout" class="kpi-value">0</span>
-      <span class="kpi-sub">partenze</span>
-    </div>
+      <div class="dash-card">
+        <h3>OCCUPAZIONE</h3>
+        <p id="kpiOccupazione">0%</p>
+      </div>
 
-  </section>
+      <div class="dash-card">
+        <h3>CHECK-IN</h3>
+        <p id="kpiCheckin">0</p>
+      </div>
 
-</main>
+      <div class="dash-card">
+        <h3>CHECK-OUT</h3>
+        <p id="kpiCheckout">0</p>
+      </div>
 
-<script>
-  checkAuth();
-  loadSidebar(loadDashboard);
-</script>
+    </section>
+
+  </main>
+
+  <!-- LOGICA DASHBOARD -->
+  <script>
+
+    async function loadDashboard() {
+
+      const strutturaId = localStorage.getItem("strutturaAttiva");
+
+      if (!strutturaId) {
+        document.getElementById("noStruttura").classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("dashboardGrid").classList.remove("hidden");
+
+      // Nome struttura attiva
+      const strutturaDoc = await db.collection("strutture").doc(strutturaId).get();
+      if (strutturaDoc.exists) {
+        document.getElementById("nomeStruttura").innerText =
+          strutturaDoc.data().nome;
+      }
+
+      // Totale strutture account
+      const struttureSnap = await db.collection("strutture").get();
+      document.getElementById("kpiStrutture").innerText =
+        struttureSnap.size;
+
+      // Prenotazioni della struttura
+      const prenotazioniSnap = await db.collection("prenotazioni")
+        .where("strutturaId", "==", strutturaId)
+        .get();
+
+      const oggi = new Date().toISOString().split("T")[0];
+
+      let checkinOggi = 0;
+      let checkoutOggi = 0;
+
+      prenotazioniSnap.forEach(doc => {
+        const p = doc.data();
+
+        if (p.checkin === oggi) checkinOggi++;
+        if (p.checkout === oggi) checkoutOggi++;
+      });
+
+      document.getElementById("kpiCheckin").innerText = checkinOggi;
+      document.getElementById("kpiCheckout").innerText = checkoutOggi;
+
+      // Calcolo occupazione (semplificato)
+      const stanzeSnap = await db.collection("stanze")
+        .where("strutturaId", "==", strutturaId)
+        .get();
+
+      const totaleStanze = stanzeSnap.size || 1;
+
+      let stanzeOccupate = 0;
+
+      prenotazioniSnap.forEach(doc => {
+        const p = doc.data();
+        if (p.checkin <= oggi && p.checkout >= oggi) {
+          stanzeOccupate += (p.stanze || []).length;
+        }
+      });
+
+      const percentuale = Math.round((stanzeOccupate / totaleStanze) * 100);
+
+      document.getElementById("kpiOccupazione").innerText =
+        percentuale + "%";
+    }
+
+    // INIT PAGINA
+    checkAuth();
+    loadSidebar(() => {
+      loadDashboard();
+    });
+
+  </script>
 
 </body>
 </html>
