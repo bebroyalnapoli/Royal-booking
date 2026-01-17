@@ -1,76 +1,56 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard - Royal Booking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+async function loadDashboard() {
 
-  <link rel="stylesheet" href="style.css">
+  const struttura = localStorage.getItem("strutturaAttiva");
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  if (!struttura) {
+    document.getElementById("noStruttura").classList.remove("hidden");
+    return;
+  }
 
-  <script src="firebase.js"></script>
-  <script src="auth.js"></script>
-  <script src="sidebar.js"></script>
-  <script src="dashboard.js"></script>
-</head>
+  document.getElementById("dashboardKpi").classList.remove("hidden");
 
-<body>
+  // Nome struttura
+  const s = await db.collection("strutture").doc(struttura).get();
+  document.getElementById("nomeStrutturaHeader").innerText = s.data().nome;
 
-<div id="sidebar-container"></div>
+  // KPI 1 - Numero strutture totali
+  const struttureSnap = await db.collection("strutture").get();
+  document.getElementById("kpiStrutture").innerText = struttureSnap.size;
 
-<header class="app-header">
-  <button id="menuToggle" class="menu-btn">☰</button>
+  // Prenotazioni della struttura selezionata
+  const oggi = new Date().toISOString().split("T")[0];
 
-  <div class="header-titles">
-    <h1>ROYAL BOOKING</h1>
-    <p id="nomeStrutturaHeader" onclick="openStrutturaSelect()">
-      Seleziona struttura
-    </p>
-  </div>
-</header>
+  const prenotazioni = await db.collection("prenotazioni")
+    .where("struttura", "==", struttura)
+    .get();
 
-<main class="page-content">
+  let checkin = 0;
+  let checkout = 0;
 
-  <div id="noStruttura" class="warning hidden">
-    ⚠️ Seleziona una struttura per visualizzare i dati
-  </div>
+  prenotazioni.forEach(doc => {
+    const p = doc.data();
 
-  <section id="dashboardKpi" class="kpi-grid hidden">
+    if (p.checkin === oggi) checkin++;
+    if (p.checkout === oggi) checkout++;
+  });
 
-    <div class="kpi-card">
-      <span class="kpi-label">STRUTTURE</span>
-      <span id="kpiStrutture" class="kpi-value">0</span>
-    </div>
+  document.getElementById("kpiCheckin").innerText = checkin;
+  document.getElementById("kpiCheckout").innerText = checkout;
 
-    <div class="kpi-card">
-      <span class="kpi-label">OCCUPAZIONE</span>
-      <span id="kpiOccupazione" class="kpi-value">0%</span>
-      <span class="kpi-sub">oggi</span>
-    </div>
+  // OCCUPAZIONE (stima semplice)
 
-    <div class="kpi-card">
-      <span class="kpi-label">CHECK-IN</span>
-      <span id="kpiCheckin" class="kpi-value">0</span>
-      <span class="kpi-sub">arrivi</span>
-    </div>
+  const stanzeSnap = await db.collection("stanze")
+    .where("struttura", "==", struttura)
+    .get();
 
-    <div class="kpi-card">
-      <span class="kpi-label">CHECK-OUT</span>
-      <span id="kpiCheckout" class="kpi-value">0</span>
-      <span class="kpi-sub">partenze</span>
-    </div>
+  const totStanze = stanzeSnap.size || 1;
 
-  </section>
+  const occupazione = Math.round((checkin / totStanze) * 100);
 
-</main>
+  document.getElementById("kpiOccupazione").innerText =
+    occupazione + "%";
+}
 
-<script>
-  checkAuth();
-  loadSidebar(loadDashboard);
-</script>
-
-</body>
-</html>
+function openStrutturaSelect() {
+  document.getElementById("strutturaSelect").focus();
+}
