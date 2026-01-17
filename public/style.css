@@ -1,12 +1,17 @@
 :root {
   --primary: #2563eb;
+  --accent: #3b82f6;
   --dark: #0f172a;
   --sidebar: #0b1221;
   --card: #ffffff;
   --bg: #f1f5f9;
   --text: #0f172a;
-  --muted: #64748b;
+  --muted: #94a3b8;
   --border: #e2e8f0;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 }
 
 body {
@@ -16,40 +21,46 @@ body {
   color: var(--text);
 }
 
-/* HEADER TOP BAR */
-.topbar {
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
+/* ========================= */
+/* HEADER DASHBOARD          */
+/* ========================= */
+
+.dashboard-header {
+  background: var(--dark);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  position: relative;
 }
 
-.topbar h1 {
+.dashboard-header h1 {
   margin: 0;
-  font-size: 18px;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.topbar-right {
-  display: flex;
-  gap: 15px;
-  align-items: center;
+.dashboard-header .struttura-attiva {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
 }
 
-/* SIDEBAR */
-
-.menu-toggle {
-  position: fixed;
-  top: 15px;
+.dashboard-header .menu-btn {
+  position: absolute;
   left: 15px;
-  background: white;
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-  border-radius: 8px;
-  z-index: 2000;
+  top: 18px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
 }
+
+/* ========================= */
+/* SIDEBAR                   */
+/* ========================= */
 
 .sidebar {
   position: fixed;
@@ -72,21 +83,6 @@ body {
 .sidebar-header {
   padding: 20px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar-header h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.struttura-select {
-  margin-top: 15px;
-  width: 100%;
-  background: #111827;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 8px;
 }
 
 .sidebar-menu {
@@ -114,7 +110,20 @@ body {
   color: white;
 }
 
-/* OVERLAY MOBILE */
+.struttura-select {
+  margin-top: 15px;
+  width: 100%;
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* ========================= */
+/* OVERLAY                   */
+/* ========================= */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -127,17 +136,21 @@ body {
   display: block;
 }
 
-/* CONTENT */
+/* ========================= */
+/* CONTENT                   */
+/* ========================= */
 
 .page-content {
   padding: 20px;
 }
 
-/* DASHBOARD CARDS */
+/* ========================= */
+/* DASHBOARD                 */
+/* ========================= */
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin-top: 20px;
 }
@@ -147,29 +160,26 @@ body {
   border-radius: 14px;
   padding: 20px;
   border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-.dash-card .info h3 {
+.dash-card h3 {
   margin: 0;
-  color: var(--muted);
   font-size: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
 }
 
-.dash-card .info p {
-  margin: 5px 0 0 0;
-  font-size: 26px;
+.dash-card p {
+  margin: 10px 0 0 0;
+  font-size: 32px;
   font-weight: bold;
 }
 
-.dash-icon {
-  font-size: 34px;
-  opacity: 0.8;
-}
-
-/* CARD GENERICHE */
+/* ========================= */
+/* CARDS GENERICHE           */
+/* ========================= */
 
 .card {
   background: white;
@@ -179,27 +189,109 @@ body {
   margin-top: 15px;
 }
 
-/* FORM */
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
 
-input, select {
+/* ========================= */
+/* FORM                      */
+/* ========================= */
+
+input, select, textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
   margin-top: 8px;
+  box-sizing: border-box;
+}
+
+label {
+  font-weight: 600;
+  font-size: 14px;
 }
 
 button {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 10px;
   cursor: pointer;
   margin-top: 10px;
+  font-weight: 600;
 }
 
-/* WARNING */
+button:hover {
+  background: var(--accent);
+}
+
+/* ========================= */
+/* PRENOTAZIONI LIST         */
+/* ========================= */
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  background: white;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.list li:hover {
+  background: #f8fafc;
+}
+
+/* ========================= */
+/* NAVIGAZIONE MESE          */
+/* ========================= */
+
+.mese-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ========================= */
+/* NUOVA PRENOTAZIONE        */
+/* ========================= */
+
+.stanze-box {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  background: #f8fafc;
+}
+
+.stanze-box label {
+  display: block;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.totali {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  font-weight: bold;
+}
+
+/* ========================= */
+/* STATI                     */
+/* ========================= */
 
 .warning {
   background: #fffbeb;
@@ -208,19 +300,62 @@ button {
   border-radius: 10px;
 }
 
-/* DESKTOP */
+.success {
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.danger {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+/* ========================= */
+/* UTILITIES                 */
+/* ========================= */
+
+.hidden {
+  display: none;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.row input {
+  flex: 1;
+}
+
+/* ========================= */
+/* DESKTOP                   */
+/* ========================= */
 
 @media(min-width: 900px) {
+
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
   .sidebar {
     left: 0;
   }
 
-  .menu-toggle,
+  .menu-btn,
   .overlay {
     display: none;
   }
 
   body {
     margin-left: 260px;
+  }
+
+  .dashboard-header {
+    padding-left: 280px;
   }
 }
