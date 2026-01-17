@@ -21,47 +21,49 @@
 
 <div id="sidebar-container"></div>
 
-<header class="topbar">
-  <h1>Dashboard</h1>
+<header class="app-header">
+  <button id="menuToggle" class="menu-btn">☰</button>
 
-  <div class="topbar-right">
-    <span>👤 Admin</span>
+  <div class="header-titles">
+    <h1>ROYAL BOOKING</h1>
+    <p id="nomeStrutturaHeader" onclick="openStrutturaSelect()">
+      Seleziona struttura
+    </p>
   </div>
 </header>
 
 <main class="page-content">
 
   <div id="noStruttura" class="warning hidden">
-    ⚠️ Seleziona una struttura dal menu
+    ⚠️ Seleziona una struttura per visualizzare i dati
   </div>
 
-  <div id="dashboardGrid" class="dashboard-grid">
+  <section id="dashboardKpi" class="kpi-grid hidden">
 
-    <div class="dash-card">
-      <div class="info">
-        <h3>Prenotazioni</h3>
-        <p id="totPrenotazioni">0</p>
-      </div>
-      <div class="dash-icon">📅</div>
+    <div class="kpi-card">
+      <span class="kpi-label">STRUTTURE</span>
+      <span id="kpiStrutture" class="kpi-value">0</span>
     </div>
 
-    <div class="dash-card">
-      <div class="info">
-        <h3>Check-in oggi</h3>
-        <p id="checkinOggi">0</p>
-      </div>
-      <div class="dash-icon">🟢</div>
+    <div class="kpi-card">
+      <span class="kpi-label">OCCUPAZIONE</span>
+      <span id="kpiOccupazione" class="kpi-value">0%</span>
+      <span class="kpi-sub">oggi</span>
     </div>
 
-    <div class="dash-card">
-      <div class="info">
-        <h3>Check-out oggi</h3>
-        <p id="checkoutOggi">0</p>
-      </div>
-      <div class="dash-icon">🔴</div>
+    <div class="kpi-card">
+      <span class="kpi-label">CHECK-IN</span>
+      <span id="kpiCheckin" class="kpi-value">0</span>
+      <span class="kpi-sub">arrivi</span>
     </div>
 
-  </div>
+    <div class="kpi-card">
+      <span class="kpi-label">CHECK-OUT</span>
+      <span id="kpiCheckout" class="kpi-value">0</span>
+      <span class="kpi-sub">partenze</span>
+    </div>
+
+  </section>
 
 </main>
 
