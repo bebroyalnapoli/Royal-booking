@@ -32,36 +32,53 @@ body {
 .app-header {
   background: var(--dark);
   color: white;
-  padding: 16px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
+
+  padding: 14px 16px;
+  gap: 12px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 900;
+  height: 60px;
 }
 
-.app-header h1 {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 1px;
-}
-
-.app-header .subtitle {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 2px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.header-menu-btn {
-  position: absolute;
-  left: 12px;
+.menu-btn {
   background: none;
   border: none;
   color: white;
   font-size: 22px;
   cursor: pointer;
+  margin: 0;
+  padding: 5px;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-title {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Spazio per header fisso */
+.page-content {
+  padding: 20px;
+  margin-top: 60px;
 }
 
 /* ========================= */
