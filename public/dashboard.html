@@ -28,17 +28,16 @@
   <div id="sidebar-container"></div>
 
   <!-- HEADER DASHBOARD -->
-  <header class="dashboard-header">
-    <button class="menu-btn" onclick="document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');">
-      ☰
-    </button>
+  <header class="app-header">
+  <button id="menuToggle" class="menu-btn">☰</button>
 
-    <h1>ROYAL BOOKING</h1>
-
-    <div class="struttura-attiva" onclick="document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');">
-      <span id="nomeStruttura">Nessuna struttura selezionata</span>
+  <div class="header-titles">
+    <div class="app-title">Royal Booking</div>
+    <div id="strutturaAttiva" class="app-subtitle">
+      Nessuna struttura selezionata
     </div>
-  </header>
+  </div>
+</header>
 
   <!-- CONTENUTO -->
   <main class="page-content">
