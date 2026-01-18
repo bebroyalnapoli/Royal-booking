@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#0b1221">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Royal Booking">
@@ -30,13 +30,21 @@
 
 <body>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <div id="sidebar-container"></div>
 
-  <!-- Contenuto -->
-  <main class="page-content">
+  <!-- HEADER APP -->
+  <header class="app-header">
+    <button id="headerMenuToggle" class="header-menu-btn">☰</button>
 
-    <h1>Prenotazioni</h1>
+    <div class="header-titles">
+      <h1>ROYAL BOOKING</h1>
+      <span id="nomeStrutturaHeader" class="subtitle"></span>
+    </div>
+  </header>
+
+  <!-- CONTENUTO -->
+  <main class="page-content">
 
     <div id="noStruttura" class="warning hidden">
       ⚠️ Seleziona prima una struttura dal menu
@@ -49,13 +57,15 @@
         <div class="row space-between">
           <h2>Elenco prenotazioni</h2>
 
-          <div>
-            <label>Ordina per:</label>
-            <select id="ordinePrenotazioni" onchange="loadPrenotazioniList()">
-              <option value="checkin">Check-in</option>
-              <option value="checkout">Check-out</option>
-              <option value="acconto">Acconto confermato</option>
-            </select>
+          <div class="actions-bar">
+            <div class="order-box">
+              <label>Ordina per:</label>
+              <select id="ordinePrenotazioni" onchange="loadPrenotazioniList()">
+                <option value="checkin">Check-in</option>
+                <option value="checkout">Check-out</option>
+                <option value="acconto">Acconto confermato</option>
+              </select>
+            </div>
 
             <button onclick="window.location.href='nuova_prenotazione.html'">
               ➕ Nuova prenotazione
@@ -80,7 +90,14 @@
 
   <script>
     checkAuth();
+
     loadSidebar(() => {
+      // Imposta nome struttura nell'header
+      const nome = localStorage.getItem("nomeStrutturaAttiva");
+      if (nome) {
+        document.getElementById("nomeStrutturaHeader").innerText = nome;
+      }
+
       loadPrenotazioniPage();
     });
   </script>
