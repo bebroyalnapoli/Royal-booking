@@ -14,6 +14,10 @@
   --danger: #ef4444;
 }
 
+/* ========================= */
+/* BASE                      */
+/* ========================= */
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
@@ -22,35 +26,37 @@ body {
 }
 
 /* ========================= */
-/* HEADER DASHBOARD          */
+/* HEADER UNICO APP          */
 /* ========================= */
 
-.dashboard-header {
+.app-header {
   background: var(--dark);
   color: white;
-  padding: 20px;
-  text-align: center;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 }
 
-.dashboard-header h1 {
+.app-header h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: 1px;
-  text-transform: uppercase;
 }
 
-.dashboard-header .struttura-attiva {
-  margin-top: 5px;
+.app-header .subtitle {
+  display: block;
+  font-size: 13px;
   color: var(--muted);
-  font-size: 14px;
+  margin-top: 2px;
+  text-align: center;
   cursor: pointer;
 }
 
-.dashboard-header .menu-btn {
+.header-menu-btn {
   position: absolute;
-  left: 15px;
-  top: 18px;
+  left: 12px;
   background: none;
   border: none;
   color: white;
@@ -137,7 +143,7 @@ body {
 }
 
 /* ========================= */
-/* CONTENT                   */
+/* CONTENUTO PAGINE          */
 /* ========================= */
 
 .page-content {
@@ -178,7 +184,7 @@ body {
 }
 
 /* ========================= */
-/* CARDS GENERICHE           */
+/* CARD GENERICHE            */
 /* ========================= */
 
 .card {
@@ -212,6 +218,26 @@ label {
   font-size: 14px;
 }
 
+/* GRID FORM */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ========================= */
+/* BOTTONI                   */
+/* ========================= */
+
 button {
   background: var(--primary);
   color: white;
@@ -227,8 +253,26 @@ button:hover {
   background: var(--accent);
 }
 
+button.secondary {
+  background: #e2e8f0;
+  color: var(--text);
+}
+
+button.secondary:hover {
+  background: #cbd5e1;
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+}
+
+button.danger:hover {
+  background: #dc2626;
+}
+
 /* ========================= */
-/* PRENOTAZIONI LIST         */
+/* LISTE (prenotazioni ecc)  */
 /* ========================= */
 
 .list {
@@ -249,6 +293,16 @@ button:hover {
 
 .list li:hover {
   background: #f8fafc;
+}
+
+.list li strong {
+  display: block;
+  font-size: 15px;
+}
+
+.list li span {
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* ========================= */
@@ -290,7 +344,7 @@ button:hover {
 }
 
 /* ========================= */
-/* STATI                     */
+/* STATI / ALERT             */
 /* ========================= */
 
 .warning {
@@ -303,13 +357,6 @@ button:hover {
 .success {
   background: #ecfdf5;
   border: 1px solid #86efac;
-  padding: 12px;
-  border-radius: 10px;
-}
-
-.danger {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
   padding: 12px;
   border-radius: 10px;
 }
@@ -328,8 +375,8 @@ button:hover {
   flex-wrap: wrap;
 }
 
-.row input {
-  flex: 1;
+.page-top-actions {
+  margin-bottom: 10px;
 }
 
 /* ========================= */
@@ -346,7 +393,7 @@ button:hover {
     left: 0;
   }
 
-  .menu-btn,
+  .header-menu-btn,
   .overlay {
     display: none;
   }
@@ -355,7 +402,7 @@ button:hover {
     margin-left: 260px;
   }
 
-  .dashboard-header {
+  .app-header {
     padding-left: 280px;
   }
 }
