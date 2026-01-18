@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#0b1221">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Royal Booking">
@@ -28,31 +28,54 @@
 
 <body>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <div id="sidebar-container"></div>
 
-  <!-- Contenuto -->
+  <!-- HEADER APP -->
+  <header class="app-header">
+    <button id="headerMenuToggle" class="header-menu-btn">☰</button>
+
+    <div class="header-titles">
+      <h1>ROYAL BOOKING</h1>
+      <span id="nomeStrutturaHeader" class="subtitle"></span>
+    </div>
+  </header>
+
+  <!-- CONTENUTO -->
   <main class="page-content">
 
-    <h1>Strutture</h1>
+    <!-- Se non c'è struttura selezionata -->
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona una struttura dal menu
+    </div>
 
-    <!-- Form nuova struttura -->
-    <section class="card">
-      <h2>Aggiungi struttura</h2>
+    <section id="struttureContent">
 
-      <input id="sNome" type="text" placeholder="Nome struttura">
-      <input id="sSigla" type="text" placeholder="Sigla (es. RT)">
-      <input id="sIndirizzo" type="text" placeholder="Indirizzo">
-      <input id="sEmail" type="email" placeholder="Email">
-      <input id="sTelefono" type="text" placeholder="Telefono">
+      <!-- Form nuova struttura -->
+      <section class="card">
+        <h2>Aggiungi struttura</h2>
 
-      <button onclick="addStruttura()">Salva struttura</button>
-    </section>
+        <div class="form-grid">
+          <input id="sNome" type="text" placeholder="Nome struttura">
 
-    <!-- Lista strutture -->
-    <section class="card">
-      <h2>Elenco strutture</h2>
-      <ul id="listaStrutture" class="list"></ul>
+          <input id="sSigla" type="text" placeholder="Sigla (es. RT)">
+
+          <input id="sIndirizzo" type="text" placeholder="Indirizzo">
+
+          <input id="sEmail" type="email" placeholder="Email">
+
+          <input id="sTelefono" type="text" placeholder="Telefono">
+        </div>
+
+        <button onclick="addStruttura()">Salva struttura</button>
+      </section>
+
+      <!-- Lista strutture -->
+      <section class="card">
+        <h2>Elenco strutture</h2>
+        <ul id="listaStrutture" class="list"></ul>
+      </section>
+
     </section>
 
   </main>
@@ -60,7 +83,14 @@
   <!-- Init pagina -->
   <script>
     checkAuth();
+
     loadSidebar(() => {
+      // Mostra nome struttura selezionata nell'header
+      const nome = localStorage.getItem("nomeStrutturaAttiva");
+      if (nome) {
+        document.getElementById("nomeStrutturaHeader").innerText = nome;
+      }
+
       loadStruttureList();
     });
   </script>
