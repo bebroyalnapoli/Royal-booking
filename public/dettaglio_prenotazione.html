@@ -24,72 +24,103 @@
 
 <body>
 
-<div id="sidebar-container"></div>
+  <!-- SIDEBAR -->
+  <div id="sidebar-container"></div>
 
-<main class="page-content">
+  <!-- HEADER APP -->
+  <header class="app-header">
+    <button id="headerMenuToggle" class="header-menu-btn">☰</button>
 
-  <h1>Dettaglio Prenotazione</h1>
+    <div class="header-titles">
+      <h1>ROYAL BOOKING</h1>
+      <span id="nomeStrutturaHeader" class="subtitle"></span>
+    </div>
+  </header>
 
-  <section class="card">
+  <!-- CONTENUTO -->
+  <main class="page-content">
 
-    <h2>Codice: <span id="dCodice">--</span></h2>
-
-    <div class="form-group">
-      <label>Cliente</label>
-      <input id="dCliente" type="text" disabled>
+    <div class="page-top-actions">
+      <button class="secondary" onclick="window.location.href='prenotazioni.html'">
+        ⬅ Torna alle prenotazioni
+      </button>
     </div>
 
-    <div class="form-group">
-      <label>Telefono</label>
-      <input id="dTelefono" type="text" disabled>
-    </div>
+    <section class="card">
 
-    <div class="row">
-      <div class="form-group">
-        <label>Check-in</label>
-        <input id="dCheckin" type="date" disabled>
+      <h2>
+        Dettaglio prenotazione  
+        <small>(Codice: <span id="dCodice">--</span>)</small>
+      </h2>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Cliente</label>
+          <input id="dCliente" type="text" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Telefono</label>
+          <input id="dTelefono" type="text" disabled>
+        </div>
+
       </div>
 
-      <div class="form-group">
-        <label>Check-out</label>
-        <input id="dCheckout" type="date" disabled>
+      <div class="date-grid">
+
+        <div class="form-group">
+          <label>Check-in</label>
+          <input id="dCheckin" type="date" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Check-out</label>
+          <input id="dCheckout" type="date" disabled>
+        </div>
+
       </div>
-    </div>
 
-    <hr>
+      <hr>
 
-    <div class="totali">
-      <p>Totale: <strong><span id="dTotale">0</span> €</strong></p>
-      <p>Acconto: <strong><span id="dAcconto">0</span> €</strong></p>
-      <p>Resto da pagare: <strong><span id="dResto">0</span> €</strong></p>
-    </div>
+      <div class="totali">
+        <p>Totale: <strong><span id="dTotale">0</span> €</strong></p>
+        <p>Acconto: <strong><span id="dAcconto">0</span> €</strong></p>
+        <p>Resto da pagare: <strong><span id="dResto">0</span> €</strong></p>
+      </div>
 
-    <hr>
+      <hr>
 
-    <!-- PULSANTI NORMALI -->
-    <div id="pulsantiNormali">
-      <button onclick="abilitaModifica()">✏️ Modifica</button>
-      <button onclick="generaPDFPrenotazione()">📄 Scarica PDF</button>
-      <button onclick="eliminaPrenotazione()" class="danger">🗑 Elimina</button>
-      <button onclick="window.location.href='prenotazioni.html'">⬅ Torna indietro</button>
-    </div>
+      <!-- PULSANTI NORMALI -->
+      <div id="pulsantiNormali" class="button-row">
+        <button onclick="abilitaModifica()">✏️ Modifica</button>
+        <button onclick="generaPDFPrenotazione()">📄 Scarica PDF</button>
+        <button onclick="eliminaPrenotazione()" class="danger">🗑 Elimina</button>
+      </div>
 
-    <!-- PULSANTI IN MODIFICA -->
-    <div id="pulsantiModifica" class="hidden">
-      <button onclick="salvaModifichePrenotazione()">💾 Salva modifiche</button>
-      <button onclick="annullaModifica()">❌ Annulla</button>
-    </div>
+      <!-- PULSANTI IN MODIFICA -->
+      <div id="pulsantiModifica" class="hidden button-row">
+        <button onclick="salvaModifichePrenotazione()">💾 Salva modifiche</button>
+        <button onclick="annullaModifica()" class="secondary">❌ Annulla</button>
+      </div>
 
-  </section>
+    </section>
 
-</main>
+  </main>
 
-<script>
-  checkAuth();
-  loadSidebar(() => {
-    loadDettaglioPrenotazione();
-  });
-</script>
+  <script>
+    checkAuth();
+
+    loadSidebar(() => {
+
+      const nome = localStorage.getItem("nomeStrutturaAttiva");
+      if (nome) {
+        document.getElementById("nomeStrutturaHeader").innerText = nome;
+      }
+
+      loadDettaglioPrenotazione();
+    });
+  </script>
 
 </body>
 </html>
