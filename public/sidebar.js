@@ -23,12 +23,17 @@ function loadSidebar(callback) {
 
 function initSidebar() {
   const sidebar = document.getElementById("sidebar");
-  const toggle = document.getElementById("menuToggle");
+
+  // ADESSO il toggle è quello nell’HEADER
+  const toggle = document.getElementById("headerMenuToggle");
+
   const overlay = document.getElementById("overlay");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // Se non esistono gli elementi base, stop
   if (!sidebar || !toggle || !overlay) return;
 
+  // Apertura sidebar
   toggle.onclick = () => {
     sidebar.classList.toggle("open");
     overlay.classList.toggle("show");
@@ -52,9 +57,10 @@ function initSidebar() {
     };
   }
 
+  // Su mobile chiude sidebar quando clicchi una voce
   document.querySelectorAll(".sidebar-menu a").forEach(a => {
     a.addEventListener("click", () => {
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 900) {
         closeSidebar();
       }
     });
