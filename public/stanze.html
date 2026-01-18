@@ -7,7 +7,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#0b1221">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Royal Booking">
@@ -29,26 +29,39 @@
 
 <body>
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <div id="sidebar-container"></div>
 
-  <!-- Contenuto -->
+  <!-- HEADER APP -->
+  <header class="app-header">
+    <button id="headerMenuToggle" class="header-menu-btn">☰</button>
+
+    <div class="header-titles">
+      <h1>ROYAL BOOKING</h1>
+      <span id="nomeStrutturaHeader" class="subtitle"></span>
+    </div>
+  </header>
+
+  <!-- CONTENUTO -->
   <main class="page-content">
-    <h1>Stanze</h1>
 
     <div id="noStruttura" class="warning hidden">
       ⚠️ Seleziona prima una struttura dal menu
     </div>
 
-    <section id="stanzeContent">
+    <section id="stanzeContent" class="hidden">
 
       <!-- Aggiungi stanza -->
       <section class="card">
         <h2>Aggiungi stanza</h2>
 
-        <input id="stanzaNumero" type="text" placeholder="Numero stanza">
-        <input id="stanzaDescrizione" type="text" placeholder="Descrizione">
-        <input id="stanzaOspiti" type="number" placeholder="Numero ospiti" min="1">
+        <div class="form-grid">
+          <input id="stanzaNumero" type="text" placeholder="Numero stanza">
+
+          <input id="stanzaDescrizione" type="text" placeholder="Descrizione">
+
+          <input id="stanzaOspiti" type="number" placeholder="Numero ospiti" min="1">
+        </div>
 
         <button onclick="addStanza()">Salva stanza</button>
       </section>
@@ -56,16 +69,25 @@
       <!-- Elenco stanze -->
       <section class="card">
         <h2>Elenco stanze</h2>
+
         <ul id="listaStanze" class="list"></ul>
       </section>
 
     </section>
+
   </main>
 
   <!-- Init -->
   <script>
     checkAuth();
+
     loadSidebar(() => {
+      // Mostra nome struttura nell'header
+      const nome = localStorage.getItem("nomeStrutturaAttiva");
+      if (nome) {
+        document.getElementById("nomeStrutturaHeader").innerText = nome;
+      }
+
       loadStanze();
     });
   </script>
