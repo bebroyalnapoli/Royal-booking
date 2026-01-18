@@ -22,70 +22,103 @@
 
 <body>
 
-<div id="sidebar-container"></div>
+  <!-- SIDEBAR -->
+  <div id="sidebar-container"></div>
 
-<main class="page-content">
+  <!-- HEADER APP -->
+  <header class="app-header">
+    <button id="headerMenuToggle" class="header-menu-btn">☰</button>
 
-  <div class="row space-between">
-    <h1>Nuova Prenotazione</h1>
+    <div class="header-titles">
+      <h1>ROYAL BOOKING</h1>
+      <span id="nomeStrutturaHeader" class="subtitle"></span>
+    </div>
+  </header>
 
-    <button onclick="window.location.href='prenotazioni.html'">
-      ⬅ Torna alle prenotazioni
-    </button>
-  </div>
+  <!-- CONTENUTO -->
+  <main class="page-content">
 
-  <div id="noStruttura" class="warning hidden">
-    ⚠️ Seleziona prima una struttura dal menu
-  </div>
-
-  <section id="prenotazioneForm" class="card hidden">
-
-    <!-- ANTEPRIMA CODICE -->
-    <p>
-      Codice prenotazione:
-      <strong id="codicePreview">--</strong>
-    </p>
-
-    <input id="pCliente" type="text" placeholder="Nome cliente" required>
-    <input id="pTelefono" type="text" placeholder="Telefono cliente" required>
-
-    <div class="row">
-      <input id="pCheckin" type="date" required>
-      <input id="pCheckout" type="date" required>
+    <div class="page-top-actions">
+      <button class="secondary" onclick="window.location.href='prenotazioni.html'">
+        ⬅ Torna alle prenotazioni
+      </button>
     </div>
 
-    <h3>Seleziona stanze</h3>
-
-    <div id="stanzePrenotazione" class="stanze-box">
-      <!-- popolato da JS -->
+    <div id="noStruttura" class="warning hidden">
+      ⚠️ Seleziona prima una struttura dal menu
     </div>
 
-    <input
-      id="pAcconto"
-      type="number"
-      placeholder="Acconto €"
-      oninput="calcolaTotali()"
-    >
+    <section id="prenotazioneForm" class="card hidden">
 
-    <div class="totali">
-      <p>Totale: <span id="totalePrenotazione">0</span> €</p>
-      <p>Resta da pagare: <span id="restoDaPagare">0</span> €</p>
-    </div>
+      <h2>Nuova prenotazione</h2>
 
-    <button onclick="addPrenotazione()">
-      💾 Salva prenotazione
-    </button>
+      <!-- ANTEPRIMA CODICE -->
+      <div class="codice-box">
+        Codice prenotazione:
+        <strong id="codicePreview">--</strong>
+      </div>
 
-  </section>
+      <div class="form-grid">
 
-</main>
+        <input id="pCliente" type="text" placeholder="Nome cliente" required>
 
-<script>
-  checkAuth();
-  loadSidebar(() => {
-    loadNuovaPrenotazionePage();
-  });
-</script>
+        <input id="pTelefono" type="text" placeholder="Telefono cliente" required>
+
+      </div>
+
+      <div class="date-grid">
+        <div>
+          <label>Check-in</label>
+          <input id="pCheckin" type="date" required>
+        </div>
+
+        <div>
+          <label>Check-out</label>
+          <input id="pCheckout" type="date" required>
+        </div>
+      </div>
+
+      <h3>Seleziona stanze</h3>
+
+      <div id="stanzePrenotazione" class="stanze-box">
+        <!-- popolato da JS -->
+      </div>
+
+      <div class="form-grid">
+        <input
+          id="pAcconto"
+          type="number"
+          placeholder="Acconto €"
+          oninput="calcolaTotali()"
+        >
+      </div>
+
+      <div class="totali">
+        <p>Totale: <span id="totalePrenotazione">0</span> €</p>
+        <p>Resta da pagare: <span id="restoDaPagare">0</span> €</p>
+      </div>
+
+      <button onclick="addPrenotazione()">
+        💾 Salva prenotazione
+      </button>
+
+    </section>
+
+  </main>
+
+  <script>
+    checkAuth();
+
+    loadSidebar(() => {
+
+      const nome = localStorage.getItem("nomeStrutturaAttiva");
+      if (nome) {
+        document.getElementById("nomeStrutturaHeader").innerText = nome;
+      }
+
+      loadNuovaPrenotazionePage();
+    });
+  </script>
 
 </body>
 </html>
